@@ -1,0 +1,40 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
+
+		/* Bundler mode */
+		"moduleResolution": "node",
+		"allowImportingTsExtensions": false,
+		"isolatedModules": true,
+		"moduleDetection": "force",
+		"noEmit": false,
+		"jsx": "react-jsx",
+
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true,
+
+		// Other stuff
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"checkJs": true,
+		"declaration": true,
+		"declarationMap": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "CommonJS",
+		"noImplicitAny": false,
+		"noImplicitReturns": true,
+		"outDir": "dist",
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strictNullChecks": true,
+		"typeRoots": ["./node_modules/@types"],
+		"useDefineForClassFields": true
+	},
+	"include": ["src", "types.d.ts", "index.tsx"]
+}
