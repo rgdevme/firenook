@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root,
+#next-root {
+	@apply grid
+  bg-white
+  w-screen
+  h-screen
+  overflow-x-hidden
+  overflow-y-auto;
+
+	grid-template:
+		'menu header' 3rem
+		'menu   main' 1fr
+		'menu   footer' 3.5rem
+		/ auto 1fr;
+}
+
+#header {
+	grid-area: header;
+}
+
+#menu {
+	grid-area: menu;
+}
+
+#main {
+	grid-area: main;
+	@apply overflow-x-hidden overflow-y-auto;
+
+	> div {
+		height: calc(100vh - 6.5rem);
+	}
+}
+
+#footer {
+	grid-area: footer;
+}
+
+.drawer {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	max-width: 500px;
+	max-height: 100%;
+	border-radius: 0;
+	margin: 0;
+}
+
+.drawer-animated {
+	transform: translateX(100%);
+}
+
+.drawer-animated-slide-in {
+	animation: slide-in 0.3s forwards;
+}
+
+.drawer-animated-slide-out {
+	animation: slide-out 0.2s forwards;
+}
+
+@keyframes slide-in {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0%);
+	}
+}
+
+@keyframes slide-out {
+	from {
+		transform: translateX(0%);
+	}
+	to {
+		transform: translateX(100%);
+	}
+}
