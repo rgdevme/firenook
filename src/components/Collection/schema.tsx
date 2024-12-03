@@ -58,7 +58,7 @@ export const CollectionSchema = ({
 				{() => (
 					<>
 						<ModalHeader className='flex flex-col gap-1'>
-							Create collection
+							{current?.plural} schema
 						</ModalHeader>
 						<ModalBody>
 							<Dropdown>

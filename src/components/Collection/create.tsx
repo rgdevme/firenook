@@ -1,37 +1,34 @@
 import {
-	Modal,
-	ModalContent,
-	ModalHeader,
-	ModalBody,
-	ModalFooter,
 	Button,
-	useDisclosure,
+	Checkbox,
 	Input,
-	Checkbox
+	Modal,
+	ModalBody,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	useDisclosure
 } from '@nextui-org/react'
-import { CollectionStore as cs } from '../../firebase/models/Collection'
-import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { Collection } from '../../firebase/types/Collection'
-import { useCollectionsList } from '../../context/collectionsList'
+import { useForm } from 'react-hook-form'
+import { CollectionStore as cs } from '../../firebase/models/Collection'
+import { CollectionModel } from '../../firebase/types/Collection'
 
 export const CollectionModal = ({
 	isOpen,
 	onClose,
 	onOpenChange
 }: ReturnType<typeof useDisclosure>) => {
-	const { refetch } = useCollectionsList()
 	const [loading, setLoading] = useState(false)
 	const { handleSubmit, register } = useForm({
 		disabled: loading,
-		defaultValues: cs.defaultData
+		defaultValues: cs.defaultData as CollectionModel
 	})
 
-	const onSubmit = async ({ schema, ...data }: Collection) => {
+	const onSubmit = async ({ schema, ...data }: CollectionModel) => {
 		try {
 			setLoading(true)
 			await cs.create({ ...data, schema: [] })
-			await refetch()
 			onClose()
 		} catch (error) {
 			console.error({ error })

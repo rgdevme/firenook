@@ -13,8 +13,8 @@ const col = CollectionStore
 
 const CollectionCtx = createContext({
 	collections: [] as CollectionModel[],
-	current: null as CollectionModel | null,
-	refetch: async () => {}
+	current: null as CollectionModel | null
+	// refetch: async () => {}
 })
 
 export const CollectionsProvider = ({ children }: PropsWithChildren) => {
@@ -23,16 +23,17 @@ export const CollectionsProvider = ({ children }: PropsWithChildren) => {
 	const [currentCollection, setCurrentCollection] =
 		useState<null | CollectionModel>(null)
 
-	const getCollections = async () => {
-		if (!col) return
-		const res = await col.query({ where: [] })
-		console.log({ res })
+	// const getCollections = async () => {
+	// 	if (!col) return
+	// 	const res = await col.query({ where: [] })
+	// 	console.log({ res })
 
-		setResults(res)
-	}
+	// 	setResults(res)
+	// }
 
 	useEffect(() => {
-		getCollections()
+		const unsub = col.subscribeMany({ onChange: setResults, where: [] })
+		return unsub
 	}, [])
 
 	useEffect(() => {
@@ -44,8 +45,8 @@ export const CollectionsProvider = ({ children }: PropsWithChildren) => {
 		<CollectionCtx.Provider
 			value={{
 				collections: results,
-				current: currentCollection,
-				refetch: getCollections
+				current: currentCollection
+				// refetch: getCollections
 			}}
 			children={children}
 		/>
