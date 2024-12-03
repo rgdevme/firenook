@@ -42,6 +42,7 @@
   },
   "homepage": "https://github.com/rgdevme/firenook#readme",
   "devDependencies": {
+    "@types/ramda": "^0.30.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
@@ -54,14 +55,18 @@
     "vite-plugin-dts": "^4.3.0"
   },
   "dependencies": {
+    "@internationalized/date": "^3.6.0",
     "@nextui-org/react": "^2.4.8",
     "@uidotdev/usehooks": "^2.4.1",
+    "dayjs": "^1.11.13",
     "framer-motion": "^11.12.0",
+    "ramda": "^0.30.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.2",
     "react-icons": "^5.3.0",
-    "react-router": "^7.0.1"
+    "react-router": "^7.0.1",
+    "zod": "^3.23.8"
   },
   "peerDependencies": {
     "firebase": "^10.5.0",
