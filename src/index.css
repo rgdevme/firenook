@@ -79,3 +79,7 @@
 		transform: translateX(100%);
 	}
 }
+
+.list > table th:not([data-column='true']) {
+	@apply w-px;
+}
