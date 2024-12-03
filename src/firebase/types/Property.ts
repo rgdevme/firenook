@@ -25,5 +25,7 @@ export enum PropertyType {
 	reference = 'reference',
 	string = 'string',
 	timestamp = 'timestamp',
-	url = 'url'
+	url = 'url',
+	image = 'image',
+	file = 'file'
 }
