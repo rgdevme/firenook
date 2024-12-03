@@ -17,6 +17,8 @@ import { CollectionProvider } from './context/collection'
 import { CollectionsProvider } from './context/collectionsList'
 import './index.css'
 import { ParamsProvider } from './context/params'
+import { RecordView } from './components/Record/view'
+import { RecordProvider } from './context/record'
 
 const Routing = ({ app }: { app: FirebaseApp }) => {
 	const auth = getAuth(app)
@@ -45,10 +47,7 @@ const Routing = ({ app }: { app: FirebaseApp }) => {
 						element={<div className='firenook'>Welcome!</div>}
 					/>
 					<Route path=':collection' element={<List />} />
-					<Route
-						path=':collection/:record'
-						element={<div className='firenook'>Record view!</div>}
-					/>
+					<Route path=':collection/:record' element={<RecordView />} />
 					<Route
 						path=':collection/:record/:subcollection'
 						element={<div className='firenook'>Subcollection view!</div>}
@@ -65,7 +64,9 @@ export const Firenook = ({ app }: { app: FirebaseApp }) => {
 			<CollectionsProvider>
 				<BrowserRouter>
 					<CollectionProvider>
-						<Routing app={app} />
+						<RecordProvider>
+							<Routing app={app} />
+						</RecordProvider>
 					</CollectionProvider>
 				</BrowserRouter>
 			</CollectionsProvider>
