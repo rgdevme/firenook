@@ -22,9 +22,9 @@ const RecordContext = createContext(
 		reset: (data?: object) => void
 		clear: () => void
 		remove?: () => Promise<void>
-		save?: () => Promise<void>
-		subscribe?: () => Unsubscribe
-		duplicate?: () => Promise<DocumentReference>
+		save?: (upd: object) => Promise<void>
+		copy?: (upd: object) => Promise<DocumentReference>
+		subscribe?: (onChange: (res: object) => any) => Unsubscribe
 	}
 )
 
@@ -39,24 +39,15 @@ export const RecordProvider = ({ children }: PropsWithChildren) => {
 	const changed = useMemo(() => equals(data, original), [])
 
 	const update = (data: object) => setData(p => ({ ...p, ...data }))
-	const getData = () => ({ ...data })
 
 	const methods = useMemo(() => {
 		if (!store || !record) return {}
 		return {
 			remove: () => store.destroy(record),
-			save: () => {
-				console.log({ record, data: getData() })
-				return store.save(record, { ...getData() })
-			},
-			duplicate: () => store.create(getData()),
-			subscribe: () =>
-				store.subscribe(record, {
-					onChange: res => {
-						reset(res)
-						toggle(false)
-					}
-				})
+			save: (upd: typeof data) => store.save(record, upd),
+			copy: (upd: typeof data) => store.create(upd),
+			subscribe: (onChange: (res: any) => any) =>
+				store.subscribe(record, { onChange })
 		}
 	}, [store, record])
 
@@ -70,6 +61,7 @@ export const RecordProvider = ({ children }: PropsWithChildren) => {
 			setOriginal(upd)
 			setData(upd)
 		} else setData(original)
+		toggle(false)
 	}
 
 	useEffect(() => {

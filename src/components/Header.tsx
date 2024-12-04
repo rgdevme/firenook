@@ -91,10 +91,7 @@ export const Header = () => {
 							variant='light'
 							radius='full'
 							color='success'
-							onPress={() => {
-								console.log(rec.data)
-								rec.save?.()
-							}}>
+							onPress={() => rec.save?.(rec.data)}>
 							<LuSave size={18} />
 						</Button>
 					</Tooltip>
@@ -105,7 +102,7 @@ export const Header = () => {
 							variant='light'
 							radius='full'
 							color='primary'
-							onPress={rec?.duplicate}>
+							onPress={() => rec.copy?.(rec.data)}>
 							<LuCopyPlus size={18} />
 						</Button>
 					</Tooltip>
