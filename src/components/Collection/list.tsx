@@ -6,7 +6,7 @@ import {
 	TableHeader,
 	TableRow
 } from '@nextui-org/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useCollection } from '../../context/collection'
 import { useCollectionsList } from '../../context/collectionsList'
 import { useNavigate } from 'react-router'
@@ -18,12 +18,15 @@ export const List = () => {
 	const { store, selection, setSelection } = useCollection()
 	const [rows, setRows] = useState<any[]>([])
 
-	const columns = [
-		{ key: 'id', name: 'ID', sortable: true, type: PropertyType.string },
-		...(current?.schema || [])
-			.filter(p => p.show)
-			.map(({ key, name, sortable, type }) => ({ key, name, sortable, type }))
-	]
+	const columns = useMemo(
+		() => [
+			{ key: 'id', name: 'ID', sortable: true, type: PropertyType.string },
+			...(current?.schema || [])
+				.filter(p => p.show)
+				.map(({ key, name, sortable, type }) => ({ key, name, sortable, type }))
+		],
+		[current?.schema]
+	)
 
 	useEffect(() => {
 		if (!store) return
