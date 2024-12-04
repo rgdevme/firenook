@@ -8,10 +8,10 @@ export const DateProperty = ({
 	onChange
 }: {
 	label: string
-	value: Date
+	value?: Date
 	onChange: (val: Date) => void
 }) => {
-	const d = dayjs(value)
+	const d = dayjs(value ?? null)
 
 	const cdt = new CalendarDateTime(
 		d.year(),
