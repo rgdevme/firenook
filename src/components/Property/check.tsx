@@ -6,10 +6,11 @@ export const CheckProperty = ({
 	onChange
 }: {
 	label: string
-	value: boolean
+	value?: boolean
 	onChange: (val: boolean) => void
-}) => (
-	<Switch size='sm' isSelected={value} onValueChange={onChange}>
-		{label}
-	</Switch>
-)
+}) =>
+	value === undefined ? null : (
+		<Switch size='sm' isSelected={value} onValueChange={onChange}>
+			{label}
+		</Switch>
+	)

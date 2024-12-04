@@ -8,7 +8,7 @@ export const NumberProperty = ({
 	onChange
 }: {
 	label: string
-	value: string
+	value?: string
 	onChange: (val: string) => void
 }) => {
 	const [isInvalid, setInvalid] = useState(false)
@@ -16,10 +16,10 @@ export const NumberProperty = ({
 	let validate = () => {
 		let schema = z.number().finite().safe()
 
-		setInvalid(!schema.safeParse(value).success)
+		setInvalid(!schema.safeParse(Number(value)).success)
 	}
 
-	return (
+	return !value ? null : (
 		<Input
 			size='sm'
 			type='number'

@@ -11,7 +11,7 @@ export const StringProperty = ({
 }: {
 	type: PropertyType
 	label: string
-	value: string
+	value?: string
 	onChange: (val: string) => void
 }) => {
 	const [isInvalid, setInvalid] = useState(false)
@@ -36,7 +36,7 @@ export const StringProperty = ({
 		setInvalid(!schema.safeParse(value).success)
 	}
 
-	return (
+	return !value ? null : (
 		<Input
 			size='sm'
 			isInvalid={isInvalid}
