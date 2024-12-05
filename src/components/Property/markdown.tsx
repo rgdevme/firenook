@@ -14,7 +14,6 @@ import {
 	markdownShortcutPlugin,
 	MDXEditor,
 	quotePlugin,
-	sandpackPlugin,
 	tablePlugin,
 	thematicBreakPlugin,
 	toolbarPlugin
@@ -24,14 +23,14 @@ import '@mdxeditor/editor/style.css'
 
 export const MarkdownProperty = ({
 	label,
-	value,
+	value = '',
 	onChange
 }: {
 	label: string
 	value?: string
 	onChange: (val: string) => void
 }) => {
-	return !value ? null : (
+	return (
 		<MDXEditor
 			className='bg-default-100 rounded-lg'
 			markdown={value}

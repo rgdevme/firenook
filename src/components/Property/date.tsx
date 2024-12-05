@@ -4,14 +4,14 @@ import dayjs from 'dayjs'
 
 export const DateProperty = ({
 	label,
-	value,
+	value = new Date(),
 	onChange
 }: {
 	label: string
 	value?: Date
 	onChange: (val: Date) => void
 }) => {
-	const d = dayjs(value ?? null)
+	const d = dayjs(value)
 
 	const cdt = new CalendarDateTime(
 		d.year(),
@@ -28,7 +28,7 @@ export const DateProperty = ({
 			label={label}
 			hideTimeZone
 			showMonthAndYearPickers
-			value={cdt}
+			defaultValue={cdt}
 			onChange={val => {
 				onChange(new Date(val.toString()))
 			}}

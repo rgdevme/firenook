@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 export const NumberProperty = ({
 	label,
-	value,
+	value = '0',
 	onChange
 }: {
 	label: string
@@ -19,14 +19,14 @@ export const NumberProperty = ({
 		setInvalid(!schema.safeParse(Number(value)).success)
 	}
 
-	return !value ? null : (
+	return (
 		<Input
 			size='sm'
 			type='number'
 			isInvalid={isInvalid}
 			color={isInvalid ? 'danger' : 'default'}
 			label={label}
-			value={value}
+			defaultValue={value}
 			onChange={val => onChange(val.target.value)}
 			onBlur={validate}
 		/>

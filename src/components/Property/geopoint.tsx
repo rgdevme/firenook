@@ -22,7 +22,9 @@ export const GeoPointProperty = ({
 		setInvalid(!validLon || !validLat)
 	}
 
-	useEffect(() => onChange(new GeoPoint(lat, lon)), [lat, lon])
+	useEffect(() => {
+		onChange(new GeoPoint(lat, lon))
+	}, [lat, lon])
 
 	return (
 		<div className='flex flex-row gap-4 flex-wrap'>
@@ -33,7 +35,7 @@ export const GeoPointProperty = ({
 				isInvalid={isInvalid}
 				color={isInvalid ? 'danger' : 'default'}
 				label={`${label}'s latitude`}
-				value={lat.toString()}
+				defaultValue={lat.toString()}
 				onChange={val => {
 					let n = 0
 					if (val.target.value.length) {
@@ -50,7 +52,7 @@ export const GeoPointProperty = ({
 				isInvalid={isInvalid}
 				color={isInvalid ? 'danger' : 'default'}
 				label={`${label}'s longitude`}
-				value={lon.toString()}
+				defaultValue={lon.toString()}
 				onChange={val => {
 					let n = 0
 					if (val.target.value.length) {

@@ -2,15 +2,14 @@ import { Switch } from '@nextui-org/react'
 
 export const CheckProperty = ({
 	label,
-	value,
+	value = false,
 	onChange
 }: {
 	label: string
 	value?: boolean
 	onChange: (val: boolean) => void
-}) =>
-	value === undefined ? null : (
-		<Switch size='sm' isSelected={value} onValueChange={onChange}>
-			{label}
-		</Switch>
-	)
+}) => (
+	<Switch size='sm' defaultSelected={value} onValueChange={onChange}>
+		{label}
+	</Switch>
+)

@@ -6,7 +6,7 @@ import { PropertyType } from '../../firebase/types/Property'
 export const StringProperty = ({
 	type,
 	label,
-	value,
+	value = '',
 	onChange
 }: {
 	type: PropertyType
@@ -36,13 +36,13 @@ export const StringProperty = ({
 		setInvalid(!schema.safeParse(value).success)
 	}
 
-	return !value ? null : (
+	return (
 		<Input
 			size='sm'
 			isInvalid={isInvalid}
 			color={isInvalid ? 'danger' : 'default'}
 			label={label}
-			value={value}
+			defaultValue={value}
 			onChange={val => onChange(val.target.value)}
 			onBlur={validate}
 		/>
