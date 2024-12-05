@@ -4,40 +4,30 @@ import {
 	Button,
 	ButtonGroup,
 	Divider,
-	Tooltip,
 	useDisclosure
 } from '@nextui-org/react'
-import {
-	LuCopyPlus,
-	LuFilePlus2,
-	LuFileX2,
-	LuListFilter,
-	LuListTree,
-	LuSave,
-	LuTrash2
-} from 'react-icons/lu'
-import { useParams } from 'react-router'
-import { useCollection } from '../context/collection'
-import { CollectionSchema } from './Collection/schema'
-import { CreateRecord } from './Record/create'
+import { LuFilePlus2, LuFileX2, LuListFilter, LuListTree } from 'react-icons/lu'
 import { TbFolderX } from 'react-icons/tb'
+import { useNavigate, useParams } from 'react-router'
+import { useCollection } from '../context/collection'
 import { useCollectionsList } from '../context/collectionsList'
-import { useRecord } from '../context/record'
+import { CollectionSchema } from './Collection/schema'
+import { RecordControls } from './Record/controls'
+import { CreateRecord } from './Record/create'
 
 export const Header = () => {
 	const { collection, record } = useParams()
+	const nav = useNavigate()
 	const { current } = useCollectionsList()
 	const { store, selection } = useCollection()
-	const rec = useRecord()
 	const collectionSchema = useDisclosure()
 	const recordCreation = useDisclosure()
 
 	const deleteSelectedRecords = async () => {
-		if (!store) return
-		console.log('destroying')
+		if (!store || !collection || !selection.size) return
 		const promises = [...selection.values().map(s => store.destroy(s))]
 		await Promise.all(promises)
-		console.log('destroyed')
+		nav(`/${collection}`)
 	}
 
 	return (
@@ -59,7 +49,7 @@ export const Header = () => {
 					)}
 				</Breadcrumbs>
 			</div>
-			{!!collection && !record ? (
+			{!!collection && !record && (
 				<>
 					<ButtonGroup size='sm' variant='light' radius='full'>
 						<Button isIconOnly color='default'>
@@ -82,43 +72,8 @@ export const Header = () => {
 						</Button>
 					</ButtonGroup>
 				</>
-			) : !!collection && !!record ? (
-				<div className='flex gap-4'>
-					<Tooltip content='Save'>
-						<Button
-							isIconOnly
-							size='sm'
-							variant='light'
-							radius='full'
-							color='success'
-							onPress={() => rec.save?.(rec.data)}>
-							<LuSave size={18} />
-						</Button>
-					</Tooltip>
-					<Tooltip content='Duplicate'>
-						<Button
-							isIconOnly
-							size='sm'
-							variant='light'
-							radius='full'
-							color='primary'
-							onPress={() => rec.copy?.(rec.data)}>
-							<LuCopyPlus size={18} />
-						</Button>
-					</Tooltip>
-					<Tooltip content='Delete'>
-						<Button
-							isIconOnly
-							size='sm'
-							variant='light'
-							radius='full'
-							color='danger'
-							onPress={rec?.remove}>
-							<LuTrash2 size={18} />
-						</Button>
-					</Tooltip>
-				</div>
-			) : null}
+			)}
+			<RecordControls />
 			<CollectionSchema {...collectionSchema} />
 			<CreateRecord {...recordCreation} />
 		</header>
