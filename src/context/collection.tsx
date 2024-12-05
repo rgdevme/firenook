@@ -1,3 +1,4 @@
+import { getCountFromServer, query, Timestamp } from 'firebase/firestore'
 import { FireBorm } from 'fireborm'
 import {
 	createContext,
@@ -5,61 +6,59 @@ import {
 	PropsWithChildren,
 	useContext,
 	useEffect,
+	useMemo,
 	useState
 } from 'react'
 import { fireborm } from '../firebase'
-import { useCollectionsList } from './collectionsList'
-import { useParamsContext } from './params'
-import { getCountFromServer, query, Timestamp } from 'firebase/firestore'
 import { PropertyType } from '../firebase/types/Property'
+import { useCollectionsList } from './collectionsList'
 
 type FirebormStore = ReturnType<ReturnType<typeof FireBorm>['initializeStore']>
 
 const CollectionCtx = createContext({
 	store: null as null | FirebormStore,
-	currentDoc: null as null | ReturnType<FirebormStore['docRef']>,
 	count: 0,
 	selection: new Set() as Set<string>,
 	setSelection: (() => {}) as Dispatch<Set<string>>
 })
 
-export const CollectionProvider = ({ children }: PropsWithChildren) => {
+export const CollectionProvider = (props: PropsWithChildren) => {
 	const { current } = useCollectionsList()
-	const { params } = useParamsContext()
-	const [store, setStore] = useState<null | FirebormStore>(null)
-	const [currentDoc, setCurrentDoc] = useState<null | ReturnType<
-		FirebormStore['docRef']
-	>>(null)
+	const store = useMemo(
+		() =>
+			current &&
+			fireborm.initializeStore({
+				...current,
+				toDocument: ({ _ref, id, ...doc }) => doc,
+				toModel: doc => {
+					const { id, ref } = doc
+					const data = {} as any
+
+					if (current.schema.some(x => x.show)) {
+						const docData = doc.data()
+						for (const key in docData) {
+							const type = current!.schema.find(s => s.key === key)!.type
+							let value = docData[key]
+
+							if (type === PropertyType.timestamp) {
+								if (value === '') value = Timestamp.fromDate(new Date())
+								data[key] = (value as Timestamp).toDate()
+							} else {
+								data[key] = value
+							}
+						}
+					}
+					return { id, _ref: ref, ...data }
+				}
+			}),
+		[current]
+	)
 	const [count, setCount] = useState(0)
 	const [selection, setSelection] = useState(new Set<string>())
 
 	useEffect(() => {
-		if (!current) return
-		const newStore = fireborm.initializeStore({
-			...current,
-			toDocument: ({ _ref, id, ...doc }) => doc,
-			toModel: doc => {
-				const { id, ref } = doc
-				const data = {} as any
-
-				if (current.schema.some(x => x.show)) {
-					const docData = doc.data()
-					for (const key in docData) {
-						const type = current.schema.find(s => s.key === key)!.type
-
-						if (type === PropertyType.timestamp) {
-							data[key] = (docData[key] as Timestamp).toDate()
-						} else {
-							data[key] = docData[key]
-						}
-					}
-				}
-				return { id, _ref: ref, ...data }
-			}
-		})
-		setStore(newStore)
-
-		const q = query(newStore.ref, ...[])
+		if (!store) return
+		const q = query(store.ref, ...[])
 		getCountFromServer(q).then(res => {
 			const count = res.data().count
 			setCount(count)
@@ -71,23 +70,17 @@ export const CollectionProvider = ({ children }: PropsWithChildren) => {
 		// 		console.log({ c })
 		// 	})
 		// 	.catch(console.error)
-	}, [current])
-
-	useEffect(() => {
-		if (!store || !params.record) return
-		setCurrentDoc(store.docRef(params.record))
-	}, [params.record])
+	}, [store])
 
 	return (
 		<CollectionCtx.Provider
 			value={{
 				store,
-				currentDoc,
 				count,
 				selection,
 				setSelection
 			}}
-			children={children}
+			{...props}
 		/>
 	)
 }

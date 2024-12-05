@@ -1,55 +1,69 @@
+import { useToggle } from '@uidotdev/usehooks'
+import { Unsubscribe } from 'firebase/auth'
+import { DocumentReference } from 'firebase/firestore'
 import { equals } from 'ramda'
 import {
 	createContext,
+	MutableRefObject,
 	PropsWithChildren,
+	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
-	useState
+	useRef
 } from 'react'
+import { Outlet } from 'react-router'
 import { useCollection } from './collection'
-import { Unsubscribe } from 'firebase/auth'
-import { DocumentReference } from 'firebase/firestore'
 import { useParamsContext } from './params'
-import { useToggle } from '@uidotdev/usehooks'
 
 const RecordContext = createContext(
 	{} as {
-		data: any
+		data: MutableRefObject<any>
+		original: MutableRefObject<any>
 		changed: boolean
 		loading: boolean
 		update: (data: object) => void
 		reset: (data?: object) => void
 		clear: () => void
-		remove?: () => Promise<void>
-		save?: (upd: object) => Promise<void>
-		copy?: (upd: object) => Promise<DocumentReference>
-		subscribe?: (onChange: (res: object) => any) => Unsubscribe
+		remove: () => Promise<void> | undefined
+		save: () => Promise<void> | undefined
+		copy: () => Promise<DocumentReference> | undefined
+		subscribe: () => Unsubscribe | undefined
 	}
 )
 
-export const RecordProvider = ({ children }: PropsWithChildren) => {
+export const RecordProvider = (props: PropsWithChildren) => {
 	const {
-		params: { record }
+		params: { record: r }
 	} = useParamsContext()
 	const [loading, toggle] = useToggle(true)
-	const { store } = useCollection()
-	const [original, setOriginal] = useState({})
-	const [data, setData] = useState(original)
+	const { store: s } = useCollection()
+	const original = useRef({})
+	const data = useRef(original.current)
 	const changed = useMemo(() => equals(data, original), [])
 
-	const update = (data: object) => setData(p => ({ ...p, ...data }))
+	const setOriginal = (d?: object) => (original.current = d ?? {})
+	const setData = (d: object) => (data.current = d)
+	const update = (d: object) => setData({ ...data.current, ...d })
 
-	const methods = useMemo(() => {
-		if (!store || !record) return {}
-		return {
-			remove: () => store.destroy(record),
-			save: (upd: typeof data) => store.save(record, upd),
-			copy: (upd: typeof data) => store.create(upd),
-			subscribe: (onChange: (res: any) => any) =>
-				store.subscribe(record, { onChange })
-		}
-	}, [store, record])
+	const copy = useCallback(() => s?.create(data.current), [s, data.current])
+	const save = useCallback(
+		() => (!r ? undefined : s?.save(r, data.current)),
+		[s, r, data.current]
+	)
+	const remove = useCallback(() => (!r ? undefined : s?.destroy(r)), [s, r])
+	const subscribe = useCallback(
+		() =>
+			!r
+				? undefined
+				: s?.subscribe(r, {
+						onChange: d => {
+							setOriginal(d)
+							toggle(false)
+						}
+				  }),
+		[s, r]
+	)
 
 	const clear = () => {
 		toggle(true)
@@ -57,28 +71,28 @@ export const RecordProvider = ({ children }: PropsWithChildren) => {
 	}
 
 	const reset = (upd?: object) => {
-		if (upd) {
-			setOriginal(upd)
-			setData(upd)
-		} else setData(original)
-		toggle(false)
+		setData(upd ?? original)
 	}
 
 	useEffect(() => {
-		reset()
-	}, [original])
+		setData(original.current)
+	}, [original.current])
 
 	const ctx = {
-		data,
+		data: data,
+		original: original,
 		changed,
 		loading,
 		update,
 		reset,
 		clear,
-		...methods
+		save,
+		copy,
+		remove,
+		subscribe
 	}
 
-	return <RecordContext.Provider value={ctx} children={children} />
+	return <RecordContext.Provider value={ctx} {...props} />
 }
 
 export const useRecord = () => useContext(RecordContext)
