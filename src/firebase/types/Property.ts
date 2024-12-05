@@ -1,3 +1,5 @@
+import { GeoPoint } from 'firebase/firestore'
+
 export type Property = {
 	key: string
 	name: string
@@ -28,4 +30,22 @@ export enum PropertyType {
 	url = 'url',
 	image = 'image',
 	file = 'file'
+}
+
+export const PropertyDefaultValue = {
+	[PropertyType.boolean]: false,
+	[PropertyType.string]: '',
+	[PropertyType.email]: '',
+	[PropertyType.url]: '',
+	[PropertyType.markdown]: '',
+	[PropertyType.phone]: '',
+	[PropertyType.number]: 0,
+	[PropertyType.file]: [],
+	[PropertyType.image]: [],
+	[PropertyType.array]: [],
+	[PropertyType.map]: {},
+	[PropertyType.reference]: undefined,
+	[PropertyType.geopoint]: new GeoPoint(0, 0),
+	[PropertyType.timestamp]: new Date(),
+	[PropertyType.computed]: ''
 }
