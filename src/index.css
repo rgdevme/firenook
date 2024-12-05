@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+	overflow: hidden;
+}
+
 #root,
 #next-root {
 	@apply grid
@@ -82,4 +86,12 @@
 
 .list > table th:not([data-column='true']) {
 	@apply w-px;
+}
+
+.mdxeditor {
+	@apply min-h-96;
+}
+
+.mdxeditor-toolbar svg {
+	width: 1.2rem;
 }

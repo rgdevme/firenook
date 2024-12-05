@@ -42,16 +42,17 @@ const Routing = ({ app }: { app: FirebaseApp }) => {
 					<Route index element={<Login />} />
 				</Route>
 				<Route path='/' element={<Private auth={{ isAuthenticated }} />}>
-					<Route
-						path='dashboard'
-						element={<div className='firenook'>Welcome!</div>}
-					/>
-					<Route path=':collection' element={<List />} />
-					<Route path=':collection/:record' element={<RecordView />} />
-					<Route
-						path=':collection/:record/:subcollection'
-						element={<div className='firenook'>Subcollection view!</div>}
-					/>
+					<Route index element={<div className='firenook'>Welcome!</div>} />
+					<Route path=':collection'>
+						<Route index element={<List />} />
+						<Route path=':record'>
+							<Route index element={<RecordView />} />
+							<Route
+								path=':subcollection'
+								element={<div className='firenook'>Subcollection view!</div>}
+							/>
+						</Route>
+					</Route>
 				</Route>
 			</Routes>
 		</NextUIProvider>
@@ -62,13 +63,13 @@ export const Firenook = ({ app }: { app: FirebaseApp }) => {
 	return (
 		<ParamsProvider>
 			<CollectionsProvider>
-				<BrowserRouter>
-					<CollectionProvider>
-						<RecordProvider>
+				<CollectionProvider>
+					<RecordProvider>
+						<BrowserRouter>
 							<Routing app={app} />
-						</RecordProvider>
-					</CollectionProvider>
-				</BrowserRouter>
+						</BrowserRouter>
+					</RecordProvider>
+				</CollectionProvider>
 			</CollectionsProvider>
 		</ParamsProvider>
 	)
