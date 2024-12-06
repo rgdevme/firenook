@@ -31,7 +31,7 @@ export const MapProperty = ({
 	return (
 		<Accordion isCompact variant='bordered' className='bg-white'>
 			<AccordionItem key={'1'} aria-label={label} title={label}>
-				<div className='flex gap-2 p-4 rounded-lg rounded-t-none'>
+				<div className='flex gap-2 rounded-lg rounded-t-none last:mb-2'>
 					{Object.entries(state).map(([key, value]) => {
 						const type = schema.find(x => x.key === key)!.type
 
