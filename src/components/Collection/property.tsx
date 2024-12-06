@@ -10,8 +10,9 @@ import {
 } from '@nextui-org/react'
 import { forwardRef, PropsWithChildren, useState } from 'react'
 import { BiTrash } from 'react-icons/bi'
-import { Property } from '../../firebase/types/Property'
 import { MdDragHandle } from 'react-icons/md'
+import { Property, PropertyType } from '../../firebase/types/Property'
+import { MapSchemaProperty } from '../SchemaProperty/map'
 
 export const Item = forwardRef<HTMLDivElement, PropsWithChildren<any>>(
 	(props, ref) => (
@@ -24,13 +25,13 @@ export const SchemaProperty = ({
 	onChange,
 	onRemove
 }: {
-	property: Property
-	onChange: (property: Partial<Property>) => void
+	property: Property & { _id: string }
+	onChange: (property: Partial<Property & { _id: string }>) => void
 	onRemove: () => void
 }) => {
 	const [keyByName, setKeyByName] = useState(!property.key.length)
 	const { attributes, listeners, setNodeRef, transform, transition } =
-		useSortable({ id: property.key })
+		useSortable({ id: property._id })
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
@@ -119,31 +120,46 @@ export const SchemaProperty = ({
 						<Switch
 							size='sm'
 							className='flex-[1_1_0%] max-w-none'
-							isSelected={property.nullable}
+							defaultSelected={property.nullable}
 							onValueChange={val => onChange({ nullable: val })}>
 							Nullable
 						</Switch>
 						<Switch
 							size='sm'
 							className='flex-[1_1_0%] max-w-none'
-							isSelected={property.sortable}
+							defaultSelected={property.sortable}
 							onValueChange={val => onChange({ sortable: val })}>
 							Sort
 						</Switch>
 						<Switch
 							size='sm'
 							className='flex-[1_1_0%] max-w-none'
-							isSelected={property.filterable}
+							defaultSelected={property.filterable}
 							onValueChange={val => onChange({ filterable: val })}>
 							Filter
 						</Switch>
 						<Switch
 							size='sm'
 							className='flex-[1_1_0%] max-w-none'
-							isSelected={property.show}
+							defaultSelected={property.show}
 							onValueChange={val => onChange({ show: val })}>
 							Show
 						</Switch>
+						<Switch
+							size='sm'
+							className='flex-[1_1_0%] max-w-none'
+							defaultSelected={property.isArray}
+							onValueChange={val => onChange({ isArray: val })}>
+							Array
+						</Switch>
+
+						{property.type === PropertyType.map && (
+							<MapSchemaProperty
+								label={property.key}
+								value={property.elements}
+								onChange={val => onChange({ elements: val })}
+							/>
+						)}
 					</div>
 				</AccordionItem>
 			</Accordion>

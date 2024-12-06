@@ -43,10 +43,11 @@ export const CollectionSchema = ({
 	const [loading, setLoading] = useState(false)
 	const [initialVal, setInitial] = useState(current?.schema!)
 	const [activeId, setActiveId] = useState(null)
-	const [properties, { push, updateAt, removeAt, set }] = useList<Property>()
+	const [properties, { push, updateAt, removeAt, set }] = useList<
+		Property & { _id: string }
+	>()
 
 	const changed = !equals(initialVal, properties)
-	console.log({ changed })
 
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -57,14 +58,16 @@ export const CollectionSchema = ({
 
 	const onReset = () => {
 		onClose()
-		set(initialVal)
+		set(initialVal.map(x => ({ ...x, _id: crypto.randomUUID() })))
 	}
 
 	const onSubmit = async () => {
 		try {
 			if (!current) return
 			setLoading(true)
-			await cs.save(current.id, { schema: properties })
+			await cs.save(current.id, {
+				schema: properties.map(({ _id, ...rest }) => rest)
+			})
 			onClose()
 		} catch (error) {
 			console.error({ error })
@@ -77,8 +80,8 @@ export const CollectionSchema = ({
 		const { active, over } = event
 
 		if (active.id !== over.id) {
-			const oldIndex = properties.findIndex(p => p.key === active.id)
-			const newIndex = properties.findIndex(p => p.key === over.id)
+			const oldIndex = properties.findIndex(p => p._id === active.id)
+			const newIndex = properties.findIndex(p => p._id === over.id)
 			set(arrayMove(properties, oldIndex, newIndex))
 		}
 
@@ -94,7 +97,7 @@ export const CollectionSchema = ({
 	useEffect(() => {
 		if (!current) return
 		setInitial(current.schema)
-		set(current.schema)
+		set(current.schema.map(x => ({ ...x, _id: crypto.randomUUID() })))
 	}, [current])
 
 	return (
@@ -116,6 +119,7 @@ export const CollectionSchema = ({
 									aria-label='Action event example'
 									onAction={key => {
 										push({
+											_id: crypto.randomUUID(),
 											filterable: false,
 											format: '',
 											key: '',
@@ -124,7 +128,8 @@ export const CollectionSchema = ({
 											sortable: true,
 											type: key as PropertyType,
 											value: '',
-											nullable: false
+											nullable: false,
+											isArray: false
 										})
 									}}>
 									{Object.values(PropertyType)
@@ -142,12 +147,12 @@ export const CollectionSchema = ({
 								onDragStart={handleDragStart}
 								onDragEnd={handleDragEnd}>
 								<SortableContext
-									items={properties.map(p => p.key)}
+									items={properties.map(p => p._id)}
 									strategy={verticalListSortingStrategy}>
 									{/* <div id='create-col' className='flex flex-col gap-2'> */}
 									{properties.map((p, i) => (
 										<SchemaProperty
-											key={p.key}
+											key={p._id}
 											property={p}
 											onChange={upd => updateAt(i, { ...p, ...upd })}
 											onRemove={() => removeAt(i)}
@@ -158,7 +163,7 @@ export const CollectionSchema = ({
 										{activeId && (
 											<Item>
 												<SchemaProperty
-													property={properties.find(p => p.key === activeId)!}
+													property={properties.find(p => p._id === activeId)!}
 													onChange={() => {}}
 													onRemove={() => {}}
 												/>
