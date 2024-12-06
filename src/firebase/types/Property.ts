@@ -8,10 +8,23 @@ export type Property = {
 	nullable: boolean
 	filterable: boolean
 	sortable: boolean
+	isArray: boolean
 	format: string
 	value: any
 	computed?: string
-	elements?: Property[]
+	elements?: MappedProperty[]
+}
+
+export type MappedProperty = {
+	key: string
+	value: number
+	type: MappedPropertyType
+}
+
+export enum MappedPropertyType {
+	STRING = 'string',
+	NUMBER = 'number',
+	BOOLEAN = 'boolean'
 }
 
 export enum PropertyType {
