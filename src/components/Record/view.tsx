@@ -7,7 +7,6 @@ export const RecordView = () => {
 
 	useEffect(() => {
 		if (!subscribe) return
-		console.log('subscribing record')
 		const unsub = subscribe()
 		return unsub ? unsub : () => {}
 	}, [subscribe])
