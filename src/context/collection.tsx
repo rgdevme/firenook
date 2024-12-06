@@ -37,7 +37,8 @@ export const CollectionProvider = (props: PropsWithChildren) => {
 					if (current.schema.some(x => x.show)) {
 						const docData = doc.data()
 						for (const key in docData) {
-							const type = current!.schema.find(s => s.key === key)!.type
+							const type = current!.schema.find(s => s.key === key)?.type
+							if (!type) continue
 							let value = docData[key]
 
 							if (type === PropertyType.timestamp) {
