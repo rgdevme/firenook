@@ -1,6 +1,7 @@
 import { Input } from '@nextui-org/react'
 import { useCollectionsList } from '../../context/collectionsList'
 import {
+	MappedProperty,
 	PropertyDefaultValue,
 	PropertyType
 } from '../../firebase/types/Property'
@@ -12,7 +13,17 @@ import { MarkdownProperty } from '../Property/markdown'
 import { NumberProperty } from '../Property/number'
 import { ReferenceProperty } from '../Property/reference'
 import { StringProperty } from '../Property/string'
-import { useMemo } from 'react'
+import { FunctionComponent, useMemo } from 'react'
+import { MapProperty } from '../Property/map'
+import { ArrayProperty } from '../Property/array'
+
+export type PropertyProps<T = any> = {
+	label: string
+	type: PropertyType
+	value?: T
+	schema?: MappedProperty[]
+	onChange: (val: T) => void
+}
 
 export const RecordProperties = ({
 	record = {},
@@ -34,60 +45,79 @@ export const RecordProperties = ({
 					onChange={val => onChange({ id: val.target.value })}
 				/>
 			)}
-			{current?.schema.map(property => {
-				let el: JSX.Element | null
+			{current?.schema.map(({ key, type, name, elements, isArray }) => {
+				let El: FunctionComponent<PropertyProps> | null
 
 				const props = {
-					label: property.name,
-					type: property.type,
-					value: record[property.key] ?? PropertyDefaultValue[property.type],
-					onChange: (val: any) => onChange({ [property.key]: val })
-				}
+					label: name,
+					type: type,
+					value:
+						record[key] ||
+						(isArray
+							? PropertyDefaultValue[PropertyType.array]
+							: PropertyDefaultValue[type]),
+					onChange: (val: any) => onChange({ [key]: val })
+				} as PropertyProps
 
-				console.log(props.value)
+				if (isArray) console.log(props.label, props.value, name, record[key])
 
-				switch (property.type) {
+				switch (type) {
 					case PropertyType.string:
 					case PropertyType.email:
 					case PropertyType.phone:
 					case PropertyType.url:
-						el = <StringProperty key={property.key} {...props} />
+						El = StringProperty
 						break
 					case PropertyType.number:
-						el = <NumberProperty key={property.key} {...props} />
+						El = NumberProperty
 						break
 
 					case PropertyType.boolean:
-						el = <CheckProperty key={property.key} {...props} />
+						El = CheckProperty
 						break
 
 					case PropertyType.timestamp:
-						el = <DateProperty key={property.key} {...props} />
+						El = DateProperty
 						break
 
 					case PropertyType.geopoint:
-						el = <GeoPointProperty key={property.key} {...props} />
+						El = GeoPointProperty
 						break
 
 					case PropertyType.reference:
-						el = <ReferenceProperty key={property.key} {...props} />
+						El = ReferenceProperty
 						break
 
 					case PropertyType.markdown:
-						el = <MarkdownProperty key={property.key} {...props} />
+						El = MarkdownProperty
+						break
+
+					case PropertyType.map:
+						El = MapProperty
 						break
 
 					case PropertyType.file:
 					case PropertyType.image:
-						el = <FileProperty key={property.key} {...props} />
+						El = FileProperty
 						break
 
 					default:
-						el = null
+						El = null
 						break
 				}
 
-				return el
+				return El ? (
+					isArray ? (
+						<ArrayProperty
+							key={key}
+							{...props}
+							schema={elements}
+							element={El}
+						/>
+					) : (
+						<El key={key} {...props} schema={elements!} />
+					)
+				) : null
 			})}
 		</>
 	)
