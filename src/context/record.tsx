@@ -4,22 +4,20 @@ import { DocumentReference } from 'firebase/firestore'
 import { equals } from 'ramda'
 import {
 	createContext,
-	MutableRefObject,
 	PropsWithChildren,
 	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
-	useRef
+	useState
 } from 'react'
-import { Outlet } from 'react-router'
 import { useCollection } from './collection'
 import { useParamsContext } from './params'
 
 const RecordContext = createContext(
 	{} as {
-		data: MutableRefObject<any>
-		original: MutableRefObject<any>
+		data: Record<string, any>
+		original: Record<string, any>
 		changed: boolean
 		loading: boolean
 		update: (data: object) => void
@@ -38,18 +36,17 @@ export const RecordProvider = (props: PropsWithChildren) => {
 	} = useParamsContext()
 	const [loading, toggle] = useToggle(true)
 	const { store: s } = useCollection()
-	const original = useRef({})
-	const data = useRef(original.current)
+	const [original, setOriginal] = useState({})
+	const [data, setData] = useState(original)
 	const changed = useMemo(() => equals(data, original), [])
 
-	const setOriginal = (d?: object) => (original.current = d ?? {})
-	const setData = (d: object) => (data.current = d)
-	const update = (d: object) => setData({ ...data.current, ...d })
+	// const setData = (d: object) => (data.current = d)
+	const update = (d: object) => setData({ ...data, ...d })
 
-	const copy = useCallback(() => s?.create(data.current), [s, data.current])
+	const copy = useCallback(() => s?.create(data), [s, data])
 	const save = useCallback(
-		() => (!r ? undefined : s?.save(r, data.current)),
-		[s, r, data.current]
+		() => (!r ? undefined : s?.save(r, data)),
+		[s, r, data]
 	)
 	const remove = useCallback(() => (!r ? undefined : s?.destroy(r)), [s, r])
 	const subscribe = useCallback(
@@ -58,7 +55,7 @@ export const RecordProvider = (props: PropsWithChildren) => {
 				? undefined
 				: s?.subscribe(r, {
 						onChange: d => {
-							setOriginal(d)
+							setOriginal(d ?? {})
 							toggle(false)
 						}
 				  }),
@@ -75,8 +72,8 @@ export const RecordProvider = (props: PropsWithChildren) => {
 	}
 
 	useEffect(() => {
-		setData(original.current)
-	}, [original.current])
+		setData(original)
+	}, [original])
 
 	const ctx = {
 		data: data,

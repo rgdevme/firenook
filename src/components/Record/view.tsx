@@ -11,11 +11,11 @@ export const RecordView = () => {
 		return unsub ? unsub : () => {}
 	}, [subscribe])
 
-	return loading && original.current ? null : (
+	return loading && original ? null : (
 		<div className='flex flex-col gap-4 max-w-screen-lg m-auto'>
-			<h2>{original.current.id}</h2>
+			<h2>{original.id}</h2>
 			<div className='flex flex-col gap-4 pb-12'>
-				<RecordProperties record={original.current} onChange={update} />
+				<RecordProperties record={original} onChange={update} />
 			</div>
 		</div>
 	)
