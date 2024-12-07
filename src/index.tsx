@@ -42,7 +42,10 @@ const Routing = ({ app }: { app: FirebaseApp }) => {
 					<Route index element={<Login />} />
 				</Route>
 				<Route path='/' element={<Private auth={{ isAuthenticated }} />}>
-					<Route index element={<div className='firenook'>Welcome!</div>} />
+					<Route
+						path='dashboard'
+						element={<div className='firenook'>Welcome!</div>}
+					/>
 					<Route path=':collection'>
 						<Route index element={<List />} />
 						<Route path=':record'>
