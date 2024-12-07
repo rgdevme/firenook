@@ -19,7 +19,8 @@
     "build": "vite build",
     "postbuild": "git add -A && git commit -m \"chore: update dist\"",
     "prebump": "npm run build",
-    "bump": "npx bumpp"
+    "bump": "npx bumpp",
+    "emu": "firebase emulators:start"
   },
   "engines": {
     "node": ">=20"
