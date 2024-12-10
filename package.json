@@ -20,7 +20,7 @@
     "postbuild": "git add -A && git commit -m \"chore: update dist\"",
     "prebump": "npm run build",
     "bump": "npx bumpp",
-    "emu": "firebase emulators:start"
+    "emu": "firebase emulators:start --import=./backup --export-on-exit"
   },
   "engines": {
     "node": ">=20"
