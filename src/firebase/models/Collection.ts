@@ -32,7 +32,8 @@ export const CollectionStore = fireborm.initializeStore<
 				value: null,
 				show: false,
 				sortable: true,
-				nullable: false
+				nullable: false,
+				isArray: false
 			}
 		]
 	},
