@@ -19,6 +19,8 @@ import './index.css'
 import { ParamsProvider } from './context/params'
 import { RecordView } from './components/Record/view'
 import { RecordProvider } from './context/record'
+import { BucketsProvider } from './context/bucket'
+import { BucketList } from './components/Bucket/list'
 
 const Routing = ({ app }: { app: FirebaseApp }) => {
 	const auth = getAuth(app)
@@ -46,6 +48,7 @@ const Routing = ({ app }: { app: FirebaseApp }) => {
 						path='dashboard'
 						element={<div className='firenook'>Welcome!</div>}
 					/>
+					<Route path='bucket/:path' element={<BucketList />} />
 					<Route path=':collection'>
 						<Route index element={<List />} />
 						<Route path=':record'>
@@ -66,13 +69,15 @@ export const Firenook = ({ app }: { app: FirebaseApp }) => {
 	return (
 		<ParamsProvider>
 			<CollectionsProvider>
-				<CollectionProvider>
-					<RecordProvider>
-						<BrowserRouter>
-							<Routing app={app} />
-						</BrowserRouter>
-					</RecordProvider>
-				</CollectionProvider>
+				<BucketsProvider>
+					<CollectionProvider>
+						<RecordProvider>
+							<BrowserRouter>
+								<Routing app={app} />
+							</BrowserRouter>
+						</RecordProvider>
+					</CollectionProvider>
+				</BucketsProvider>
 			</CollectionsProvider>
 		</ParamsProvider>
 	)

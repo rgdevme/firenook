@@ -13,12 +13,15 @@ import { PiCaretCircleDoubleLeft } from 'react-icons/pi'
 import { TbCirclePlus, TbFiles, TbSettings2 } from 'react-icons/tb'
 import { Link } from 'react-router'
 import { useCollectionsList } from '../context/collectionsList'
-import { CollectionModal } from './Collection/create'
+import { useBucketsList } from '../context/bucket'
+import { BucketModal } from './Bucket/create'
 
 export const Menu = () => {
 	const [toggle, setToggle] = useState(false)
 	const { collections } = useCollectionsList()
+	const { buckets } = useBucketsList()
 	const collectionModal = useDisclosure()
+	const bucketModal = useDisclosure()
 
 	return (
 		<section
@@ -64,7 +67,7 @@ export const Menu = () => {
 					<IconBtn icon={TbCirclePlus} onClick={collectionModal.onOpen} />
 				}
 			/>
-			<CollectionModal {...collectionModal} />
+			<BucketModal {...bucketModal} />
 			{collections.map(c => (
 				<Button
 					size='sm'
@@ -81,11 +84,20 @@ export const Menu = () => {
 				title='Buckets'
 				compact={toggle}
 				icon={<TbFiles />}
-				action={<IconBtn icon={TbCirclePlus} />}
+				action={<IconBtn icon={TbCirclePlus} onClick={bucketModal.onOpen} />}
 			/>
-			<Button size='sm'>Media 1</Button>
-			<Button size='sm'>Media 2</Button>
-			<Button size='sm'>Media 3</Button>
+			{buckets.map(c => (
+				<Button
+					size='sm'
+					key={c.path}
+					as={Link}
+					to={`bucket/${c.path}`}
+					variant='light'
+					color='primary'
+					className='justify-start'>
+					{c.name}
+				</Button>
+			))}
 
 			<Div title='Settings' icon={<TbSettings2 />} />
 			<Button size='sm'>Small</Button>
