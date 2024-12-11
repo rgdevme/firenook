@@ -6,6 +6,7 @@ import { SlCloudUpload } from 'react-icons/sl'
 import { useParams } from 'react-router'
 import { fireborm } from '../../firebase'
 import { FirebaseError } from 'firebase/app'
+import { equals } from 'ramda'
 
 type StoredFile = { name: string; url: string; saved: boolean }
 
@@ -28,25 +29,25 @@ export const FileProperty = ({
 		}))
 	)
 
-	const bucket = collection
-		? fireborm.initializeStorage({
-				path: collection,
-				folder: label.toLowerCase()
-		  })
-		: null
+	const bucket = fireborm.initializeStorage({
+		path: collection ?? 'bucket',
+		folder: label.toLowerCase()
+	})
 
 	const { getRootProps, getInputProps } = useDropzone({
-		accept: { 'image/*': [] },
+		// accept: { '*/*': [] },
 		onDrop: acceptedFiles => {
 			acceptedFiles.forEach(async file => {
-				const name = `${record}-${file.name}`
-				if (!bucket || !collection || !record) return
+				if (!bucket) return
+				let name = file.name
+				if (record) name = `${record}-${file.name}`
+
 				if (storageFiles.some(f => f.name === name)) return
 				console.log({ storageFiles, name })
 
 				increment()
 				const url = await bucket.upload(name, file)
-				sf.push({ name, url, saved: false })
+				sf.insertAt(0, { name, url, saved: false })
 				decrement()
 			})
 		}
@@ -64,7 +65,9 @@ export const FileProperty = ({
 	}, [value])
 
 	useEffect(() => {
-		onChange(storageFiles.map(x => x.url))
+		const update = storageFiles.map(x => x.url)
+		if (equals(update, value)) return
+		onChange(update)
 		// Make sure to revoke the data uris to avoid memory leaks, will run on unmount
 		return () => {
 			storageFiles.forEach(file => URL.revokeObjectURL(file.url))
