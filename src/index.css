@@ -95,3 +95,26 @@ html {
 .mdxeditor-toolbar svg {
 	width: 1.2rem;
 }
+
+.firebase-emulator-warning {
+	/* opacity: 0.25; */
+	@apply !w-[320px]
+	!h-min
+	!opacity-30
+	!pointer-events-none
+	!outline-none
+	!shadow-xl
+	!border-none
+	!text-xs
+	!font-bold
+	!font-mono
+	!px-12
+	!py-1
+	!right-0
+	!translate-y-[75px]
+	!translate-x-[65px]
+	!rotate-45
+	!text-white
+	!bg-red-800;
+	left: unset !important;
+}
