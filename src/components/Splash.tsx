@@ -1,12 +1,17 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { Navigate } from 'react-router'
 
-export const Splash = ({ loading }: { loading: boolean }) => {
-	const nav = useNavigate()
-	useEffect(() => {
-		if (loading) return
-		setTimeout(() => nav('login', { replace: true }), 1000)
-	}, [loading])
-
-	return <div>Loading</div>
+export const Splash = ({
+	loading,
+	authenticated
+}: {
+	loading: boolean
+	authenticated: boolean
+}) => {
+	return loading ? (
+		<div>Loading</div>
+	) : authenticated ? (
+		<Navigate to='/dashboard' replace />
+	) : (
+		<Navigate to='/login' replace />
+	)
 }
