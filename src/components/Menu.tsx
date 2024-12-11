@@ -15,6 +15,9 @@ import { Link } from 'react-router'
 import { useCollectionsList } from '../context/collectionsList'
 import { useBucketsList } from '../context/bucket'
 import { BucketModal } from './Bucket/create'
+import { CollectionModal } from './Collection/create'
+import { MdLogout } from 'react-icons/md'
+import { getAuth, signOut } from 'firebase/auth'
 
 export const Menu = () => {
 	const [toggle, setToggle] = useState(false)
@@ -67,7 +70,6 @@ export const Menu = () => {
 					<IconBtn icon={TbCirclePlus} onClick={collectionModal.onOpen} />
 				}
 			/>
-			<BucketModal {...bucketModal} />
 			{collections.map(c => (
 				<Button
 					size='sm'
@@ -104,8 +106,17 @@ export const Menu = () => {
 			<Button size='sm'>Small</Button>
 			<Button size='sm'>Small</Button>
 			<div className='flex-1 flex flex-col justify-end mb-1'>
-				<Button size='sm'>Logout</Button>
+				<Button
+					size='sm'
+					variant='light'
+					color='danger'
+					startContent={<MdLogout />}
+					onClick={() => signOut(getAuth())}>
+					Logout
+				</Button>
 			</div>
+			<CollectionModal {...collectionModal} />
+			<BucketModal {...bucketModal} />
 		</section>
 	)
 }
