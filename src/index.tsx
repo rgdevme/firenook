@@ -1,8 +1,4 @@
 import { NextUIProvider } from '@nextui-org/react'
-import { useToggle } from '@uidotdev/usehooks'
-import { FirebaseApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { useEffect, useState } from 'react'
 import {
 	BrowserRouter,
 	Route,
@@ -21,71 +17,48 @@ import { CollectionProvider } from './context/collection'
 import { CollectionsProvider } from './context/collectionsList'
 import { ParamsProvider } from './context/params'
 import { RecordProvider } from './context/record'
+import { AppConfigProps, AppConfigProvider } from './firebase'
 import './index.css'
+import { Path } from './routes'
 
-const Routing = ({ app }: { app: FirebaseApp }) => {
-	const auth = getAuth(app)
+const Routing = () => {
 	const navigate = useNavigate()
-	const [loading, toggle] = useToggle(true)
-	const [isAuthenticated, setIsAuthenticated] = useState(!auth)
-
-	useEffect(() => {
-		if (!auth) return
-		const unsub = auth.onAuthStateChanged(user => {
-			setIsAuthenticated(!!user)
-			if (loading) toggle(false)
-		})
-		return unsub
-	}, [])
 
 	return (
 		<NextUIProvider id='next-root' navigate={navigate} useHref={useHref}>
 			<Routes>
-				<Route
-					index
-					element={<Splash loading={loading} authenticated={isAuthenticated} />}
-				/>
-				<Route
-					path='login'
-					element={<SignFlow authenticated={isAuthenticated} />}>
+				<Route index element={<Splash />} />
+				<Route path={Path.LOGIN} element={<SignFlow />}>
 					<Route index element={<Login />} />
 				</Route>
-				<Route path='/' element={<Private auth={{ isAuthenticated }} />}>
-					<Route
-						path='dashboard'
-						element={<div className='firenook'>Welcome!</div>}
-					/>
-					<Route path='bucket/:path' element={<BucketList />} />
-					<Route path=':collection'>
-						<Route index element={<List />} />
-						<Route path=':record'>
-							<Route index element={<RecordView />} />
-							<Route
-								path=':subcollection'
-								element={<div className='firenook'>Subcollection view!</div>}
-							/>
-						</Route>
-					</Route>
+				<Route path='/' element={<Private />}>
+					<Route path={Path.DASHBOARD} element={<div>Welcome!</div>} />
+					<Route path={Path.BUCKET} element={<BucketList />} />
+					<Route path={Path.COLLECTION} element={<List />} />
+					<Route path={Path.RECORD} element={<RecordView />} />
+					<Route path={Path.SUBCOLLECTION} element={<div>Subcollection</div>} />
 				</Route>
 			</Routes>
 		</NextUIProvider>
 	)
 }
 
-export const Firenook = ({ app }: { app: FirebaseApp }) => {
+export const Firenook = (props: AppConfigProps) => {
 	return (
-		<ParamsProvider>
-			<CollectionsProvider>
-				<BucketsProvider>
-					<CollectionProvider>
-						<RecordProvider>
-							<BrowserRouter>
-								<Routing app={app} />
-							</BrowserRouter>
-						</RecordProvider>
-					</CollectionProvider>
-				</BucketsProvider>
-			</CollectionsProvider>
-		</ParamsProvider>
+		<BrowserRouter>
+			<ParamsProvider>
+				<AppConfigProvider {...props}>
+					<CollectionsProvider>
+						<BucketsProvider>
+							<CollectionProvider>
+								<RecordProvider>
+									<Routing />
+								</RecordProvider>
+							</CollectionProvider>
+						</BucketsProvider>
+					</CollectionsProvider>
+				</AppConfigProvider>
+			</ParamsProvider>
+		</BrowserRouter>
 	)
 }

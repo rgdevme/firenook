@@ -1,7 +1,7 @@
 import { useList } from '@uidotdev/usehooks'
 import { equals } from 'ramda'
 import { createContext, PropsWithChildren, useContext, useEffect } from 'react'
-import { BucketStore } from '../firebase/models/Bucket'
+import { useBucketStore } from '../firebase/models/Bucket'
 import { BucketData } from '../firebase/types/Bucket'
 
 const BucketsCtx = createContext({
@@ -12,10 +12,11 @@ const BucketsCtx = createContext({
 
 export const BucketsProvider = ({ children }: PropsWithChildren) => {
 	const [results, { set }] = useList<BucketData>()
+	const store = useBucketStore()
 
 	const create = async (data: BucketData) => {
 		if (results.some(x => equals(x, data))) return
-		const res = await BucketStore.save('buckets', {
+		const res = await store?.save('buckets', {
 			buckets: [...results, data]
 		})
 		console.log({ res })
@@ -23,20 +24,20 @@ export const BucketsProvider = ({ children }: PropsWithChildren) => {
 
 	const remove = async (data: BucketData) => {
 		if (!results.some(x => equals(x, data))) return
-		await BucketStore.save('buckets', {
+		await store?.save('buckets', {
 			buckets: results.filter(x => !equals(x, data))
 		})
 	}
 
 	useEffect(() => {
-		const unsub = BucketStore.subscribe('buckets', {
+		const unsub = store?.subscribe('buckets', {
 			onChange: res => {
 				if (!res?.buckets) return
 				set(res.buckets)
 			}
 		})
-		return unsub
-	}, [])
+		return () => unsub?.()
+	}, [store?.ref.id])
 
 	return (
 		<BucketsCtx.Provider

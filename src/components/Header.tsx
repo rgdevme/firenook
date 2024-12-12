@@ -14,9 +14,10 @@ import { useCollectionsList } from '../context/collectionsList'
 import { CollectionSchema } from './Collection/schema'
 import { RecordControls } from './Record/controls'
 import { CreateRecord } from './Record/create'
+import { Path } from '../routes'
 
 export const Header = () => {
-	const { collection, record } = useParams()
+	const { cid, rid } = useParams()
 	const nav = useNavigate()
 	const { current } = useCollectionsList()
 	const { store, selection } = useCollection()
@@ -24,10 +25,10 @@ export const Header = () => {
 	const recordCreation = useDisclosure()
 
 	const deleteSelectedRecords = async () => {
-		if (!store || !collection || !selection.size) return
+		if (!store || !cid || !selection.size) return
 		const promises = [...selection.values().map(s => store.destroy(s))]
 		await Promise.all(promises)
-		nav(`/${collection}`)
+		nav(Path.COLLECTION.replace(':cid', cid))
 	}
 
 	return (
@@ -36,20 +37,23 @@ export const Header = () => {
 			className='w-full flex flex-row no-wrap gap-2 items-center justify-end p-2 pr-4'>
 			<div className='flex flex-1'>
 				<Breadcrumbs size='sm' variant='solid'>
-					<BreadcrumbItem href='/dashboard'>Dashboard</BreadcrumbItem>
-					{collection && (
-						<BreadcrumbItem href={`/${collection}`}>
-							{current?.singular}
-						</BreadcrumbItem>
-					)}
-					{record && (
-						<BreadcrumbItem href={`/${collection}/${record}`}>
-							{record}
-						</BreadcrumbItem>
+					<BreadcrumbItem href={Path.DASHBOARD}>Dashboard</BreadcrumbItem>
+					{cid && (
+						<>
+							<BreadcrumbItem href={Path.COLLECTION.replace(':cid', cid)}>
+								{current?.singular}
+							</BreadcrumbItem>
+							{rid && (
+								<BreadcrumbItem
+									href={Path.RECORD.replace(':cid', cid).replace(':rid', rid)}>
+									{rid}
+								</BreadcrumbItem>
+							)}
+						</>
 					)}
 				</Breadcrumbs>
 			</div>
-			{!!collection && !record && (
+			{!!cid && !rid && (
 				<>
 					<ButtonGroup size='sm' variant='light' radius='full'>
 						<Button isIconOnly color='default'>

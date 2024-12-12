@@ -1,17 +1,23 @@
 import { useList } from '@uidotdev/usehooks'
 import { useEffect, useMemo } from 'react'
-import { useParams } from 'react-router'
-import { fireborm } from '../../firebase'
-import { FileProperty } from '../Property/file'
 import { useBucketsList } from '../../context/bucket'
+import { useParamsContext } from '../../context/params'
+import { useAppConfig } from '../../firebase'
+import { FileProperty } from '../Property/file'
 
 export const BucketList = () => {
-	const { path } = useParams()
+	const { fireborm } = useAppConfig()
+	const {
+		params: { bid }
+	} = useParamsContext()
 	const [results, { set }] = useList<string>()
 	const { buckets } = useBucketsList()
 	const bucket = useMemo(
-		() => (!path ? null : fireborm.initializeStorage({ path, folder: path })),
-		[path]
+		() =>
+			!bid || !fireborm
+				? null
+				: fireborm?.initializeStorage({ path: bid, folder: '' }),
+		[bid]
 	)
 
 	useEffect(() => {
@@ -25,12 +31,12 @@ export const BucketList = () => {
 		})
 	}, [bucket])
 
-	return !path ? null : (
+	return !bid ? null : (
 		<div>
 			<h3 className='font-bold text-xl mb-2'>
-				{buckets.find(x => x.path === path)?.name}
+				{buckets.find(x => x.path === bid)?.name}
 			</h3>
-			<FileProperty label={path} value={results} onChange={set} />
+			<FileProperty label={bid} value={results} onChange={set} />
 		</div>
 	)
 }

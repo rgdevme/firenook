@@ -1,17 +1,15 @@
 import { Navigate } from 'react-router'
+import { useAppConfig } from '../firebase'
+import { Path } from '../routes'
 
-export const Splash = ({
-	loading,
-	authenticated
-}: {
-	loading: boolean
-	authenticated: boolean
-}) => {
+export const Splash = () => {
+	const { loading, user } = useAppConfig()
+
 	return loading ? (
 		<div>Loading</div>
-	) : authenticated ? (
-		<Navigate to='/dashboard' replace />
+	) : user ? (
+		<Navigate to={Path.DASHBOARD} replace />
 	) : (
-		<Navigate to='/login' replace />
+		<Navigate to={Path.LOGIN} replace />
 	)
 }

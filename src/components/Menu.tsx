@@ -18,6 +18,7 @@ import { BucketModal } from './Bucket/create'
 import { CollectionModal } from './Collection/create'
 import { MdLogout } from 'react-icons/md'
 import { getAuth, signOut } from 'firebase/auth'
+import { Path } from '../routes'
 
 export const Menu = () => {
 	const [toggle, setToggle] = useState(false)
@@ -46,7 +47,7 @@ export const Menu = () => {
 					fill='currentcolor'
 				/>
 			</Button>
-			<Link to='/dashboard'>
+			<Link to={Path.DASHBOARD}>
 				<div className='flex flex-row gap-2 mb-4'>
 					<Image
 						width={56}
@@ -75,7 +76,7 @@ export const Menu = () => {
 					size='sm'
 					key={c.path}
 					as={Link}
-					to={`/${c.path}`}
+					to={Path.COLLECTION.replace(':cid', c.path)}
 					variant='light'
 					color='primary'
 					className='justify-start'>
@@ -88,16 +89,16 @@ export const Menu = () => {
 				icon={<TbFiles />}
 				action={<IconBtn icon={TbCirclePlus} onClick={bucketModal.onOpen} />}
 			/>
-			{buckets.map(c => (
+			{buckets.map(b => (
 				<Button
 					size='sm'
-					key={c.path}
+					key={b.path}
 					as={Link}
-					to={`bucket/${c.path}`}
+					to={Path.BUCKET.replace(':bid', b.path)}
 					variant='light'
 					color='primary'
 					className='justify-start'>
-					{c.name}
+					{b.name}
 				</Button>
 			))}
 

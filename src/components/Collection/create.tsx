@@ -11,24 +11,26 @@ import {
 } from '@nextui-org/react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { CollectionStore as cs } from '../../firebase/models/Collection'
-import { CollectionModel } from '../../firebase/types/Collection'
+import { useCollectionsList } from '../../context/collectionsList'
+import { CollectionData } from '../../firebase/types/Collection'
 
 export const CollectionModal = ({
 	isOpen,
 	onClose,
 	onOpenChange
 }: ReturnType<typeof useDisclosure>) => {
+	const { addCollection, defaultData } = useCollectionsList()
+
 	const [loading, setLoading] = useState(false)
 	const { handleSubmit, register } = useForm({
 		disabled: loading,
-		defaultValues: cs.defaultData as CollectionModel
+		defaultValues: defaultData
 	})
 
-	const onSubmit = async ({ schema, ...data }: CollectionModel) => {
+	const onSubmit = async ({ schema, ...data }: CollectionData) => {
 		try {
 			setLoading(true)
-			await cs.create({ ...data, schema: [] })
+			await addCollection({ ...data, schema: [] })
 			onClose()
 		} catch (error) {
 			console.error({ error })

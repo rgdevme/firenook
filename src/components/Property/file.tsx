@@ -1,12 +1,12 @@
 import { useCounter, useList } from '@uidotdev/usehooks'
+import { FirebaseError } from 'firebase/app'
+import { equals } from 'ramda'
 import { useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { LuLoader } from 'react-icons/lu'
 import { SlCloudUpload } from 'react-icons/sl'
 import { useParams } from 'react-router'
-import { fireborm } from '../../firebase'
-import { FirebaseError } from 'firebase/app'
-import { equals } from 'ramda'
+import { useAppConfig } from '../../firebase'
 
 type StoredFile = { name: string; url: string; saved: boolean }
 
@@ -19,6 +19,7 @@ export const FileProperty = ({
 	value?: string[]
 	onChange: (val: string[]) => void
 }) => {
+	const { fireborm } = useAppConfig()
 	const { collection, record } = useParams()
 	const [count, { increment, decrement }] = useCounter()
 	const [storageFiles, sf] = useList<StoredFile>(
@@ -29,7 +30,7 @@ export const FileProperty = ({
 		}))
 	)
 
-	const bucket = fireborm.initializeStorage({
+	const bucket = fireborm?.initializeStorage({
 		path: collection ?? 'bucket',
 		folder: label.toLowerCase()
 	})

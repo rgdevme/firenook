@@ -11,8 +11,13 @@ import { useCollection } from '../../context/collection'
 import { useCollectionsList } from '../../context/collectionsList'
 import { useNavigate } from 'react-router'
 import { PropertyType } from '../../firebase/types/Property'
+import { Path } from '../../routes'
+import { useParamsContext } from '../../context/params'
 
 export const List = () => {
+	const {
+		params: { cid }
+	} = useParamsContext()
 	const { current } = useCollectionsList()
 	const navigate = useNavigate()
 	const { store, selection, setSelection } = useCollection()
@@ -51,7 +56,9 @@ export const List = () => {
 				isStriped
 				removeWrapper
 				onSortChange={() => rows}
-				onRowAction={key => navigate(`${key}`)}
+				onRowAction={key =>
+					navigate(Path.RECORD.replace(':cid', cid!).replace(':rid', key))
+				}
 				aria-label='Example static collection table'>
 				<TableHeader>
 					{columns.map(col => (

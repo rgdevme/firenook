@@ -2,13 +2,14 @@ import { Button, Tooltip } from '@nextui-org/react'
 import { LuCopyPlus, LuSave, LuTrash2 } from 'react-icons/lu'
 import { useNavigate, useParams } from 'react-router'
 import { useRecord } from '../../context/record'
+import { Path } from '../../routes'
 
 export const RecordControls = () => {
-	const { collection, record } = useParams()
+	const { cid, rid } = useParams()
 	const { save, copy, remove } = useRecord()
 	const nav = useNavigate()
 
-	return !record ? null : (
+	return !rid ? null : (
 		<div className='flex gap-4'>
 			<Tooltip content='Save'>
 				<Button
@@ -41,7 +42,7 @@ export const RecordControls = () => {
 					color='danger'
 					onPress={() => {
 						remove?.()
-						nav(`/${collection}`)
+						nav(Path.COLLECTION.replace(':cid', cid!))
 					}}>
 					<LuTrash2 size={18} />
 				</Button>

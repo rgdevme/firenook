@@ -9,14 +9,18 @@ import {
 	// Tabs
 } from '@nextui-org/react'
 import { useToggle } from '@uidotdev/usehooks'
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 // import { useState } from 'react'
 // import { useForm } from 'react-hook-form'
+import { useCallback } from 'react'
 import { FcGoogle } from 'react-icons/fc'
+import { useAppConfig } from '../firebase'
+
 export const Login = () => {
+	const { auth, user } = useAppConfig()
 	const [loading, setLoading] = useToggle()
+
 	// const [selected, setSelected] = useState('login')
-	const auth = getAuth()
 	// const { handleSubmit, register } = useForm({
 	// 	disabled: loading,
 	// 	defaultValues: {
@@ -26,40 +30,45 @@ export const Login = () => {
 	// 	}
 	// })
 
-	const onSubmit = async data => {
-		try {
-			setLoading(true)
-			const provider = new GoogleAuthProvider()
-			const result = await signInWithPopup(auth, provider)
-			// This gives you a Google Access Token. You can use it to access the Google API.
-			const credential = GoogleAuthProvider.credentialFromResult(result)
-			const token = credential?.accessToken
-			// The signed-in user info.
-			const user = result.user
-			// IdP data available using getAdditionalUserInfo(result)
-			// ...
-			console.log({ token, user })
-		} catch (error) {
-			console.error({ error })
-		} finally {
-			setLoading(false)
-		}
-	}
+	const onSubmit = useCallback(
+		async data => {
+			if (!auth) return
+			try {
+				setLoading(true)
+				const provider = new GoogleAuthProvider()
+				const result = await signInWithPopup(auth, provider)
+				// This gives you a Google Access Token. You can use it to access the Google API.
+				const credential = GoogleAuthProvider.credentialFromResult(result)
+				const token = credential?.accessToken
+				// The signed-in user info.
+				const user = result.user
+				// IdP data available using getAdditionalUserInfo(result)
+				// ...
+				console.log({ token, user })
+			} catch (error) {
+				console.error({ error })
+			} finally {
+				setLoading(false)
+			}
+		},
+		[auth]
+	)
 
 	return (
-		<div className='flex flex-col w-full h-full justify-center items-center'>
-			<Card className='max-w-[340px]'>
-				<CardBody className='overflow-hidden flex flex-col gap-4'>
-					<Image src='https://placehold.co/600x400/EEE/31343C' />
-					<Button
-						startContent={<FcGoogle size={24} />}
-						variant='light'
-						color='primary'
-						onClick={onSubmit}
-						isLoading={loading}>
-						Sign in with Google
-					</Button>
-					{/* <Tabs
+		auth && (
+			<div className='flex flex-col w-full h-full justify-center items-center'>
+				<Card className='max-w-[340px]'>
+					<CardBody className='overflow-hidden flex flex-col gap-4'>
+						<Image src='https://placehold.co/600x400/EEE/31343C' />
+						<Button
+							startContent={<FcGoogle size={24} />}
+							variant='light'
+							color='primary'
+							onClick={onSubmit}
+							isLoading={loading}>
+							Sign in with Google
+						</Button>
+						{/* <Tabs
 						fullWidth
 						size='md'
 						aria-label='Tabs form'
@@ -134,8 +143,9 @@ export const Login = () => {
 							</form>
 						</Tab>
 					</Tabs> */}
-				</CardBody>
-			</Card>
-		</div>
+					</CardBody>
+				</Card>
+			</div>
+		)
 	)
 }

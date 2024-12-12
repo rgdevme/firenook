@@ -7,20 +7,25 @@ import {
 	useSearchParams
 } from 'react-router'
 import { useParamsContext } from '../context/params'
+import { useAppConfig } from '../firebase'
+import { Path } from '../routes'
 import { ContainerMain } from './ContainerMain'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { Menu } from './Menu'
 
-export const Private = ({ auth: { isAuthenticated } }) => {
+export const Private = () => {
+	const { user } = useAppConfig()
 	const { pathname } = useLocation()
 	const params = useParams()
 	const { exposeParams } = useParamsContext()
 	const redir = encodeURIComponent(pathname)
+
 	useEffect(() => {
 		exposeParams(params)
 	}, [params])
-	return isAuthenticated ? (
+
+	return user ? (
 		<>
 			<Header />
 			<Menu />
@@ -30,15 +35,16 @@ export const Private = ({ auth: { isAuthenticated } }) => {
 			<Footer />
 		</>
 	) : (
-		<Navigate to={`login?redir=${redir}`} replace />
+		<Navigate to={`${Path.LOGIN}?redir=${redir}`} replace />
 	)
 }
 
-export const SignFlow = ({ authenticated }: { authenticated: boolean }) => {
+export const SignFlow = () => {
+	const { user } = useAppConfig()
 	const [params] = useSearchParams()
-	const redir = params.get('redir') ?? '/dashboard'
+	const redir = params.get('redir') ?? Path.DASHBOARD
 
-	return !authenticated ? (
+	return !user ? (
 		<ContainerMain>
 			<Outlet />
 		</ContainerMain>

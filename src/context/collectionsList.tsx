@@ -1,52 +1,68 @@
+import { useList } from '@uidotdev/usehooks'
+import { arrayUnion } from 'firebase/firestore'
 import {
 	createContext,
 	PropsWithChildren,
 	useContext,
 	useEffect,
-	useState
+	useMemo
 } from 'react'
-import { CollectionStore } from '../firebase/models/Collection'
-import { CollectionModel } from '../firebase/types/Collection'
+import { useCollectionStore } from '../firebase/models/Collection'
+import { CollectionData } from '../firebase/types/Collection'
 import { useParamsContext } from './params'
 
-const col = CollectionStore
-
 const CollectionCtx = createContext({
-	collections: [] as CollectionModel[],
-	current: null as CollectionModel | null
-	// refetch: async () => {}
+	collections: [] as CollectionData[],
+	current: null as CollectionData | null,
+	defaultData: {} as CollectionData | undefined,
+	updateSchema: (async () => {}) as (
+		schema: CollectionData['schema']
+	) => Promise<void>,
+	addCollection: (async () => {}) as (data: CollectionData) => Promise<void>
 })
 
 export const CollectionsProvider = ({ children }: PropsWithChildren) => {
 	const { params } = useParamsContext()
-	const [results, setResults] = useState([] as CollectionModel[])
-	const [currentCollection, setCurrentCollection] =
-		useState<null | CollectionModel>(null)
-
-	// const getCollections = async () => {
-	// 	if (!col) return
-	// 	const res = await col.query({ where: [] })
-	// 	console.log({ res })
-
-	// 	setResults(res)
-	// }
-
-	useEffect(() => {
-		const unsub = col.subscribeMany({ onChange: setResults, where: [] })
-		return unsub
-	}, [])
+	const [results, { set }] = useList<CollectionData>()
+	const store = useCollectionStore()
+	const { index, current } = useMemo(() => {
+		const index = results.findIndex(x => x.path === params.cid)
+		console.log(params)
+		return {
+			index: index < 0 ? null : index,
+			current: index < 0 ? null : results[index]
+		}
+	}, [params.cid, results])
 
 	useEffect(() => {
-		const col = results.find(col => col.path === params?.collection)
-		setCurrentCollection(col || null)
-	}, [params.collection, results])
+		const unsub = store?.subscribe('collections', {
+			onChange: res => {
+				if (!res?.collections) return
+				set(res.collections)
+			}
+		})
+		return () => unsub?.()
+	}, [store?.ref.id])
+
+	const updateSchema = async (schema: CollectionData['schema']) => {
+		const upd = [...results]
+		if (index === null) return
+		upd[index].schema = schema
+		await store?.save('collections', { collections: upd })
+	}
+
+	const addCollection = async (data: CollectionData) => {
+		await store?.save('collections', { collections: arrayUnion(data) })
+	}
 
 	return (
 		<CollectionCtx.Provider
 			value={{
+				defaultData: store?.defaultData.collections[0],
 				collections: results,
-				current: currentCollection
-				// refetch: getCollections
+				current,
+				updateSchema,
+				addCollection
 			}}
 			children={children}
 		/>

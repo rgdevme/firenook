@@ -2,14 +2,16 @@ import { createContext, PropsWithChildren, useContext, useState } from 'react'
 
 const ParamsCtx = createContext({
 	params: {} as {
-		collection?: string
-		record?: string
-		subParams?: string
+		bid?: string
+		cid?: string
+		rid?: string
+		sid?: string
 	},
 	exposeParams: (({}) => {}) as (params: {
-		collection?: string
-		record?: string
-		subParams?: string
+		bid?: string
+		cid?: string
+		rid?: string
+		sid?: string
 	}) => void
 })
 

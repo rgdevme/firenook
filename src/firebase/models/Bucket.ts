@@ -1,4 +1,4 @@
-import { fireborm } from '..'
+import { useAppConfig } from '..'
 import {
 	BucketDefault,
 	BucketDoc,
@@ -6,20 +6,23 @@ import {
 	BucketRef
 } from '../types/Bucket'
 
-export const BucketStore = fireborm.initializeStore<
-	BucketDoc,
-	BucketModel,
-	BucketDefault,
-	BucketDefault
->({
-	singular: 'Bucket',
-	plural: 'Buckets',
-	path: '_buckets',
-	defaultData: { buckets: [] },
-	toDocument: ({ _ref, id, ...doc }) => doc,
-	toModel: doc => {
-		const { id, ref } = doc
-		const data = doc.data()
-		return { id, _ref: ref as BucketRef, ...data }
-	}
-})
+export const useBucketStore = () => {
+	const { fireborm } = useAppConfig()
+	return fireborm?.initializeStore<
+		BucketDoc,
+		BucketModel,
+		BucketDefault,
+		BucketDefault
+	>({
+		singular: 'Bucket',
+		plural: 'Buckets',
+		path: '_settings',
+		defaultData: { buckets: [] },
+		toDocument: ({ _ref, id, ...doc }) => doc,
+		toModel: doc => {
+			const { id, ref } = doc
+			const data = doc.data()
+			return { id, _ref: ref as BucketRef, ...data }
+		}
+	})
+}

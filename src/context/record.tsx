@@ -32,7 +32,7 @@ const RecordContext = createContext(
 
 export const RecordProvider = (props: PropsWithChildren) => {
 	const {
-		params: { record: r }
+		params: { rid }
 	} = useParamsContext()
 	const [loading, toggle] = useToggle(true)
 	const { store: s } = useCollection()
@@ -45,21 +45,24 @@ export const RecordProvider = (props: PropsWithChildren) => {
 
 	const copy = useCallback(() => s?.create(data), [s, data])
 	const save = useCallback(
-		() => (!r ? undefined : s?.save(r, data)),
-		[s, r, data]
+		() => (!rid ? undefined : s?.save(rid, data)),
+		[s, rid, data]
 	)
-	const remove = useCallback(() => (!r ? undefined : s?.destroy(r)), [s, r])
+	const remove = useCallback(
+		() => (!rid ? undefined : s?.destroy(rid)),
+		[s, rid]
+	)
 	const subscribe = useCallback(
 		() =>
-			!r
+			!rid
 				? undefined
-				: s?.subscribe(r, {
+				: s?.subscribe(rid, {
 						onChange: d => {
 							setOriginal(d ?? {})
 							toggle(false)
 						}
 				  }),
-		[s, r]
+		[s, rid]
 	)
 
 	const clear = () => {

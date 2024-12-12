@@ -110,6 +110,7 @@ html {
 	!font-mono
 	!px-12
 	!py-1
+	!top-0
 	!right-0
 	!translate-y-[75px]
 	!translate-x-[65px]
@@ -117,4 +118,5 @@ html {
 	!text-white
 	!bg-red-800;
 	left: unset !important;
+	bottom: unset !important;
 }

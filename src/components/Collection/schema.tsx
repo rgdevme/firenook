@@ -1,23 +1,4 @@
 import {
-	Button,
-	Dropdown,
-	DropdownItem,
-	DropdownMenu,
-	DropdownTrigger,
-	Modal,
-	ModalBody,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	useDisclosure
-} from '@nextui-org/react'
-import { useList } from '@uidotdev/usehooks'
-import { useEffect, useMemo, useState } from 'react'
-import { useCollectionsList } from '../../context/collectionsList'
-import { CollectionStore as cs } from '../../firebase/models/Collection'
-import { Property, PropertyType } from '../../firebase/types/Property'
-import { Item, SchemaProperty } from './property'
-import {
 	closestCenter,
 	DndContext,
 	DragOverlay,
@@ -32,14 +13,32 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy
 } from '@dnd-kit/sortable'
+import {
+	Button,
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
+	Modal,
+	ModalBody,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	useDisclosure
+} from '@nextui-org/react'
+import { useList } from '@uidotdev/usehooks'
 import { equals } from 'ramda'
+import { useEffect, useState } from 'react'
+import { useCollectionsList } from '../../context/collectionsList'
+import { Property, PropertyType } from '../../firebase/types/Property'
+import { Item, SchemaProperty } from './property'
 
 export const CollectionSchema = ({
 	isOpen,
 	onClose,
 	onOpenChange
 }: ReturnType<typeof useDisclosure>) => {
-	const { current } = useCollectionsList()
+	const { current, updateSchema } = useCollectionsList()
 	const [loading, setLoading] = useState(false)
 	const [initialVal, setInitial] = useState(current?.schema!)
 	const [activeId, setActiveId] = useState(null)
@@ -65,9 +64,7 @@ export const CollectionSchema = ({
 		try {
 			if (!current) return
 			setLoading(true)
-			await cs.save(current.id, {
-				schema: properties.map(({ _id, ...rest }) => rest)
-			})
+			await updateSchema(properties.map(({ _id, ...rest }) => rest))
 			onClose()
 		} catch (error) {
 			console.error({ error })

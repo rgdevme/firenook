@@ -9,7 +9,7 @@ import {
 	useMemo,
 	useState
 } from 'react'
-import { fireborm } from '../firebase'
+import { useAppConfig } from '../firebase'
 import { PropertyType } from '../firebase/types/Property'
 import { useCollectionsList } from './collectionsList'
 
@@ -23,35 +23,37 @@ const CollectionCtx = createContext({
 })
 
 export const CollectionProvider = (props: PropsWithChildren) => {
+	const { fireborm } = useAppConfig()
 	const { current } = useCollectionsList()
 	const store = useMemo(
 		() =>
-			current &&
-			fireborm.initializeStore({
-				...current,
-				toDocument: ({ _ref, id, ...doc }) => doc,
-				toModel: doc => {
-					const { id, ref } = doc
-					const data = {} as any
+			!current || !fireborm
+				? null
+				: fireborm.initializeStore({
+						...current,
+						toDocument: ({ _ref, id, ...doc }) => doc,
+						toModel: doc => {
+							const { id, ref } = doc
+							const data = {} as any
 
-					if (current.schema.some(x => x.show)) {
-						const docData = doc.data()
-						for (const key in docData) {
-							const type = current!.schema.find(s => s.key === key)?.type
-							if (!type) continue
-							let value = docData[key]
+							if (current.schema.some(x => x.show)) {
+								const docData = doc.data()
+								for (const key in docData) {
+									const type = current!.schema.find(s => s.key === key)?.type
+									if (!type) continue
+									let value = docData[key]
 
-							if (type === PropertyType.timestamp) {
-								if (value === '') value = Timestamp.fromDate(new Date())
-								data[key] = (value as Timestamp).toDate()
-							} else {
-								data[key] = value
+									if (type === PropertyType.timestamp) {
+										if (value === '') value = Timestamp.fromDate(new Date())
+										data[key] = (value as Timestamp).toDate()
+									} else {
+										data[key] = value
+									}
+								}
 							}
+							return { id, _ref: ref, ...data }
 						}
-					}
-					return { id, _ref: ref, ...data }
-				}
-			}),
+				  }),
 		[current]
 	)
 	const [count, setCount] = useState(0)
