@@ -8,16 +8,19 @@ import {
 } from '@nextui-org/react'
 import { LuFilePlus2, LuFileX2, LuListFilter, LuListTree } from 'react-icons/lu'
 import { TbFolderX } from 'react-icons/tb'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useCollection } from '../context/collection'
 import { useCollectionsList } from '../context/collectionsList'
+import { useParamsContext } from '../context/params'
+import { Path } from '../routes'
 import { CollectionSchema } from './Collection/schema'
 import { RecordControls } from './Record/controls'
 import { CreateRecord } from './Record/create'
-import { Path } from '../routes'
 
 export const Header = () => {
-	const { cid, rid } = useParams()
+	const {
+		params: { cid, rid }
+	} = useParamsContext()
 	const nav = useNavigate()
 	const { current } = useCollectionsList()
 	const { store, selection } = useCollection()
@@ -39,17 +42,15 @@ export const Header = () => {
 				<Breadcrumbs size='sm' variant='solid'>
 					<BreadcrumbItem href={Path.DASHBOARD}>Dashboard</BreadcrumbItem>
 					{cid && (
-						<>
-							<BreadcrumbItem href={Path.COLLECTION.replace(':cid', cid)}>
-								{current?.singular}
-							</BreadcrumbItem>
-							{rid && (
-								<BreadcrumbItem
-									href={Path.RECORD.replace(':cid', cid).replace(':rid', rid)}>
-									{rid}
-								</BreadcrumbItem>
-							)}
-						</>
+						<BreadcrumbItem href={Path.COLLECTION.replace(':cid', cid)}>
+							{current?.singular}
+						</BreadcrumbItem>
+					)}
+					{rid && (
+						<BreadcrumbItem
+							href={Path.RECORD.replace(':cid', cid!).replace(':rid', rid)}>
+							{rid}
+						</BreadcrumbItem>
 					)}
 				</Breadcrumbs>
 			</div>
