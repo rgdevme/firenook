@@ -16,7 +16,7 @@ export const BucketList = () => {
 		() =>
 			!bid || !fireborm
 				? null
-				: fireborm?.initializeStorage({ path: bid, folder: '' }),
+				: fireborm?.initializeStorage({ path: 'bucket', folder: bid }),
 		[bid]
 	)
 
