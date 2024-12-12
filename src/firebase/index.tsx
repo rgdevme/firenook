@@ -43,6 +43,7 @@ export const initFB = async (config: FirebaseOptions, useEmulator = false) => {
 export type AppConfigProps = {
 	config: FirebaseOptions
 	useEmulator?: boolean
+	logo?: string
 }
 
 const appConfigCtxValue = {} as {
@@ -50,6 +51,7 @@ const appConfigCtxValue = {} as {
 	auth?: Auth
 	user?: User
 	loading: boolean
+	logo?: string
 }
 
 const appConfigCtx = createContext(appConfigCtxValue)
@@ -57,6 +59,7 @@ const appConfigCtx = createContext(appConfigCtxValue)
 export const AppConfigProvider = ({
 	config,
 	useEmulator = false,
+	logo,
 	children
 }: PropsWithChildren<AppConfigProps>) => {
 	const [fireborm, setFb] = useState<ReturnType<typeof FireBorm>>()
@@ -96,7 +99,7 @@ export const AppConfigProvider = ({
 
 	return (
 		<appConfigCtx.Provider
-			value={{ fireborm, auth, user, loading }}
+			value={{ fireborm, auth, user, loading, logo }}
 			children={children}
 		/>
 	)

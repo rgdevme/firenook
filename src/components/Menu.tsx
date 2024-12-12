@@ -19,8 +19,10 @@ import { CollectionModal } from './Collection/create'
 import { MdLogout } from 'react-icons/md'
 import { getAuth, signOut } from 'firebase/auth'
 import { Path } from '../routes'
+import { useAppConfig } from '../firebase'
 
 export const Menu = () => {
+	const { logo } = useAppConfig()
 	const [toggle, setToggle] = useState(false)
 	const { collections } = useCollectionsList()
 	const { buckets } = useBucketsList()
@@ -48,18 +50,18 @@ export const Menu = () => {
 				/>
 			</Button>
 			<Link to={Path.DASHBOARD}>
-				<div className='flex flex-row gap-2 mb-4'>
+				<div className='flex flex-row gap-2 mb-4 items-center'>
 					<Image
 						width={56}
 						height={56}
-						className='object-cover min-w-14'
+						className='object-contain min-w-14'
 						alt='NextUI hero Image'
-						src='https://nextui.org/images/hero-card-complete.jpeg'
+						src={logo ?? 'https://nextui.org/images/hero-card-complete.jpeg'}
 					/>
 					<span
 						data-active={toggle}
-						className='w-full data-[active=true]:w-0 data-[active=true]:overflow-hidden transition-all h-full max-w-16'>
-						Company name
+						className='w-full data-[active=true]:w-0 data-[active=true]:overflow-hidden transition-all h-full max-w-16 font-bold'>
+						Firenook
 					</span>
 				</div>
 			</Link>

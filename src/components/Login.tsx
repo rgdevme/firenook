@@ -17,7 +17,7 @@ import { FcGoogle } from 'react-icons/fc'
 import { useAppConfig } from '../firebase'
 
 export const Login = () => {
-	const { auth, user } = useAppConfig()
+	const { auth, logo } = useAppConfig()
 	const [loading, setLoading] = useToggle()
 
 	// const [selected, setSelected] = useState('login')
@@ -59,7 +59,11 @@ export const Login = () => {
 			<div className='flex flex-col w-full h-full justify-center items-center'>
 				<Card className='max-w-[340px]'>
 					<CardBody className='overflow-hidden flex flex-col gap-4'>
-						<Image src='https://placehold.co/600x400/EEE/31343C' />
+						<Image
+							className='w-24 h-24 object-contain object-center mx-auto'
+							classNames={{ wrapper: 'mx-auto' }}
+							src={logo ?? 'https://placehold.co/600x400/EEE/31343C'}
+						/>
 						<Button
 							startContent={<FcGoogle size={24} />}
 							variant='light'
