@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
-import { Firenook } from './src/index'
 import logo from './assets/logo.png'
+import { Firenook } from './src/index'
+import StoresPlugin from './src/plugins/store'
 
 const config = {
 	apiKey: 'AIzaSyCHJdqYGjsXWlciLt21lN5i8qheX6tBqoQ',
@@ -13,4 +14,11 @@ const config = {
 }
 
 const root = createRoot(document.getElementById('root')!)
-root.render(<Firenook config={config} useEmulator={true} logo={logo} />)
+root.render(
+	<Firenook
+		config={config}
+		useEmulator={true}
+		logo={logo}
+		plugins={[StoresPlugin]}
+	/>
+)
