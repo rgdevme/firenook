@@ -6,28 +6,31 @@ import {
 	Image,
 	useDisclosure
 } from '@nextui-org/react'
-import { useState } from 'react'
+import { getAuth, signOut } from 'firebase/auth'
+import { useMemo, useState } from 'react'
 import { IconType } from 'react-icons'
 import { BiCollection } from 'react-icons/bi'
+import { MdLogout } from 'react-icons/md'
 import { PiCaretCircleDoubleLeft } from 'react-icons/pi'
 import { TbCirclePlus, TbFiles, TbSettings2 } from 'react-icons/tb'
 import { Link } from 'react-router'
-import { useCollectionsList } from '../context/collectionsList'
 import { useBucketsList } from '../context/bucket'
+import { useAppConfig } from '../firebase'
+import { Path } from '../routes'
 import { BucketModal } from './Bucket/create'
 import { CollectionModal } from './Collection/create'
-import { MdLogout } from 'react-icons/md'
-import { getAuth, signOut } from 'firebase/auth'
-import { Path } from '../routes'
-import { useAppConfig } from '../firebase'
 
 export const Menu = () => {
-	const { logo } = useAppConfig()
+	const { logo, menuItems } = useAppConfig()
 	const [toggle, setToggle] = useState(false)
-	const { collections } = useCollectionsList()
 	const { buckets } = useBucketsList()
 	const collectionModal = useDisclosure()
 	const bucketModal = useDisclosure()
+
+	const elements = useMemo(
+		() => Object.entries(menuItems).map(([key, Item]) => <Item key={key} />),
+		[menuItems]
+	)
 
 	return (
 		<section
@@ -73,18 +76,8 @@ export const Menu = () => {
 					<IconBtn icon={TbCirclePlus} onClick={collectionModal.onOpen} />
 				}
 			/>
-			{collections.map(c => (
-				<Button
-					size='sm'
-					key={c.path}
-					as={Link}
-					to={Path.COLLECTION.replace(':cid', c.path)}
-					variant='light'
-					color='primary'
-					className='justify-start'>
-					{c.plural}
-				</Button>
-			))}
+			{elements}
+
 			<Div
 				title='Buckets'
 				compact={toggle}

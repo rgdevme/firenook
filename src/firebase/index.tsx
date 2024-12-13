@@ -11,11 +11,15 @@ import { Auth, connectAuthEmulator, getAuth, User } from 'firebase/auth'
 import { FireBorm } from 'fireborm'
 import {
 	createContext,
+	FunctionComponent,
+	MutableRefObject,
 	PropsWithChildren,
 	useContext,
 	useEffect,
+	useRef,
 	useState
 } from 'react'
+import { FirenookElements } from '../plugins/core'
 
 export let fireborm: ReturnType<typeof FireBorm>
 
@@ -46,13 +50,19 @@ export type AppConfigProps = {
 	logo?: string
 }
 
-const appConfigCtxValue = {} as {
+export type AppConfig = {
 	fireborm?: ReturnType<typeof FireBorm>
 	auth?: Auth
 	user?: User
 	loading: boolean
 	logo?: string
+	routes: MutableRefObject<FirenookElements>
+	menuItems: Record<string, FunctionComponent>
+	registerRoutes: (elements: FirenookElements) => void
+	registerMenuItems: (elements: Record<string, FunctionComponent>) => void
 }
+
+const appConfigCtxValue = {} as AppConfig
 
 const appConfigCtx = createContext(appConfigCtxValue)
 
@@ -66,6 +76,21 @@ export const AppConfigProvider = ({
 	const [auth, setAuth] = useState<Auth>()
 	const [loading, toggle] = useToggle(true)
 	const [user, setIsAuthenticated] = useState<User>()
+	const routes = useRef<FirenookElements>({})
+	const [menuItems, setMenuItems] = useState<Record<string, FunctionComponent>>(
+		{}
+	)
+	const registerRoutes = (elements: FirenookElements) => {
+		routes.current = { ...routes.current, ...elements }
+	}
+	const registerMenuItems = (elements: Record<string, FunctionComponent>) => {
+		const upd = { ...menuItems }
+		for (const key in elements) {
+			upd[key] = elements[key]
+		}
+		// menuItems.current = { ...upd }
+		setMenuItems({ ...upd })
+	}
 
 	useEffect(() => {
 		toggle(true)
@@ -99,7 +124,17 @@ export const AppConfigProvider = ({
 
 	return (
 		<appConfigCtx.Provider
-			value={{ fireborm, auth, user, loading, logo }}
+			value={{
+				fireborm,
+				auth,
+				user,
+				loading,
+				logo,
+				menuItems,
+				routes,
+				registerMenuItems,
+				registerRoutes
+			}}
 			children={children}
 		/>
 	)
