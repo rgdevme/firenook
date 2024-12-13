@@ -7,17 +7,17 @@ import {
 	TableRow
 } from '@nextui-org/react'
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useCollection } from '../../context/collection'
 import { useCollectionsList } from '../../context/collectionsList'
-import { useNavigate } from 'react-router'
+import { useAppConfig } from '../../firebase'
 import { PropertyType } from '../../firebase/types/Property'
 import { Path } from '../../routes'
-import { useParamsContext } from '../../context/params'
 
 export const List = () => {
 	const {
 		params: { cid }
-	} = useParamsContext()
+	} = useAppConfig()
 	const { current } = useCollectionsList()
 	const navigate = useNavigate()
 	const { store, selection, setSelection } = useCollection()

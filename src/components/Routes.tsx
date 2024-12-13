@@ -6,7 +6,6 @@ import {
 	useParams,
 	useSearchParams
 } from 'react-router'
-import { useParamsContext } from '../context/params'
 import { useAppConfig } from '../firebase'
 import { Path } from '../routes'
 import { ContainerMain } from './ContainerMain'
@@ -15,10 +14,9 @@ import { Header } from './Header'
 import { Menu } from './Menu'
 
 export const Private = () => {
-	const { user } = useAppConfig()
+	const { user, exposeParams } = useAppConfig()
 	const { pathname } = useLocation()
 	const params = useParams()
-	const { exposeParams } = useParamsContext()
 	const redir = encodeURIComponent(pathname)
 
 	useEffect(() => {

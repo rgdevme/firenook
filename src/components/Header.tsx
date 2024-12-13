@@ -11,7 +11,7 @@ import { TbFolderX } from 'react-icons/tb'
 import { useNavigate } from 'react-router'
 import { useCollection } from '../context/collection'
 import { useCollectionsList } from '../context/collectionsList'
-import { useParamsContext } from '../context/params'
+import { useAppConfig } from '../firebase'
 import { Path } from '../routes'
 import { CollectionSchema } from './Collection/schema'
 import { RecordControls } from './Record/controls'
@@ -20,7 +20,7 @@ import { CreateRecord } from './Record/create'
 export const Header = () => {
 	const {
 		params: { cid, rid }
-	} = useParamsContext()
+	} = useAppConfig()
 	const nav = useNavigate()
 	const { current } = useCollectionsList()
 	const { store, selection } = useCollection()

@@ -20,6 +20,7 @@ import {
 	useState
 } from 'react'
 import { FirenookElements } from '../plugins/core'
+import { Params } from 'react-router'
 
 export let fireborm: ReturnType<typeof FireBorm>
 
@@ -58,6 +59,8 @@ export type AppConfig = {
 	logo?: string
 	routes: MutableRefObject<FirenookElements>
 	menuItems: Record<string, FunctionComponent>
+	params: Params<string>
+	exposeParams: (params: Params<string>) => void
 	registerRoutes: (elements: FirenookElements) => void
 	registerMenuItems: (elements: Record<string, FunctionComponent>) => void
 }
@@ -77,6 +80,7 @@ export const AppConfigProvider = ({
 	const [loading, toggle] = useToggle(true)
 	const [user, setIsAuthenticated] = useState<User>()
 	const routes = useRef<FirenookElements>({})
+	const [params, exposeParams] = useState({})
 	const [menuItems, setMenuItems] = useState<Record<string, FunctionComponent>>(
 		{}
 	)
@@ -132,6 +136,8 @@ export const AppConfigProvider = ({
 				logo,
 				menuItems,
 				routes,
+				params,
+				exposeParams,
 				registerMenuItems,
 				registerRoutes
 			}}

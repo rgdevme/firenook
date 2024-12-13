@@ -7,9 +7,9 @@ import {
 	useEffect,
 	useMemo
 } from 'react'
+import { useAppConfig } from '../firebase'
 import { useCollectionStore } from '../firebase/models/Collection'
 import { CollectionData } from '../firebase/types/Collection'
-import { useParamsContext } from './params'
 
 const CollectionCtx = createContext({
 	collections: [] as CollectionData[],
@@ -22,7 +22,7 @@ const CollectionCtx = createContext({
 })
 
 export const CollectionsProvider = ({ children }: PropsWithChildren) => {
-	const { params } = useParamsContext()
+	const { params } = useAppConfig()
 	const [results, { set }] = useList<CollectionData>()
 	const store = useCollectionStore()
 	const { index, current } = useMemo(() => {

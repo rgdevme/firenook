@@ -6,13 +6,11 @@ import { AppConfig } from '../../firebase'
 export type FirenookProvider = FunctionComponent<
 	PropsWithChildren<{
 		app: AppConfig
-		params: Record<string, string | undefined>
 	}>
 >
 
 export type FirenookComponent = FunctionComponent<{
 	app: AppConfig
-	params: Record<string, string | undefined>
 }>
 
 export type FirenookElement = {

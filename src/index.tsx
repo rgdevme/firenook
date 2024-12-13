@@ -14,7 +14,6 @@ import { Private, SignFlow } from './components/Routes'
 import { Splash } from './components/Splash'
 import { BucketsProvider } from './context/bucket'
 import { CollectionProvider } from './context/collection'
-import { ParamsProvider, useParamsContext } from './context/params'
 import { RecordProvider } from './context/record'
 import { AppConfigProps, AppConfigProvider, useAppConfig } from './firebase'
 import { FirenookPlugin } from './plugins/core'
@@ -58,19 +57,15 @@ export const Firenook = ({
 	return (
 		<BrowserRouter>
 			<AppConfigProvider {...props}>
-				<ParamsProvider>
-					<PluginsProvider plugins={plugins}>
-						{/* <CollectionsProvider> */}
-						<BucketsProvider>
-							<CollectionProvider>
-								<RecordProvider>
-									<Routing />
-								</RecordProvider>
-							</CollectionProvider>
-						</BucketsProvider>
-						{/* </CollectionsProvider> */}
-					</PluginsProvider>
-				</ParamsProvider>
+				<PluginsProvider plugins={plugins}>
+					<BucketsProvider>
+						<CollectionProvider>
+							<RecordProvider>
+								<Routing />
+							</RecordProvider>
+						</CollectionProvider>
+					</BucketsProvider>
+				</PluginsProvider>
 			</AppConfigProvider>
 		</BrowserRouter>
 	)
@@ -83,7 +78,6 @@ const PluginsProvider = ({
 	plugins: FirenookPlugin[]
 }>) => {
 	const app = useAppConfig()
-	const { params } = useParamsContext()
 
 	return useMemo(
 		() =>
@@ -93,7 +87,7 @@ const PluginsProvider = ({
 				.reduce((children, plugin) => {
 					if (plugin.routes) app.registerRoutes(plugin.routes)
 					if (!plugin?.provider) return children
-					return <plugin.provider {...{ app, params, children }} />
+					return <plugin.provider {...{ app, children }} />
 				}, bottomChildren),
 		[app]
 	)

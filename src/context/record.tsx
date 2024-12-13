@@ -11,8 +11,8 @@ import {
 	useMemo,
 	useState
 } from 'react'
+import { useAppConfig } from '../firebase'
 import { useCollection } from './collection'
-import { useParamsContext } from './params'
 
 const RecordContext = createContext(
 	{} as {
@@ -33,7 +33,7 @@ const RecordContext = createContext(
 export const RecordProvider = (props: PropsWithChildren) => {
 	const {
 		params: { rid }
-	} = useParamsContext()
+	} = useAppConfig()
 	const [loading, toggle] = useToggle(true)
 	const { store: s } = useCollection()
 	const [original, setOriginal] = useState({})
