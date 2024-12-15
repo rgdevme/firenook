@@ -20,8 +20,8 @@ export default defineConfig(({ command }) => ({
 			? {
 					lib: {
 						entry: './src/index.tsx',
-						name: 'index',
-						fileName: 'index',
+						// name: 'index',
+						// fileName: 'index',
 						formats: ['cjs', 'es']
 					},
 					outDir: 'dist',
