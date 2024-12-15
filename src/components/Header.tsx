@@ -1,44 +1,50 @@
-import {
-	BreadcrumbItem,
-	Breadcrumbs,
-	Button,
-	ButtonGroup,
-	Divider,
-	useDisclosure
-} from '@nextui-org/react'
-import { LuFilePlus2, LuFileX2, LuListFilter, LuListTree } from 'react-icons/lu'
-import { TbFolderX } from 'react-icons/tb'
-import { useNavigate } from 'react-router'
-import { useCollection } from '../context/collection'
-import { useCollectionsList } from '../context/collectionsList'
-import { useAppConfig } from '../firebase'
-import { Path } from '../routes'
-import { CollectionSchema } from './Collection/schema'
-import { RecordControls } from './Record/controls'
-import { CreateRecord } from './Record/create'
+// import {
+// 	// BreadcrumbItem,
+// 	// Breadcrumbs,
+// 	Button,
+// 	ButtonGroup,
+// 	Divider,
+// 	useDisclosure
+// } from '@nextui-org/react'
+// import {
+// 	LuFilePlus2,
+// 	// LuFileX2,
+// 	LuListFilter,
+// 	LuListTree
+// } from 'react-icons/lu'
+// import { TbFolderX } from 'react-icons/tb'
+// import { useNavigate } from 'react-router'
+// import { useCollection } from '../context/collection'
+// import { useCollectionsList } from '../context/collectionsList'
+import { useAppConfig } from '../context'
+// import { Path } from '../routes'
+// import { CollectionSchema } from './Collection/schema'
+// import { RecordControls } from './Record/controls'
+// import { CreateRecord } from './Record/create'
 
 export const Header = () => {
-	const {
-		params: { cid, rid }
-	} = useAppConfig()
-	const nav = useNavigate()
-	const { current } = useCollectionsList()
-	const { store, selection } = useCollection()
-	const collectionSchema = useDisclosure()
-	const recordCreation = useDisclosure()
+	const { header } = useAppConfig()
+	// const nav = useNavigate()
+	// const { current } = useCollectionsList()
+	// const { store, selection } = useCollection()
+	// const collectionSchema = useDisclosure()
+	// const recordCreation = useDisclosure()
 
-	const deleteSelectedRecords = async () => {
-		if (!store || !cid || !selection.size) return
-		const promises = [...selection.values().map(s => store.destroy(s))]
-		await Promise.all(promises)
-		nav(Path.COLLECTION.replace(':cid', cid))
-	}
+	// const deleteSelectedRecords = async () => {
+	// 	if (!store || !cid || !selection.size) return
+	// 	const promises = [...selection.values().map(s => store.destroy(s))]
+	// 	await Promise.all(promises)
+	// 	nav(Path.COLLECTION.replace(':cid', cid))
+	// }
 
 	return (
 		<header
 			id='header'
 			className='w-full flex flex-row no-wrap gap-2 items-center justify-end p-2 pr-4'>
-			<div className='flex flex-1'>
+			{header.map((H, i) => (
+				<H key={i} />
+			))}
+			{/* <div className='flex flex-1'>
 				<Breadcrumbs size='sm' variant='solid'>
 					<BreadcrumbItem href={Path.DASHBOARD}>Dashboard</BreadcrumbItem>
 					{cid && (
@@ -77,10 +83,10 @@ export const Header = () => {
 						</Button>
 					</ButtonGroup>
 				</>
-			)}
-			<RecordControls />
-			<CollectionSchema {...collectionSchema} />
-			<CreateRecord {...recordCreation} />
+			)} */}
+			{/* <RecordControls /> */}
+			{/* <CollectionSchema {...collectionSchema} /> */}
+			{/* <CreateRecord {...recordCreation} /> */}
 		</header>
 	)
 }

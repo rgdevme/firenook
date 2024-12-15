@@ -1,7 +1,7 @@
 import { useList } from '@uidotdev/usehooks'
 import { useEffect, useMemo } from 'react'
 import { useBucketsList } from '../../context/bucket'
-import { useAppConfig } from '../../firebase'
+import { useAppConfig } from '../../context'
 import { FileProperty } from '../Property/file'
 
 export const BucketList = () => {

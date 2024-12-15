@@ -14,7 +14,7 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 // import { useForm } from 'react-hook-form'
 import { useCallback } from 'react'
 import { FcGoogle } from 'react-icons/fc'
-import { useAppConfig } from '../firebase'
+import { useAppConfig } from '../context'
 
 export const Login = () => {
 	const { auth, logo } = useAppConfig()

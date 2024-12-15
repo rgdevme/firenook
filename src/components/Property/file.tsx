@@ -6,7 +6,7 @@ import { useDropzone } from 'react-dropzone'
 import { LuLoader } from 'react-icons/lu'
 import { SlCloudUpload } from 'react-icons/sl'
 import { useParams } from 'react-router'
-import { useAppConfig } from '../../firebase'
+import { useAppConfig } from '../../context'
 
 type StoredFile = { name: string; url: string; saved: boolean }
 

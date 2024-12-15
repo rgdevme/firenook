@@ -1,4 +1,4 @@
-import { useAppConfig } from '..'
+import { useAppConfig } from '../../context'
 import {
 	BucketDefault,
 	BucketDoc,

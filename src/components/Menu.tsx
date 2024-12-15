@@ -1,36 +1,23 @@
-import {
-	Button,
-	ButtonProps,
-	Divider,
-	extendVariants,
-	Image,
-	useDisclosure
-} from '@nextui-org/react'
+import { Button, Image, useDisclosure } from '@nextui-org/react'
 import { getAuth, signOut } from 'firebase/auth'
-import { useMemo, useState } from 'react'
-import { IconType } from 'react-icons'
-import { BiCollection } from 'react-icons/bi'
+import { useState } from 'react'
 import { MdLogout } from 'react-icons/md'
 import { PiCaretCircleDoubleLeft } from 'react-icons/pi'
 import { TbCirclePlus, TbFiles, TbSettings2 } from 'react-icons/tb'
 import { Link } from 'react-router'
 import { useBucketsList } from '../context/bucket'
-import { useAppConfig } from '../firebase'
+import { useAppConfig } from '../context'
 import { Path } from '../routes'
 import { BucketModal } from './Bucket/create'
-import { CollectionModal } from './Collection/create'
+import { IconBtn } from './IconButton'
+import { MenuDivider } from './MenuDivider'
+// import { CollectionModal } from './Collection/create'
 
 export const Menu = () => {
 	const { logo, menuItems } = useAppConfig()
 	const [toggle, setToggle] = useState(false)
 	const { buckets } = useBucketsList()
-	const collectionModal = useDisclosure()
 	const bucketModal = useDisclosure()
-
-	const elements = useMemo(
-		() => Object.entries(menuItems).map(([key, Item]) => <Item key={key} />),
-		[menuItems]
-	)
 
 	return (
 		<section
@@ -68,17 +55,11 @@ export const Menu = () => {
 					</span>
 				</div>
 			</Link>
-			<Div
-				title='Collections'
-				compact={toggle}
-				icon={<BiCollection />}
-				action={
-					<IconBtn icon={TbCirclePlus} onClick={collectionModal.onOpen} />
-				}
-			/>
-			{elements}
+			{menuItems.map((X, i) => (
+				<X key={i} />
+			))}
 
-			<Div
+			<MenuDivider
 				title='Buckets'
 				compact={toggle}
 				icon={<TbFiles />}
@@ -97,7 +78,7 @@ export const Menu = () => {
 				</Button>
 			))}
 
-			<Div title='Settings' icon={<TbSettings2 />} />
+			<MenuDivider title='Settings' icon={<TbSettings2 />} />
 			<Button size='sm'>Small</Button>
 			<Button size='sm'>Small</Button>
 			<Button size='sm'>Small</Button>
@@ -111,55 +92,7 @@ export const Menu = () => {
 					Logout
 				</Button>
 			</div>
-			<CollectionModal {...collectionModal} />
 			<BucketModal {...bucketModal} />
 		</section>
 	)
 }
-
-const Div = ({
-	title,
-	icon,
-	action,
-	compact = false
-}: {
-	title: string
-	icon?: JSX.Element
-	action?: JSX.Element
-	compact?: boolean
-}) => {
-	return (
-		<div className='cursor-default select-none flex flex-row h-6 gap-2 px-2 justify-center items-center text-zinc-400 hover:text-primary transition duration-75'>
-			{icon}
-			{!compact && (
-				<>
-					<span
-						data-compact={compact}
-						className='text-xs data-[compact=true]:hidden'>
-						{title}
-					</span>
-					<Divider className='flex-1 bg-zinc-200' />
-					{action}
-				</>
-			)}
-		</div>
-	)
-}
-
-const IconBtn = ({ icon: Icon, ...props }: { icon?: IconType } & ButtonProps) =>
-	Icon && (
-		<CustomBtn {...props} size='xs' isIconOnly color='current' variant='light'>
-			<Icon size={16} />
-		</CustomBtn>
-	)
-
-const CustomBtn = extendVariants(Button, {
-	variants: {
-		color: {
-			current: 'text-[currentcolor] bg-white'
-		},
-		size: {
-			xs: 'p-1 min-w-min h-6 text-tiny gap-1 rounded-small'
-		}
-	}
-})
