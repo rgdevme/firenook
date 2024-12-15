@@ -1,5 +1,4 @@
 import { NextUIProvider } from '@nextui-org/react'
-import { PropsWithChildren, useMemo } from 'react'
 import {
 	BrowserRouter,
 	Route,
@@ -9,14 +8,10 @@ import {
 } from 'react-router'
 import { BucketList } from './components/Bucket/list'
 import { Login } from './components/Login'
-import { RecordView } from './components/Record/view'
 import { Private, SignFlow } from './components/Routes'
 import { Splash } from './components/Splash'
 import { BucketsProvider } from './context/bucket'
-import { CollectionProvider } from './context/collection'
-import { RecordProvider } from './context/record'
-import { AppConfigProps, AppConfigProvider, useAppConfig } from './firebase'
-import { FirenookPlugin } from './plugins/core'
+import { AppConfigProps, AppConfigProvider, useAppConfig } from './context'
 import { Path } from './routes'
 
 import './index.css'
@@ -34,7 +29,7 @@ const Routing = () => {
 				</Route>
 				<Route path='/' element={<Private />}>
 					<Route path={Path.DASHBOARD} element={<div>Welcome!</div>} />
-					{Object.values(app.routes.current).map(({ path, element: Elem }) => (
+					{Object.values(app.routes).map(({ path, element: Elem }) => (
 						<Route
 							key={path}
 							path={path}
@@ -42,7 +37,6 @@ const Routing = () => {
 						/>
 					))}
 					<Route path={Path.BUCKET} element={<BucketList />} />
-					<Route path={Path.RECORD} element={<RecordView />} />
 					<Route path={Path.SUBCOLLECTION} element={<div>Subcollection</div>} />
 				</Route>
 			</Routes>
@@ -50,45 +44,14 @@ const Routing = () => {
 	)
 }
 
-export const Firenook = ({
-	plugins = [],
-	...props
-}: AppConfigProps & { plugins: FirenookPlugin[] }) => {
+export const Firenook = (props: AppConfigProps) => {
 	return (
 		<BrowserRouter>
 			<AppConfigProvider {...props}>
-				<PluginsProvider plugins={plugins}>
-					<BucketsProvider>
-						<CollectionProvider>
-							<RecordProvider>
-								<Routing />
-							</RecordProvider>
-						</CollectionProvider>
-					</BucketsProvider>
-				</PluginsProvider>
+				<BucketsProvider>
+					<Routing />
+				</BucketsProvider>
 			</AppConfigProvider>
 		</BrowserRouter>
-	)
-}
-
-const PluginsProvider = ({
-	plugins,
-	children: bottomChildren
-}: PropsWithChildren<{
-	plugins: FirenookPlugin[]
-}>) => {
-	const app = useAppConfig()
-
-	return useMemo(
-		() =>
-			plugins
-				.map(p => p(app))
-				.reverse()
-				.reduce((children, plugin) => {
-					if (plugin.routes) app.registerRoutes(plugin.routes)
-					if (!plugin?.provider) return children
-					return <plugin.provider {...{ app, children }} />
-				}, bottomChildren),
-		[app]
 	)
 }

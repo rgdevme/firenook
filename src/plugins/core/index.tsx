@@ -1,7 +1,7 @@
 import { Button } from '@nextui-org/react'
 import { FunctionComponent, PropsWithChildren } from 'react'
 import { Link } from 'react-router'
-import { AppConfig } from '../../firebase'
+import { AppConfig } from '../../context'
 
 export type FirenookProvider = FunctionComponent<
 	PropsWithChildren<{
@@ -13,23 +13,42 @@ export type FirenookComponent = FunctionComponent<{
 	app: AppConfig
 }>
 
-export type FirenookElement = {
+export class FirenookRoute {
 	path: string
-	name: string
 	element: FirenookComponent
-	menuElement?: FirenookComponent
+	build: (...args: string[]) => string
+	constructor({ path, element }: { path: string; element: FirenookComponent }) {
+		this.path = path
+		this.element = element
+
+		this.build = (...args) => {
+			const segments = path.split('/')
+
+			const newPath = segments.map(segment => {
+				if (segment.startsWith(':')) {
+					// const paramName = segment.substring(1)
+					return args.shift()
+				} else return segment
+			})
+
+			return newPath.join('/')
+		}
+	}
 }
 
-export type FirenookElements = Record<string, FirenookElement>
+export type FirenookElements = { [key: string]: FirenookRoute }
 
 type FirenookPluginProps = {
 	name: Lowercase<`fn-${string}-plugin`>
 	routes?: FirenookElements
-	menuItems?: FunctionComponent[]
+	menuItems?: FunctionComponent
+	header?: FunctionComponent
 	provider?: FirenookProvider
 }
 
-export type FirenookPlugin = (config: AppConfig) => FirenookPluginProps
+export type FirenookPlugin = (
+	fireborm: AppConfig['fireborm']
+) => FirenookPluginProps
 
 export const FirenookMenuItem = ({
 	path,
