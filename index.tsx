@@ -1,7 +1,9 @@
 import { createRoot } from 'react-dom/client'
-import logo from './assets/logo.png'
 import { Firenook } from './src/index'
+import BucketsPlugin from './src/plugins/buckets'
 import StoresPlugin from './src/plugins/store'
+
+import logo from './assets/logo.png'
 
 const config = {
 	apiKey: 'AIzaSyCHJdqYGjsXWlciLt21lN5i8qheX6tBqoQ',
@@ -19,6 +21,6 @@ root.render(
 		config={config}
 		useEmulator={true}
 		logo={logo}
-		plugins={[StoresPlugin]}
+		plugins={[StoresPlugin, BucketsPlugin]}
 	/>
 )

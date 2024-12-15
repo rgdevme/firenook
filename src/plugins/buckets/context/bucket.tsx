@@ -1,8 +1,9 @@
 import { useList } from '@uidotdev/usehooks'
 import { equals } from 'ramda'
-import { createContext, PropsWithChildren, useContext, useEffect } from 'react'
-import { useBucketStore } from '../firebase/models/Bucket'
-import { BucketData } from '../firebase/types/Bucket'
+import { createContext, useContext, useEffect } from 'react'
+import { FirenookProvider } from '../../core'
+import { initBucketStore } from '../model'
+import { BucketData } from '../type'
 
 const BucketsCtx = createContext({
 	buckets: [] as BucketData[],
@@ -10,9 +11,9 @@ const BucketsCtx = createContext({
 	remove: (async () => {}) as (data: BucketData) => Promise<void>
 })
 
-export const BucketsProvider = ({ children }: PropsWithChildren) => {
+export const BucketsProvider: FirenookProvider = ({ children }) => {
 	const [results, { set }] = useList<BucketData>()
-	const store = useBucketStore()
+	const store = initBucketStore()
 
 	const create = async (data: BucketData) => {
 		if (results.some(x => equals(x, data))) return

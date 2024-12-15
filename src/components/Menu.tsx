@@ -1,23 +1,15 @@
-import { Button, Image, useDisclosure } from '@nextui-org/react'
+import { Button, Image } from '@nextui-org/react'
 import { getAuth, signOut } from 'firebase/auth'
 import { useState } from 'react'
 import { MdLogout } from 'react-icons/md'
 import { PiCaretCircleDoubleLeft } from 'react-icons/pi'
-import { TbCirclePlus, TbFiles, TbSettings2 } from 'react-icons/tb'
 import { Link } from 'react-router'
-import { useBucketsList } from '../context/bucket'
 import { useAppConfig } from '../context'
 import { Path } from '../routes'
-import { BucketModal } from './Bucket/create'
-import { IconBtn } from './IconButton'
-import { MenuDivider } from './MenuDivider'
-// import { CollectionModal } from './Collection/create'
 
 export const Menu = () => {
 	const { logo, menuItems } = useAppConfig()
 	const [toggle, setToggle] = useState(false)
-	const { buckets } = useBucketsList()
-	const bucketModal = useDisclosure()
 
 	return (
 		<section
@@ -59,29 +51,6 @@ export const Menu = () => {
 				<X key={i} />
 			))}
 
-			<MenuDivider
-				title='Buckets'
-				compact={toggle}
-				icon={<TbFiles />}
-				action={<IconBtn icon={TbCirclePlus} onClick={bucketModal.onOpen} />}
-			/>
-			{buckets.map(b => (
-				<Button
-					size='sm'
-					key={b.path}
-					as={Link}
-					to={Path.BUCKET.replace(':bid', b.path)}
-					variant='light'
-					color='primary'
-					className='justify-start'>
-					{b.name}
-				</Button>
-			))}
-
-			<MenuDivider title='Settings' icon={<TbSettings2 />} />
-			<Button size='sm'>Small</Button>
-			<Button size='sm'>Small</Button>
-			<Button size='sm'>Small</Button>
 			<div className='flex-1 flex flex-col justify-end mb-1'>
 				<Button
 					size='sm'
@@ -92,7 +61,6 @@ export const Menu = () => {
 					Logout
 				</Button>
 			</div>
-			<BucketModal {...bucketModal} />
 		</section>
 	)
 }

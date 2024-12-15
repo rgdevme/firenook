@@ -5,20 +5,22 @@ import {
 	ModalBody,
 	ModalContent,
 	ModalFooter,
-	ModalHeader,
-	useDisclosure
+	ModalHeader
 } from '@nextui-org/react'
+import { atom, useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useToggleAtom } from '../../../../hooks/useToggleAtom'
 import { useBucketsList } from '../../context/bucket'
-import { BucketData } from '../../firebase/types/Bucket'
+import { BucketData } from '../../type'
 
-export const BucketModal = ({
-	isOpen,
-	onClose,
-	onOpenChange
-}: ReturnType<typeof useDisclosure>) => {
+export const bucketsModalAtom = atom(false)
+
+export const BucketModal = () => {
 	const { create } = useBucketsList()
+	const isOpen = useAtomValue(bucketsModalAtom)
+	const toggleModal = useToggleAtom(bucketsModalAtom)
+
 	const [loading, setLoading] = useState(false)
 	const { handleSubmit, register } = useForm({
 		disabled: loading,
@@ -31,7 +33,7 @@ export const BucketModal = ({
 			console.log('creating: ', { data, create })
 
 			await create(data)
-			onClose()
+			toggleModal(false)
 		} catch (error) {
 			console.error({ error })
 		} finally {
@@ -40,9 +42,9 @@ export const BucketModal = ({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+		<Modal isOpen={isOpen} onOpenChange={toggleModal}>
 			<ModalContent>
-				{onClose => (
+				{() => (
 					<>
 						<ModalHeader className='flex flex-col gap-1'>
 							Create Bucket
@@ -72,9 +74,7 @@ export const BucketModal = ({
 							<Button
 								color='danger'
 								variant='light'
-								onPress={() => {
-									onClose()
-								}}>
+								onPress={() => toggleModal(false)}>
 								Close
 							</Button>
 							<Button

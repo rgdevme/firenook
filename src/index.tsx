@@ -6,11 +6,9 @@ import {
 	useHref,
 	useNavigate
 } from 'react-router'
-import { BucketList } from './components/Bucket/list'
 import { Login } from './components/Login'
 import { Private, SignFlow } from './components/Routes'
 import { Splash } from './components/Splash'
-import { BucketsProvider } from './context/bucket'
 import { AppConfigProps, AppConfigProvider, useAppConfig } from './context'
 import { Path } from './routes'
 
@@ -36,7 +34,6 @@ const Routing = () => {
 							element={<Elem {...{ app, params: {} }} />}
 						/>
 					))}
-					<Route path={Path.BUCKET} element={<BucketList />} />
 					<Route path={Path.SUBCOLLECTION} element={<div>Subcollection</div>} />
 				</Route>
 			</Routes>
@@ -48,9 +45,7 @@ export const Firenook = (props: AppConfigProps) => {
 	return (
 		<BrowserRouter>
 			<AppConfigProvider {...props}>
-				<BucketsProvider>
-					<Routing />
-				</BucketsProvider>
+				<Routing />
 			</AppConfigProvider>
 		</BrowserRouter>
 	)

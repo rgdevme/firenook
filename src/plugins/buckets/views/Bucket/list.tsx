@@ -1,14 +1,15 @@
 import { useList } from '@uidotdev/usehooks'
 import { useEffect, useMemo } from 'react'
+import { FileProperty } from '../../../../components/Property/file'
 import { useBucketsList } from '../../context/bucket'
-import { useAppConfig } from '../../context'
-import { FileProperty } from '../Property/file'
+import { FirenookComponent } from '../../../core'
 
-export const BucketList = () => {
-	const {
+export const BucketList: FirenookComponent = ({
+	app: {
 		params: { bid },
 		fireborm
-	} = useAppConfig()
+	}
+}) => {
 	const [results, { set }] = useList<string>()
 	const { buckets } = useBucketsList()
 	const bucket = useMemo(
