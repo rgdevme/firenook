@@ -5,12 +5,12 @@ import dts from 'vite-plugin-dts'
 export default defineConfig(({ command }) => ({
 	root: './',
 	plugins: [
-		react(),
-		dts({
-			include: ['./src'],
-			rollupTypes: true,
-			insertTypesEntry: true
-		})
+		react()
+		// dts({
+		// 	include: ['./src/index.tsx'],
+		// 	rollupTypes: true,
+		// 	insertTypesEntry: true
+		// })
 	],
 	// optimizeDeps: {
 	// 	include: ['react/jsx-runtime']
