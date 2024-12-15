@@ -36,5 +36,5 @@
 		"typeRoots": ["./node_modules/@types"],
 		"useDefineForClassFields": true
 	},
-	"include": ["src", "types.d.ts", "index.tsx"]
+	"include": ["packages/**/*", "*/**/**.d.ts", "index.tsx"]
 }
