@@ -1,3 +1,4 @@
+import { equals } from 'ramda'
 import { useEffect } from 'react'
 import {
 	Navigate,
@@ -6,7 +7,7 @@ import {
 	useParams,
 	useSearchParams
 } from 'react-router'
-import { useAppConfig } from '../firebase'
+import { useAppConfig } from '../context'
 import { Path } from '../routes'
 import { ContainerMain } from './ContainerMain'
 import { Footer } from './Footer'
@@ -14,14 +15,15 @@ import { Header } from './Header'
 import { Menu } from './Menu'
 
 export const Private = () => {
-	const { user, exposeParams } = useAppConfig()
+	const { user, exposeParams, params } = useAppConfig()
 	const { pathname } = useLocation()
-	const params = useParams()
+	const rrparams = useParams()
 	const redir = encodeURIComponent(pathname)
 
 	useEffect(() => {
-		exposeParams(params)
-	}, [params])
+		if (equals(rrparams, params)) return
+		exposeParams({ ...rrparams })
+	}, [rrparams])
 
 	return user ? (
 		<>
@@ -33,7 +35,8 @@ export const Private = () => {
 			<Footer />
 		</>
 	) : (
-		<Navigate to={`${Path.LOGIN}?redir=${redir}`} replace />
+		<Navigate to={`/?redir=${redir}`} replace />
+		// <Navigate to={'/'} replace />
 	)
 }
 
