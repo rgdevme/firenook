@@ -64,6 +64,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "dayjs": "^1.11.13",
     "framer-motion": "^11.12.0",
+    "jotai": "^2.10.3",
     "ramda": "^0.30.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
