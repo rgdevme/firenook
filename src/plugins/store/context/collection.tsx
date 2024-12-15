@@ -3,28 +3,30 @@ import { FireBorm } from 'fireborm'
 import {
 	createContext,
 	Dispatch,
-	PropsWithChildren,
 	useContext,
 	useEffect,
 	useMemo,
 	useState
 } from 'react'
-import { useAppConfig } from '../firebase'
-import { PropertyType } from '../firebase/types/Property'
-import { useCollectionsList } from './collectionsList'
+import { FirenookProvider } from '../../core'
+import { PropertyType } from '../type'
+import { useCollections } from './collections'
 
 type FirebormStore = ReturnType<ReturnType<typeof FireBorm>['initializeStore']>
 
 const CollectionCtx = createContext({
 	store: null as null | FirebormStore,
 	count: 0,
+	list: [] as any[],
 	selection: new Set() as Set<string>,
 	setSelection: (() => {}) as Dispatch<Set<string>>
 })
 
-export const CollectionProvider = (props: PropsWithChildren) => {
-	const { fireborm } = useAppConfig()
-	const { current } = useCollectionsList()
+export const CollectionProvider: FirenookProvider = ({
+	children,
+	app: { fireborm }
+}) => {
+	const { current } = useCollections()
 	const store = useMemo(
 		() =>
 			!current || !fireborm
@@ -57,6 +59,7 @@ export const CollectionProvider = (props: PropsWithChildren) => {
 		[current]
 	)
 	const [count, setCount] = useState(0)
+	const [list, setList] = useState<any[]>([])
 	const [selection, setSelection] = useState(new Set<string>())
 
 	useEffect(() => {
@@ -66,24 +69,27 @@ export const CollectionProvider = (props: PropsWithChildren) => {
 			const count = res.data().count
 			setCount(count)
 		})
+	}, [store])
 
-		// newStore
-		// 	.count()
-		// 	.then(c => {
-		// 		console.log({ c })
-		// 	})
-		// 	.catch(console.error)
+	useEffect(() => {
+		if (!store) return
+		const unsub = store.subscribeMany({
+			onChange: setList,
+			where: []
+		})
+		return unsub
 	}, [store])
 
 	return (
 		<CollectionCtx.Provider
 			value={{
 				store,
+				list,
 				count,
 				selection,
 				setSelection
 			}}
-			{...props}
+			children={children}
 		/>
 	)
 }

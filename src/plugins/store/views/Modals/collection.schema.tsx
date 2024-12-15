@@ -23,23 +23,28 @@ import {
 	ModalBody,
 	ModalContent,
 	ModalFooter,
-	ModalHeader,
-	useDisclosure
+	ModalHeader
 } from '@nextui-org/react'
 import { useList } from '@uidotdev/usehooks'
+import { atom, useAtomValue } from 'jotai'
 import { equals } from 'ramda'
 import { useEffect, useState } from 'react'
-import { useCollectionsList } from '../../context/collectionsList'
-import { Property, PropertyType } from '../../firebase/types/Property'
-import { Item, SchemaProperty } from './property'
+import { useToggleAtom } from '../../../../hooks/useToggleAtom'
+import { useCollections } from '../../context/collections'
+import { Property, PropertyType } from '../../type'
+import {
+	Item,
+	SchemaProperty
+} from '../../../../components/SchemaProperty/property'
 
-export const CollectionSchema = ({
-	isOpen,
-	onClose,
-	onOpenChange
-}: ReturnType<typeof useDisclosure>) => {
-	const { current, updateSchema } = useCollectionsList()
+export const collectionSchemaModalAtom = atom(false)
+
+export const CollectionSchema = () => {
+	const { current, updateSchema } = useCollections()
 	const [loading, setLoading] = useState(false)
+	const isOpen = useAtomValue(collectionSchemaModalAtom)
+	const toggleModal = useToggleAtom(collectionSchemaModalAtom)
+
 	const [initialVal, setInitial] = useState(current?.schema!)
 	const [activeId, setActiveId] = useState(null)
 	const [properties, { push, updateAt, removeAt, set }] = useList<
@@ -56,7 +61,7 @@ export const CollectionSchema = ({
 	)
 
 	const onReset = () => {
-		onClose()
+		toggleModal(false)
 		set(initialVal.map(x => ({ ...x, _id: crypto.randomUUID() })))
 	}
 
@@ -65,7 +70,7 @@ export const CollectionSchema = ({
 			if (!current) return
 			setLoading(true)
 			await updateSchema(properties.map(({ _id, ...rest }) => rest))
-			onClose()
+			toggleModal(false)
 		} catch (error) {
 			console.error({ error })
 		} finally {
@@ -98,7 +103,7 @@ export const CollectionSchema = ({
 	}, [current])
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange} placement='top'>
+		<Modal isOpen={isOpen} onOpenChange={toggleModal} placement='top'>
 			<ModalContent>
 				{() => (
 					<>

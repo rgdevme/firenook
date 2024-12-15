@@ -1,17 +1,11 @@
 import { useList } from '@uidotdev/usehooks'
 import { arrayUnion } from 'firebase/firestore'
-import {
-	createContext,
-	PropsWithChildren,
-	useContext,
-	useEffect,
-	useMemo
-} from 'react'
-import { useAppConfig } from '../firebase'
-import { useCollectionStore } from '../firebase/models/Collection'
-import { CollectionData } from '../firebase/types/Collection'
+import { createContext, useContext, useEffect, useMemo } from 'react'
+import { FirenookProvider } from '../../core'
+import { initCollectionStore } from '../model'
+import { CollectionData } from '../type'
 
-const CollectionCtx = createContext({
+const CollectionsCtx = createContext({
 	collections: [] as CollectionData[],
 	current: null as CollectionData | null,
 	defaultData: {} as CollectionData | undefined,
@@ -21,28 +15,16 @@ const CollectionCtx = createContext({
 	addCollection: (async () => {}) as (data: CollectionData) => Promise<void>
 })
 
-export const CollectionsProvider = ({ children }: PropsWithChildren) => {
-	const { params } = useAppConfig()
+export const CollectionsProvider: FirenookProvider = ({ children, app }) => {
+	const store = initCollectionStore(app.fireborm)
 	const [results, { set }] = useList<CollectionData>()
-	const store = useCollectionStore()
 	const { index, current } = useMemo(() => {
-		const index = results.findIndex(x => x.path === params.cid)
-		console.log(params)
+		const index = results.findIndex(x => x.path === app.params.cid)
 		return {
 			index: index < 0 ? null : index,
 			current: index < 0 ? null : results[index]
 		}
-	}, [params.cid, results])
-
-	useEffect(() => {
-		const unsub = store?.subscribe('collections', {
-			onChange: res => {
-				if (!res?.collections) return
-				set(res.collections)
-			}
-		})
-		return () => unsub?.()
-	}, [store?.ref.id])
+	}, [app.params, results])
 
 	const updateSchema = async (schema: CollectionData['schema']) => {
 		const upd = [...results]
@@ -55,8 +37,23 @@ export const CollectionsProvider = ({ children }: PropsWithChildren) => {
 		await store?.save('collections', { collections: arrayUnion(data) })
 	}
 
+	useEffect(() => {
+		const unsub = store?.subscribe('collections', {
+			onChange: res => {
+				if (!res?.collections) return
+				set(res.collections)
+			}
+		})
+		return () => unsub?.()
+	}, [store?.ref.id])
+
+	// useEffect(() => {
+	// 	console.log('Header should change')
+	// 	console.log('Footer should change')
+	// }, [Object.values(params)])
+
 	return (
-		<CollectionCtx.Provider
+		<CollectionsCtx.Provider
 			value={{
 				defaultData: store?.defaultData.collections[0],
 				collections: results,
@@ -69,4 +66,4 @@ export const CollectionsProvider = ({ children }: PropsWithChildren) => {
 	)
 }
 
-export const useCollectionsList = () => useContext(CollectionCtx)
+export const useCollections = () => useContext(CollectionsCtx)

@@ -2,7 +2,6 @@ import { Button, Tooltip } from '@nextui-org/react'
 import { LuCopyPlus, LuSave, LuTrash2 } from 'react-icons/lu'
 import { useNavigate, useParams } from 'react-router'
 import { useRecord } from '../../context/record'
-import { Path } from '../../routes'
 
 export const RecordControls = () => {
 	const { cid, rid } = useParams()
@@ -42,7 +41,7 @@ export const RecordControls = () => {
 					color='danger'
 					onPress={() => {
 						remove?.()
-						nav(Path.COLLECTION.replace(':cid', cid!))
+						nav(`c/${cid}`)
 					}}>
 					<LuTrash2 size={18} />
 				</Button>

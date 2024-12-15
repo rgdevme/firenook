@@ -1,11 +1,14 @@
 import { useEffect } from 'react'
 import { useRecord } from '../../context/record'
 import { RecordProperties } from './properties'
+import { FirenookComponent } from '../../../core'
 
-export const RecordView = () => {
+export const RecordView: FirenookComponent = () => {
 	const { subscribe, update, loading, original } = useRecord()
 
 	useEffect(() => {
+		console.log('triggered')
+
 		if (!subscribe) return
 		const unsub = subscribe()
 		return unsub ? unsub : () => {}

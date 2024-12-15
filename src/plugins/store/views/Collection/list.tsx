@@ -6,22 +6,19 @@ import {
 	TableHeader,
 	TableRow
 } from '@nextui-org/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
+import { PluginRoutes } from '../..'
+import { FirenookComponent } from '../../../core'
 import { useCollection } from '../../context/collection'
-import { useCollectionsList } from '../../context/collectionsList'
-import { useAppConfig } from '../../firebase'
-import { PropertyType } from '../../firebase/types/Property'
-import { Path } from '../../routes'
+import { useCollections } from '../../context/collections'
+import { PropertyType } from '../../type'
 
-export const List = () => {
-	const {
-		params: { cid }
-	} = useAppConfig()
-	const { current } = useCollectionsList()
+export const List: FirenookComponent = ({ app: { params } }) => {
 	const navigate = useNavigate()
-	const { store, selection, setSelection } = useCollection()
-	const [rows, setRows] = useState<any[]>([])
+	const { cid } = params
+	const { current } = useCollections()
+	const { list: rows, selection, setSelection } = useCollection()
 
 	const columns = useMemo(
 		() => [
@@ -32,15 +29,6 @@ export const List = () => {
 		],
 		[current?.schema]
 	)
-
-	useEffect(() => {
-		if (!store) return
-		const unsub = store.subscribeMany({
-			onChange: setRows,
-			where: []
-		})
-		return unsub
-	}, [store])
 
 	return (
 		<div className='flex flex-col gap-3 px-2'>
@@ -56,9 +44,7 @@ export const List = () => {
 				isStriped
 				removeWrapper
 				onSortChange={() => rows}
-				onRowAction={key =>
-					navigate(Path.RECORD.replace(':cid', cid!).replace(':rid', key))
-				}
+				onRowAction={key => navigate(PluginRoutes.record.build(cid!, key))}
 				aria-label='Example static collection table'>
 				<TableHeader>
 					{columns.map(col => (

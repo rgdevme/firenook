@@ -4,20 +4,21 @@ import {
 	ModalBody,
 	ModalContent,
 	ModalFooter,
-	ModalHeader,
-	useDisclosure
+	ModalHeader
 } from '@nextui-org/react'
+import { atom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
+import { useToggleAtom } from '../../../../hooks/useToggleAtom'
 import { useCollection } from '../../context/collection'
-import { RecordProperties } from './properties'
+import { RecordProperties } from '../Record/properties'
 
-export const CreateRecord = ({
-	isOpen,
-	onClose,
-	onOpenChange
-}: ReturnType<typeof useDisclosure>) => {
+export const recordCreateAtom = atom(false)
+
+export const CreateRecord = () => {
 	const { store } = useCollection()
 	const [loading, setLoading] = useState(false)
+	const isOpen = useAtomValue(recordCreateAtom)
+	const toggleModal = useToggleAtom(recordCreateAtom)
 	const data = useRef({})
 
 	const updateData = (upd: {}) => {
@@ -26,7 +27,7 @@ export const CreateRecord = ({
 
 	const onReset = () => {
 		data.current = {}
-		onClose()
+		toggleModal(false)
 	}
 
 	const onSubmit = async () => {
@@ -35,7 +36,7 @@ export const CreateRecord = ({
 			setLoading(true)
 			await store.create(data.current)
 			// await refetch()
-			onClose()
+			toggleModal(false)
 		} catch (error) {
 			console.error({ error })
 		} finally {
@@ -44,7 +45,7 @@ export const CreateRecord = ({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange} size='full'>
+		<Modal isOpen={isOpen} onOpenChange={toggleModal} size='full'>
 			<ModalContent>
 				{() => (
 					<>

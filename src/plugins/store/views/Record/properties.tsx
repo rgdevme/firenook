@@ -1,21 +1,17 @@
 import { Input } from '@nextui-org/react'
-import { useCollectionsList } from '../../context/collectionsList'
-import {
-	MappedProperty,
-	PropertyDefaultValue,
-	PropertyType
-} from '../../firebase/types/Property'
-import { CheckProperty } from '../Property/check'
-import { DateProperty } from '../Property/date'
-import { FileProperty } from '../Property/file'
-import { GeoPointProperty } from '../Property/geopoint'
-import { MarkdownProperty } from '../Property/markdown'
-import { NumberProperty } from '../Property/number'
-import { ReferenceProperty } from '../Property/reference'
-import { StringProperty } from '../Property/string'
 import { FunctionComponent, useMemo } from 'react'
-import { MapProperty } from '../Property/map'
-import { ArrayProperty } from '../Property/array'
+import { ArrayProperty } from '../../../../components/Property/array'
+import { CheckProperty } from '../../../../components/Property/check'
+import { DateProperty } from '../../../../components/Property/date'
+import { FileProperty } from '../../../../components/Property/file'
+import { GeoPointProperty } from '../../../../components/Property/geopoint'
+import { MapProperty } from '../../../../components/Property/map'
+import { MarkdownProperty } from '../../../../components/Property/markdown'
+import { NumberProperty } from '../../../../components/Property/number'
+import { ReferenceProperty } from '../../../../components/Property/reference'
+import { StringProperty } from '../../../../components/Property/string'
+import { useCollections } from '../../context/collections'
+import { MappedProperty, PropertyDefaultValue, PropertyType } from '../../type'
 
 export type PropertyProps<T = any> = {
 	label: string
@@ -32,7 +28,7 @@ export const RecordProperties = ({
 	record?: Record<string, any>
 	onChange: (val: Record<string, any>) => void
 }) => {
-	const { current } = useCollectionsList()
+	const { current } = useCollections()
 	const disableId = useMemo(() => !!record.id, [record])
 
 	return (

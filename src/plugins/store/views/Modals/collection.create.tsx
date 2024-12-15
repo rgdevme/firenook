@@ -6,20 +6,21 @@ import {
 	ModalBody,
 	ModalContent,
 	ModalFooter,
-	ModalHeader,
-	useDisclosure
+	ModalHeader
 } from '@nextui-org/react'
+import { atom, useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useCollectionsList } from '../../context/collectionsList'
-import { CollectionData } from '../../firebase/types/Collection'
+import { useToggleAtom } from '../../../../hooks/useToggleAtom'
+import { useCollections } from '../../context/collections'
+import { CollectionData } from '../../type'
 
-export const CollectionModal = ({
-	isOpen,
-	onClose,
-	onOpenChange
-}: ReturnType<typeof useDisclosure>) => {
-	const { addCollection, defaultData } = useCollectionsList()
+export const collectionModalAtom = atom(false)
+
+export const CollectionModal = () => {
+	const { addCollection, defaultData } = useCollections()
+	const isOpen = useAtomValue(collectionModalAtom)
+	const toggleModal = useToggleAtom(collectionModalAtom)
 
 	const [loading, setLoading] = useState(false)
 	const { handleSubmit, register } = useForm({
@@ -31,7 +32,7 @@ export const CollectionModal = ({
 		try {
 			setLoading(true)
 			await addCollection({ ...data, schema: [] })
-			onClose()
+			toggleModal(false)
 		} catch (error) {
 			console.error({ error })
 		} finally {
@@ -40,7 +41,7 @@ export const CollectionModal = ({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+		<Modal isOpen={isOpen} onOpenChange={toggleModal}>
 			<ModalContent>
 				{onClose => (
 					<>

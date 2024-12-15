@@ -4,14 +4,13 @@ import { DocumentReference } from 'firebase/firestore'
 import { equals } from 'ramda'
 import {
 	createContext,
-	PropsWithChildren,
 	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
 	useState
 } from 'react'
-import { useAppConfig } from '../firebase'
+import { FirenookProvider } from '../../core'
 import { useCollection } from './collection'
 
 const RecordContext = createContext(
@@ -30,10 +29,10 @@ const RecordContext = createContext(
 	}
 )
 
-export const RecordProvider = (props: PropsWithChildren) => {
+export const RecordProvider: FirenookProvider = ({ children, app }) => {
 	const {
 		params: { rid }
-	} = useAppConfig()
+	} = app
 	const [loading, toggle] = useToggle(true)
 	const { store: s } = useCollection()
 	const [original, setOriginal] = useState({})
@@ -52,18 +51,20 @@ export const RecordProvider = (props: PropsWithChildren) => {
 		() => (!rid ? undefined : s?.destroy(rid)),
 		[s, rid]
 	)
-	const subscribe = useCallback(
-		() =>
-			!rid
-				? undefined
-				: s?.subscribe(rid, {
-						onChange: d => {
-							setOriginal(d ?? {})
-							toggle(false)
-						}
-				  }),
-		[s, rid]
-	)
+	const subscribe = useCallback(() => {
+		console.log({ rid })
+
+		if (!rid) return undefined
+
+		return s?.subscribe(rid, {
+			onChange: d => {
+				console.log({ d })
+
+				setOriginal(d ?? {})
+				toggle(false)
+			}
+		})
+	}, [s, rid])
 
 	const clear = () => {
 		toggle(true)
@@ -73,6 +74,10 @@ export const RecordProvider = (props: PropsWithChildren) => {
 	const reset = (upd?: object) => {
 		setData(upd ?? original)
 	}
+
+	useEffect(() => {
+		if (!rid) clear()
+	}, [rid])
 
 	useEffect(() => {
 		setData(original)
@@ -92,7 +97,7 @@ export const RecordProvider = (props: PropsWithChildren) => {
 		subscribe
 	}
 
-	return <RecordContext.Provider value={ctx} {...props} />
+	return <RecordContext.Provider value={ctx} children={children} />
 }
 
 export const useRecord = () => useContext(RecordContext)

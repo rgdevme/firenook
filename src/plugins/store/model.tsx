@@ -1,15 +1,14 @@
-import { useAppConfig } from '..'
+import { AppConfig } from '../../context'
 import {
 	CollectionData,
 	CollectionDefault,
 	CollectionDoc,
 	CollectionModel,
-	CollectionRef
-} from '../types/Collection'
-import { PropertyType } from '../types/Property'
+	CollectionRef,
+	PropertyType
+} from './type'
 
-export const useCollectionStore = () => {
-	const { fireborm } = useAppConfig()
+export const initCollectionStore = (fireborm: AppConfig['fireborm']) => {
 	return fireborm?.initializeStore<
 		CollectionDoc,
 		CollectionModel,
