@@ -1,17 +1,26 @@
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 import { BuildEnvironmentOptions, defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import pkg from './package.json'
+
+const root = resolve(__dirname)
+const external = [
+	/firebase/,
+	...Object.keys(pkg.devDependencies),
+	...Object.keys(pkg.peerDependencies)
+]
 
 const buildOptions: BuildEnvironmentOptions = {
 	lib: {
-		entry: './src/index.tsx',
+		entry: resolve(root, './src/index.tsx'),
 		formats: ['cjs', 'es']
 	},
 	outDir: '../../dist',
 	emptyOutDir: false,
 	minify: true,
 	rollupOptions: {
-		external: [/firebase/, /fireborm/, /react/],
+		external,
 		output: { inlineDynamicImports: true }
 	}
 }
@@ -25,17 +34,14 @@ const serveOptions: BuildEnvironmentOptions = {
 }
 
 export default defineConfig(({ command }) => ({
-	root: './',
+	root: root,
 	plugins: [
 		dts({
-			entryRoot: './',
+			entryRoot: root,
 			include: ['src'],
 			rollupTypes: true
 		}),
 		react()
 	],
-	optimizeDeps: {
-		include: ['react/jsx-runtime']
-	},
 	build: command === 'build' ? buildOptions : serveOptions
 }))
