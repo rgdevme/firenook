@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
-import { Firenook } from './packages/core/src/index'
-import BucketsPlugin from './packages/plugin/bucket/src'
-import StoresPlugin from './packages/plugin/store/src'
+import { Firenook } from '@firenook/core/src'
+import { BucketsPlugin } from '@firenook/bucket/src'
+import { StoresPlugin } from '@firenook/store/src'
 
 import logo from './assets/logo.png'
 
