@@ -1,0 +1,53 @@
+{
+  "name": "firenook",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "source": "packages/core/src/index.tsx",
+  "module": "dist/index.js",
+  "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "serve": "vite",
+    "build": "npm run build --workspaces",
+    "postother": "git add -A && git commit -m \"chore: update dist\"",
+    "prebump": "npm run build",
+    "bump": "npx bumpp",
+    "emu": "firebase emulators:start --import=./backup --export-on-exit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "^npm@10.8.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rgdevme/firenook.git"
+  },
+  "keywords": [
+    "firebase",
+    "admin",
+    "functions",
+    "orm"
+  ],
+  "author": "Rafael González",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rgdevme/firenook/issues"
+  },
+  "homepage": "https://github.com/rgdevme/firenook#readme",
+  "workspaces": [
+    "packages/**/*"
+  ],
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.7.2"
+  }
+}
