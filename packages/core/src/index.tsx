@@ -14,6 +14,8 @@ import { Path } from './routes'
 
 import './index.css'
 
+export * from './type'
+
 const Routing = () => {
 	const app = useAppConfig()
 	const navigate = useNavigate()

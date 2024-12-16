@@ -4,16 +4,14 @@ import { Auth, User } from 'firebase/auth'
 import { FireBorm } from 'fireborm'
 import {
 	createContext,
-	FunctionComponent,
 	PropsWithChildren,
 	useContext,
 	useEffect,
 	useMemo,
 	useState
 } from 'react'
-import { Params } from 'react-router'
 import { initializeFirebase } from '../firebase'
-import { FirenookElements, FirenookPlugin } from '../type'
+import { AppConfig, FirenookPlugin } from '../type'
 import { initializePlugins } from '../utils/init'
 
 export type AppConfigProps = {
@@ -21,19 +19,6 @@ export type AppConfigProps = {
 	useEmulator?: boolean
 	logo?: string
 	plugins?: FirenookPlugin[]
-}
-
-export type AppConfig = {
-	fireborm?: ReturnType<typeof FireBorm>
-	auth?: Auth
-	user?: User
-	loading: boolean
-	logo?: string
-	routes: FirenookElements
-	menuItems: FunctionComponent[]
-	header: FunctionComponent[]
-	params: Params<string>
-	exposeParams: (params: Params<string>) => void
 }
 
 const appConfigCtxValue = {} as AppConfig
@@ -47,7 +32,7 @@ export const AppConfigProvider = ({
 	children,
 	plugins = []
 }: PropsWithChildren<AppConfigProps>) => {
-	const [fireborm, setFireBorm] = useState<ReturnType<typeof FireBorm>>()
+	const [fireborm, setFireBorm] = useState<object>()
 	const [auth, setAuth] = useState<Auth>()
 	const [loadingPlugins, toggleLoadingPlugins] = useToggle(true)
 	const [loadingFireBorm, toggleLoadingFireBorm] = useToggle(true)
@@ -60,7 +45,7 @@ export const AppConfigProvider = ({
 
 	const { PluginsProvider, menuItems, routes, header } = useMemo(() => {
 		toggleLoadingPlugins(true)
-		const result = initializePlugins(plugins, fireborm)
+		const result = initializePlugins(plugins)
 		toggleLoadingPlugins(false)
 		return result
 	}, [plugins, fireborm])

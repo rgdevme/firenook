@@ -30,7 +30,7 @@ export const DateProperty = ({
 			showMonthAndYearPickers
 			defaultValue={cdt}
 			onChange={val => {
-				onChange(new Date(val.toString()))
+				onChange(dayjs(val?.toString()).toDate())
 			}}
 		/>
 	)

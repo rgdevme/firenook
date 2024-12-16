@@ -1,14 +1,39 @@
+import { Auth, User } from 'firebase/auth'
+import { Firestore } from 'firebase/firestore'
+import { FirebaseStorage } from 'firebase/storage'
 import { FunctionComponent, PropsWithChildren } from 'react'
-import { AppConfig } from './context'
+import { Params } from 'react-router'
+
+export type AppConfig = {
+	firestore?: Firestore
+	storage?: FirebaseStorage
+	auth?: Auth
+	user?: User
+	loading: boolean
+	logo?: string
+	routes: FirenookElements
+	menuItems: FunctionComponent[]
+	header: FunctionComponent[]
+	params: Params<string>
+	exposeParams: (params: Params<string>) => void
+}
 
 export type FirenookProvider = FunctionComponent<
 	PropsWithChildren<{
-		app: AppConfig
+		app: {
+			firestore?: Firestore
+			storage?: FirebaseStorage
+			params: Params<string>
+		}
 	}>
 >
 
 export type FirenookComponent = FunctionComponent<{
-	app: AppConfig
+	app: {
+		firestore?: Firestore
+		storage?: FirebaseStorage
+		params: Params<string>
+	}
 }>
 
 export class FirenookRoute {
@@ -37,13 +62,11 @@ export class FirenookRoute {
 export type FirenookElements = { [key: string]: FirenookRoute }
 
 type FirenookPluginProps = {
-	name: Lowercase<`fn-${string}-plugin`>
+	name: `fn-${string}-plugin`
 	routes?: FirenookElements
 	menuItems?: FunctionComponent
 	header?: FunctionComponent
 	provider?: FirenookProvider
 }
 
-export type FirenookPlugin = (
-	fireborm: AppConfig['fireborm']
-) => FirenookPluginProps
+export type FirenookPlugin = () => FirenookPluginProps
