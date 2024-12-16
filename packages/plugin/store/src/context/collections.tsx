@@ -1,7 +1,7 @@
+import { FirenookProvider } from '@firenook/core/src'
 import { useList } from '@uidotdev/usehooks'
 import { arrayUnion } from 'firebase/firestore'
 import { createContext, useContext, useEffect, useMemo } from 'react'
-import { FirenookProvider } from '../../../../core/src/type'
 import { initCollectionStore } from '../model'
 import { CollectionData } from '../type'
 
@@ -16,7 +16,7 @@ const CollectionsCtx = createContext({
 })
 
 export const CollectionsProvider: FirenookProvider = ({ children, app }) => {
-	const store = initCollectionStore(app.fireborm)
+	const store = initCollectionStore(app.firestore)
 	const [results, { set }] = useList<CollectionData>()
 	const { index, current } = useMemo(() => {
 		const index = results.findIndex(x => x.path === app.params.cid)

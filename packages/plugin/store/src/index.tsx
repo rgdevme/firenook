@@ -2,17 +2,17 @@ import {
 	FirenookElements,
 	FirenookPlugin,
 	FirenookRoute
-} from '../../../core/src/type'
+} from '@firenook/core/src'
 import { CollectionProvider } from './context/collection'
 import { CollectionsProvider } from './context/collections'
 import { RecordProvider } from './context/record'
-import { MenuItems } from './views/Plugin/menuItems'
-import { CollectionModal } from './views/Modals/collection.create'
 import { List } from './views/Collection/list'
+import { CollectionModal } from './views/Modals/collection.create'
 import { CollectionSchema } from './views/Modals/collection.schema'
 import { CreateRecord } from './views/Modals/record.create'
-import { RecordView } from './views/Record/view'
 import { PluginControls } from './views/Plugin/controls'
+import { MenuItems } from './views/Plugin/menuItems'
+import { RecordView } from './views/Record/view'
 
 export const PluginRoutes = {
 	collection: new FirenookRoute({
@@ -25,7 +25,7 @@ export const PluginRoutes = {
 	})
 } satisfies FirenookElements
 
-const StoresPlugin: FirenookPlugin = () => ({
+export const StoresPlugin: FirenookPlugin = () => ({
 	name: 'fn-store-plugin',
 	provider: ({ children, app }) => (
 		<CollectionsProvider app={app}>
@@ -43,5 +43,3 @@ const StoresPlugin: FirenookPlugin = () => ({
 	menuItems: MenuItems,
 	header: PluginControls
 })
-
-export default StoresPlugin

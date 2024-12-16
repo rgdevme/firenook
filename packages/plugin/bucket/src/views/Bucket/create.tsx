@@ -1,3 +1,4 @@
+import { useToggleAtom } from '@firenook/core/src/hooks/useToggleAtom'
 import {
 	Button,
 	Input,
@@ -12,7 +13,6 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useBucketsList } from '../../context/bucket'
 import { BucketData } from '../../type'
-import { useToggleAtom } from '../../../../../core/src/hooks/useToggleAtom'
 
 export const bucketsModalAtom = atom(false)
 

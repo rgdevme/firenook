@@ -1,7 +1,7 @@
+import { FirenookComponent } from '@firenook/core/src'
 import { useEffect } from 'react'
 import { useRecord } from '../../context/record'
 import { RecordProperties } from './properties'
-import { FirenookComponent } from '../../../../core/src/type'
 
 export const RecordView: FirenookComponent = () => {
 	const { subscribe, update, loading, original } = useRecord()

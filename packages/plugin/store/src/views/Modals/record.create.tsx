@@ -1,3 +1,4 @@
+import { useToggleAtom } from '@firenook/core/src/hooks/useToggleAtom'
 import {
 	Button,
 	Modal,
@@ -8,7 +9,6 @@ import {
 } from '@nextui-org/react'
 import { atom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
-import { useToggleAtom } from '../../../../../core/src/hooks/useToggleAtom'
 import { useCollection } from '../../context/collection'
 import { RecordProperties } from '../Record/properties'
 

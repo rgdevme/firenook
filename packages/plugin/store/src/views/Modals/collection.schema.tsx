@@ -14,6 +14,11 @@ import {
 	verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import {
+	Item,
+	SchemaProperty
+} from '@firenook/core/src/components/SchemaProperty/property'
+import { useToggleAtom } from '@firenook/core/src/hooks/useToggleAtom'
+import {
 	Button,
 	Dropdown,
 	DropdownItem,
@@ -29,11 +34,6 @@ import { useList } from '@uidotdev/usehooks'
 import { atom, useAtomValue } from 'jotai'
 import { equals } from 'ramda'
 import { useEffect, useState } from 'react'
-import {
-	Item,
-	SchemaProperty
-} from '../../../../../core/src/components/SchemaProperty/property'
-import { useToggleAtom } from '../../../../../core/src/hooks/useToggleAtom'
 import { useCollections } from '../../context/collections'
 import { Property, PropertyType } from '../../type'
 

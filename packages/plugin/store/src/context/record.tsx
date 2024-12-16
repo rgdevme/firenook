@@ -1,3 +1,4 @@
+import { FirenookProvider } from '@firenook/core/src'
 import { useToggle } from '@uidotdev/usehooks'
 import { Unsubscribe } from 'firebase/auth'
 import { DocumentReference } from 'firebase/firestore'
@@ -10,7 +11,6 @@ import {
 	useMemo,
 	useState
 } from 'react'
-import { FirenookProvider } from '../../../../core/src/type'
 import { useCollection } from './collection'
 
 const RecordContext = createContext(

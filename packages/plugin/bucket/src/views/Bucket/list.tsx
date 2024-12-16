@@ -1,9 +1,9 @@
+import { FirenookComponent } from '@firenook/core/src'
+import { FileProperty } from '@firenook/core/src/components/Property/file'
 import { useList } from '@uidotdev/usehooks'
-import { useEffect, useMemo } from 'react'
-import { FileProperty } from '../../../../../core/src/components/Property/file'
-import { FirenookComponent } from '../../../../../core/src/type'
-import { useBucketsList } from '../../context/bucket'
 import { FirebormStorage } from 'fireborm'
+import { useEffect, useMemo } from 'react'
+import { useBucketsList } from '../../context/bucket'
 
 export const BucketList: FirenookComponent = ({
 	app: {

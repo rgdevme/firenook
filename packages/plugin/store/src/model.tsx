@@ -1,4 +1,5 @@
-import { AppConfig } from '../../../core/src/context'
+import { Firestore } from 'firebase/firestore'
+import { FirebormStore } from 'fireborm'
 import {
 	CollectionData,
 	CollectionDefault,
@@ -8,8 +9,8 @@ import {
 	PropertyType
 } from './type'
 
-export const initCollectionStore = (fireborm: AppConfig['fireborm']) => {
-	return fireborm?.initializeStore<
+export const initCollectionStore = (firestore?: Firestore) => {
+	const store = new FirebormStore<
 		CollectionDoc,
 		CollectionModel,
 		CollectionDefault,
@@ -63,4 +64,8 @@ export const initCollectionStore = (fireborm: AppConfig['fireborm']) => {
 			return { id, _ref: ref as CollectionRef, ...data, defaultData }
 		}
 	})
+
+	store.init(firestore)
+
+	return store
 }

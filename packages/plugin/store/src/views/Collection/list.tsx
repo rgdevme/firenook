@@ -1,3 +1,4 @@
+import { FirenookComponent } from '@firenook/core/src'
 import {
 	Table,
 	TableBody,
@@ -12,7 +13,6 @@ import { PluginRoutes } from '../..'
 import { useCollection } from '../../context/collection'
 import { useCollections } from '../../context/collections'
 import { PropertyType } from '../../type'
-import { FirenookComponent } from '../../../../../core/src/type'
 
 export const List: FirenookComponent = ({ app: { params } }) => {
 	const navigate = useNavigate()

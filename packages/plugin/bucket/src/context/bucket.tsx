@@ -1,7 +1,7 @@
+import { FirenookProvider } from '@firenook/core/src'
 import { useList } from '@uidotdev/usehooks'
 import { equals } from 'ramda'
 import { createContext, useContext, useEffect } from 'react'
-import { FirenookProvider } from '../../../../core/src/type'
 import { initBucketStore } from '../model'
 import { BucketData } from '../type'
 

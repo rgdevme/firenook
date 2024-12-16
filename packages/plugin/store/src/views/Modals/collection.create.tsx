@@ -1,3 +1,4 @@
+import { useToggleAtom } from '@firenook/core/src/hooks/useToggleAtom'
 import {
 	Button,
 	Checkbox,
@@ -11,7 +12,6 @@ import {
 import { atom, useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useToggleAtom } from '../../../../../core/src/hooks/useToggleAtom'
 import { useCollections } from '../../context/collections'
 import { CollectionData } from '../../type'
 

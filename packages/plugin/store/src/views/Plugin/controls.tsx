@@ -1,10 +1,10 @@
+import { Path } from '@firenook/core/src/routes'
 import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/react'
 import { PluginRoutes } from '../..'
 import { useCollections } from '../../context/collections'
 import { useRecord } from '../../context/record'
 import { CollectionControls } from '../Collection/controls'
 import { RecordControls } from '../Record/controls'
-import { Path } from '../../../../../core/src/routes'
 
 export const PluginControls = () => {
 	const { current } = useCollections()
