@@ -3,22 +3,22 @@ import { useEffect, useMemo } from 'react'
 import { FileProperty } from '../../../../../core/src/components/Property/file'
 import { FirenookComponent } from '../../../../../core/src/type'
 import { useBucketsList } from '../../context/bucket'
+import { FirebormStorage } from 'fireborm'
 
 export const BucketList: FirenookComponent = ({
 	app: {
 		params: { bid },
-		fireborm
+		storage
 	}
 }) => {
 	const [results, { set }] = useList<string>()
 	const { buckets } = useBucketsList()
-	const bucket = useMemo(
-		() =>
-			!bid || !fireborm
-				? null
-				: fireborm?.initializeStorage({ path: 'bucket', folder: bid }),
-		[bid]
-	)
+	const bucket = useMemo(() => {
+		if (!bid) return null
+		const s = new FirebormStorage({ path: 'bucket', folder: bid })
+		s.init(storage)
+		return s
+	}, [bid])
 
 	useEffect(() => {
 		if (!bucket) return

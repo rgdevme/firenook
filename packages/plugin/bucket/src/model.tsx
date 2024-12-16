@@ -1,8 +1,9 @@
-import { AppConfig } from '../../../core/src/context'
+import { Firestore } from 'firebase/firestore'
+import { FirebormStore } from 'fireborm'
 import { BucketDefault, BucketDoc, BucketModel, BucketRef } from './type'
 
-export const initBucketStore = (fireborm: AppConfig['fireborm']) => {
-	return fireborm?.initializeStore<
+export const initBucketStore = (firestore?: Firestore) => {
+	const store = new FirebormStore<
 		BucketDoc,
 		BucketModel,
 		BucketDefault,
@@ -19,4 +20,8 @@ export const initBucketStore = (fireborm: AppConfig['fireborm']) => {
 			return { id, _ref: ref as BucketRef, ...data }
 		}
 	})
+
+	store.init(firestore)
+
+	return store
 }

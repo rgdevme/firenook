@@ -13,7 +13,7 @@ const BucketsCtx = createContext({
 
 export const BucketsProvider: FirenookProvider = ({ children, app }) => {
 	const [results, { set }] = useList<BucketData>()
-	const store = initBucketStore(app.fireborm)
+	const store = initBucketStore(app.firestore)
 
 	const create = async (data: BucketData) => {
 		if (results.some(x => equals(x, data))) return

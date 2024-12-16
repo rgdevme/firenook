@@ -2,7 +2,7 @@ import {
 	FirenookElements,
 	FirenookPlugin,
 	FirenookRoute
-} from '../../../core/src/type'
+} from '@firenook/core/src'
 import { BucketsProvider } from './context/bucket'
 import { BucketModal } from './views/Bucket/create'
 import { BucketList } from './views/Bucket/list'
@@ -15,7 +15,7 @@ export const PluginRoutes = {
 	})
 } satisfies FirenookElements
 
-const BucketsPlugin: FirenookPlugin = () => ({
+export const BucketsPlugin: FirenookPlugin = () => ({
 	name: 'fn-bucket-plugin',
 	provider: ({ children, app }) => (
 		<BucketsProvider app={app}>
@@ -27,5 +27,3 @@ const BucketsPlugin: FirenookPlugin = () => ({
 	menuItems: MenuItems
 	// header: PluginControls
 })
-
-export default BucketsPlugin
