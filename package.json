@@ -3,17 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "source": "packages/core/src/index.tsx",
-  "module": "dist/index.js",
-  "main": "dist/index.cjs",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs"
-    }
-  },
   "scripts": {
     "serve": "vite",
     "build": "npm run build --workspaces",
@@ -43,7 +32,8 @@
   },
   "homepage": "https://github.com/rgdevme/firenook#readme",
   "workspaces": [
-    "packages/**/*"
+    "packages/**/*",
+    "examples/**/*"
   ],
   "devDependencies": {
     "@types/react": "^18.3.12",
