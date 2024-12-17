@@ -1,7 +1,8 @@
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import chalk from 'chalk'
+import { relative, resolve } from 'path'
 import { BuildEnvironmentOptions, defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
+import dts, { PluginOptions } from 'vite-plugin-dts'
 import pkg from './package.json'
 
 const root = resolve(__dirname)
@@ -11,39 +12,46 @@ const external = [
 	...Object.keys(pkg.peerDependencies)
 ]
 
-const buildOptions: BuildEnvironmentOptions = {
-	lib: {
-		entry: resolve(root, './src/index.tsx'),
-		name: 'index',
-		fileName: 'index',
-		formats: ['cjs', 'es']
-	},
-	outDir: './dist',
-	emptyOutDir: true,
-	minify: true,
-	rollupOptions: {
-		external,
-		output: { inlineDynamicImports: true }
+// Reused by plugins. DO NOT CHANGE. Overwrite when used
+export const dtsOptions = (rootPath: string): PluginOptions => ({
+	entryRoot: rootPath,
+	include: [resolve(rootPath, './src')],
+	rollupTypes: true,
+	logLevel: 'silent',
+	afterBuild: emittedFiles => {
+		const keys = [...emittedFiles.keys()]
+		keys.forEach(k => {
+			const filepath = relative(rootPath, k).split('\\')
+			const file = filepath.pop()
+			console.log(
+				chalk.dim(filepath.join('/') + '/') +
+					chalk.green(file) +
+					chalk.dim('\tcreated')
+			)
+		})
 	}
-}
+})
 
-const serveOptions: BuildEnvironmentOptions = {
-	watch: {
-		buildDelay: 2000,
-		clearScreen: true,
-		include: 'src/**'
-	}
-}
+// Reused by plugins. DO NOT CHANGE. Overwrite when used
+export const buildOptions = (rootPath: string) =>
+	({
+		lib: {
+			entry: resolve(rootPath, './src/index.tsx'),
+			name: 'index',
+			fileName: 'index',
+			formats: ['cjs', 'es']
+		},
+		outDir: './dist',
+		emptyOutDir: true,
+		minify: true,
+		rollupOptions: {
+			external,
+			output: { inlineDynamicImports: true }
+		}
+	} satisfies BuildEnvironmentOptions)
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
 	root: root,
-	plugins: [
-		dts({
-			entryRoot: root,
-			include: [resolve(root, './src')],
-			rollupTypes: true
-		}),
-		react()
-	],
-	build: command === 'build' ? buildOptions : serveOptions
-}))
+	plugins: [dts({ ...dtsOptions(root) }), react()],
+	build: buildOptions(root)
+})

@@ -1,6 +1,7 @@
+import { buildOptions, dtsOptions } from '../../core/vite.config'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
-import { BuildEnvironmentOptions, defineConfig } from 'vite'
+import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import pkg from './package.json'
 
@@ -11,39 +12,11 @@ const external = [
 	...Object.keys(pkg.peerDependencies)
 ]
 
-const buildOptions: BuildEnvironmentOptions = {
-	lib: {
-		entry: resolve(root, './src/index.tsx'),
-		name: 'index',
-		fileName: 'index',
-		formats: ['cjs', 'es']
-	},
-	outDir: './dist',
-	emptyOutDir: true,
-	minify: true,
-	rollupOptions: {
-		external,
-		output: { inlineDynamicImports: true }
-	}
-}
+const buildOpts = buildOptions(root)
+buildOpts.rollupOptions.external = external
 
-const serveOptions: BuildEnvironmentOptions = {
-	watch: {
-		buildDelay: 2000,
-		clearScreen: true,
-		include: 'src/**'
-	}
-}
-
-export default defineConfig(({ command }) => ({
+export default defineConfig({
 	root: root,
-	plugins: [
-		dts({
-			entryRoot: root,
-			include: ['src'],
-			rollupTypes: true
-		}),
-		react()
-	],
-	build: command === 'build' ? buildOptions : serveOptions
-}))
+	plugins: [dts(dtsOptions(root)), react()],
+	build: buildOpts
+})
