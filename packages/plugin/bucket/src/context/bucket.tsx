@@ -1,4 +1,4 @@
-import { FirenookProvider } from '@firenook/core/src'
+import { FirenookProvider } from '@firenook/core'
 import { useList } from '@uidotdev/usehooks'
 import { equals } from 'ramda'
 import { createContext, useContext, useEffect } from 'react'

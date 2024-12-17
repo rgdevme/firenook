@@ -1,8 +1,4 @@
-import {
-	FirenookElements,
-	FirenookPlugin,
-	FirenookRoute
-} from '@firenook/core/src'
+import { FirenookElements, FirenookPlugin, FirenookRoute } from '@firenook/core'
 import { BucketsProvider } from './context/bucket'
 import { BucketModal } from './views/Bucket/create'
 import { BucketList } from './views/Bucket/list'

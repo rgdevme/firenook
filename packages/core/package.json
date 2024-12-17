@@ -1,8 +1,18 @@
 {
   "name": "@firenook/core",
   "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
+  "source": "src/index.tsx",
+  "module": "dist/core.js",
+  "main": "dist/core.cjs",
+  "types": "dist/core.d.ts",
+  "exports": {
+    ".": {
+      "import": "./../../dist/core.js",
+      "types": "./../../dist/core.d.ts",
+      "require": "./../../dist/core.cjs"
+    }
+  },
   "scripts": {
     "serve": "vite",
     "build": "vite build"

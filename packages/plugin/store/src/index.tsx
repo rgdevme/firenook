@@ -1,8 +1,4 @@
-import {
-	FirenookElements,
-	FirenookPlugin,
-	FirenookRoute
-} from '@firenook/core/src'
+import { FirenookElements, FirenookPlugin, FirenookRoute } from '@firenook/core'
 import { CollectionProvider } from './context/collection'
 import { CollectionsProvider } from './context/collections'
 import { RecordProvider } from './context/record'

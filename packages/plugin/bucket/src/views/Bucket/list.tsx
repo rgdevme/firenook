@@ -1,4 +1,4 @@
-import { FirenookComponent } from '@firenook/core/src'
+import { FirenookComponent } from '@firenook/core'
 import { FileProperty } from '@firenook/core/src/components/Property/file'
 import { useList } from '@uidotdev/usehooks'
 import { FirebormStorage } from 'fireborm'

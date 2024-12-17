@@ -1,4 +1,4 @@
-import { FirenookProvider } from '@firenook/core/src'
+import { FirenookProvider } from '@firenook/core'
 import { getCountFromServer, query, Timestamp } from 'firebase/firestore'
 import { FirebormStore } from 'fireborm'
 import {

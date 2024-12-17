@@ -1,4 +1,4 @@
-import { FirenookComponent } from '@firenook/core/src'
+import { FirenookComponent } from '@firenook/core'
 import { useEffect } from 'react'
 import { useRecord } from '../../context/record'
 import { RecordProperties } from './properties'

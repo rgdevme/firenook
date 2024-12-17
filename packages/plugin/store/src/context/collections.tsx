@@ -1,4 +1,4 @@
-import { FirenookProvider } from '@firenook/core/src'
+import { FirenookProvider } from '@firenook/core'
 import { useList } from '@uidotdev/usehooks'
 import { arrayUnion } from 'firebase/firestore'
 import { createContext, useContext, useEffect, useMemo } from 'react'

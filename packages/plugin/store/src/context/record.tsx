@@ -1,4 +1,4 @@
-import { FirenookProvider } from '@firenook/core/src'
+import { FirenookProvider } from '@firenook/core'
 import { useToggle } from '@uidotdev/usehooks'
 import { Unsubscribe } from 'firebase/auth'
 import { DocumentReference } from 'firebase/firestore'
