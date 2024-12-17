@@ -15,6 +15,8 @@ import { Path } from './routes'
 import './index.css'
 
 export * from './type'
+export * from './components'
+export * from './hooks'
 
 const Routing = () => {
 	const app = useAppConfig()

@@ -19,7 +19,7 @@ const buildOptions: BuildEnvironmentOptions = {
 		formats: ['cjs', 'es']
 	},
 	outDir: './dist',
-	emptyOutDir: false,
+	emptyOutDir: true,
 	minify: true,
 	rollupOptions: {
 		external,
@@ -40,7 +40,7 @@ export default defineConfig(({ command }) => ({
 	plugins: [
 		dts({
 			entryRoot: root,
-			include: ['src'],
+			include: [resolve(root, './src')],
 			rollupTypes: true
 		}),
 		react()

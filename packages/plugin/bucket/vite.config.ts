@@ -19,7 +19,7 @@ const buildOptions: BuildEnvironmentOptions = {
 		formats: ['cjs', 'es']
 	},
 	outDir: './dist',
-	emptyOutDir: false,
+	emptyOutDir: true,
 	minify: true,
 	rollupOptions: {
 		external,

@@ -1,5 +1,4 @@
-import { FirenookComponent } from '@firenook/core'
-import { FileProperty } from '@firenook/core/src/components/Property/file'
+import { FileProperty, FirenookComponent } from '@firenook/core'
 import { useList } from '@uidotdev/usehooks'
 import { FirebormStorage } from 'fireborm'
 import { useEffect, useMemo } from 'react'

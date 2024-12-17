@@ -1,4 +1,3 @@
-import { Path } from '@firenook/core/src/routes'
 import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/react'
 import { PluginRoutes } from '../..'
 import { useCollections } from '../../context/collections'
@@ -14,7 +13,7 @@ export const PluginControls = () => {
 		<>
 			<div className='flex flex-1'>
 				<Breadcrumbs size='sm' variant='solid'>
-					<BreadcrumbItem href={Path.DASHBOARD}>Dashboard</BreadcrumbItem>
+					<BreadcrumbItem href={'/dashboard'}>Dashboard</BreadcrumbItem>
 					<BreadcrumbItem href={PluginRoutes.collection.build(current.path)}>
 						{current.singular}
 					</BreadcrumbItem>

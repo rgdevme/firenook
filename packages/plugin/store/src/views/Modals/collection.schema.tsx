@@ -13,11 +13,7 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import {
-	Item,
-	SchemaProperty
-} from '@firenook/core/src/components/SchemaProperty/property'
-import { useToggleAtom } from '@firenook/core/src/hooks/useToggleAtom'
+import { createGlobalToggle } from '@firenook/core'
 import {
 	Button,
 	Dropdown,
@@ -31,19 +27,22 @@ import {
 	ModalHeader
 } from '@nextui-org/react'
 import { useList } from '@uidotdev/usehooks'
-import { atom, useAtomValue } from 'jotai'
 import { equals } from 'ramda'
 import { useEffect, useState } from 'react'
+import { Item, SchemaProperty } from '../../components/SchemaProperty/property'
 import { useCollections } from '../../context/collections'
 import { Property, PropertyType } from '../../type'
 
-export const collectionSchemaModalAtom = atom(false)
+const [useCollectionSchemaValue, useCollectionSchemaToggle] =
+	createGlobalToggle()
+
+export { useCollectionSchemaToggle }
 
 export const CollectionSchema = () => {
 	const { current, updateSchema } = useCollections()
 	const [loading, setLoading] = useState(false)
-	const isOpen = useAtomValue(collectionSchemaModalAtom)
-	const toggleModal = useToggleAtom(collectionSchemaModalAtom)
+	const isOpen = useCollectionSchemaValue()
+	const toggleModal = useCollectionSchemaToggle()
 
 	const [initialVal, setInitial] = useState(current?.schema!)
 	const [activeId, setActiveId] = useState(null)

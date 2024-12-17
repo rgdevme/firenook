@@ -1,13 +1,15 @@
-import { ArrayProperty } from '@firenook/core/src/components/Property/array'
-import { CheckProperty } from '@firenook/core/src/components/Property/check'
-import { DateProperty } from '@firenook/core/src/components/Property/date'
-import { FileProperty } from '@firenook/core/src/components/Property/file'
-import { GeoPointProperty } from '@firenook/core/src/components/Property/geopoint'
-import { MapProperty } from '@firenook/core/src/components/Property/map'
-import { MarkdownProperty } from '@firenook/core/src/components/Property/markdown'
-import { NumberProperty } from '@firenook/core/src/components/Property/number'
-import { ReferenceProperty } from '@firenook/core/src/components/Property/reference'
-import { StringProperty } from '@firenook/core/src/components/Property/string'
+import {
+	ArrayProperty,
+	CheckProperty,
+	DateProperty,
+	FileProperty,
+	GeoPointProperty,
+	MapProperty,
+	MarkdownProperty,
+	NumberProperty,
+	ReferenceProperty,
+	StringProperty
+} from '@firenook/core'
 import { Input } from '@nextui-org/react'
 import { FunctionComponent, useMemo } from 'react'
 import { useCollections } from '../../context/collections'

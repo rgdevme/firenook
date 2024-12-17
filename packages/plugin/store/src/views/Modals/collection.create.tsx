@@ -1,4 +1,4 @@
-import { useToggleAtom } from '@firenook/core/src/hooks/useToggleAtom'
+import { createGlobalToggle } from '@firenook/core'
 import {
 	Button,
 	Checkbox,
@@ -9,18 +9,19 @@ import {
 	ModalFooter,
 	ModalHeader
 } from '@nextui-org/react'
-import { atom, useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useCollections } from '../../context/collections'
 import { CollectionData } from '../../type'
 
-export const collectionModalAtom = atom(false)
+const [useCollectionModalValue, useCollectionModalToggle] = createGlobalToggle()
+
+export { useCollectionModalToggle }
 
 export const CollectionModal = () => {
 	const { addCollection, defaultData } = useCollections()
-	const isOpen = useAtomValue(collectionModalAtom)
-	const toggleModal = useToggleAtom(collectionModalAtom)
+	const isOpen = useCollectionModalValue()
+	const toggleModal = useCollectionModalToggle()
 
 	const [loading, setLoading] = useState(false)
 	const { handleSubmit, register } = useForm({

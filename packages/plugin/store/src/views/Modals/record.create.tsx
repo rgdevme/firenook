@@ -1,4 +1,4 @@
-import { useToggleAtom } from '@firenook/core/src/hooks/useToggleAtom'
+import { createGlobalToggle } from '@firenook/core'
 import {
 	Button,
 	Modal,
@@ -7,18 +7,19 @@ import {
 	ModalFooter,
 	ModalHeader
 } from '@nextui-org/react'
-import { atom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
 import { useCollection } from '../../context/collection'
 import { RecordProperties } from '../Record/properties'
 
-export const recordCreateAtom = atom(false)
+const [useRecordCreateValue, useRecordCreateToggle] = createGlobalToggle()
+
+export { useRecordCreateToggle }
 
 export const CreateRecord = () => {
 	const { store } = useCollection()
 	const [loading, setLoading] = useState(false)
-	const isOpen = useAtomValue(recordCreateAtom)
-	const toggleModal = useToggleAtom(recordCreateAtom)
+	const isOpen = useRecordCreateValue()
+	const toggleModal = useRecordCreateToggle()
 	const data = useRef({})
 
 	const updateData = (upd: {}) => {
