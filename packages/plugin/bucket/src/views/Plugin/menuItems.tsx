@@ -1,6 +1,6 @@
 import { IconBtn } from '@firenook/core/src/components/IconButton'
 import { MenuDivider } from '@firenook/core/src/components/MenuDivider'
-import { MenuItem } from '@nextui-org/react'
+import { MenuItem } from '@firenook/core/src/components/MenuItem'
 import { useSetAtom } from 'jotai'
 import { TbCirclePlus, TbFiles } from 'react-icons/tb'
 import { useBucketsList } from '../../context/bucket'
