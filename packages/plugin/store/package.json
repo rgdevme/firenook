@@ -1,8 +1,18 @@
 {
   "name": "@firenook/store",
   "version": "1.0.0",
-  "main": "./src/index.tsx",
   "type": "module",
+  "source": "src/index.tsx",
+  "module": "dist/index.js",
+  "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./../../dist/index.js",
+      "types": "./../../dist/index.d.ts",
+      "require": "./../../dist/index.cjs"
+    }
+  },
   "scripts": {
     "serve": "vite",
     "build": "vite build"

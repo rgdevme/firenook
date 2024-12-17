@@ -14,9 +14,11 @@ const external = [
 const buildOptions: BuildEnvironmentOptions = {
 	lib: {
 		entry: resolve(root, './src/index.tsx'),
+		name: 'index',
+		fileName: 'index',
 		formats: ['cjs', 'es']
 	},
-	outDir: '../../../dist/store',
+	outDir: './dist',
 	emptyOutDir: false,
 	minify: true,
 	rollupOptions: {
