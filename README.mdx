@@ -1,0 +1,105 @@
+<p align="center">
+<img src="assets/logo.png" width="120">
+</p>
+<h1 align="center">
+Firenook
+</h1>
+<p align="center">
+The free Firebase admin panel we deserve
+</p>
+
+## What is Firenook?
+
+Firenook is a react.js based admin panel for firebase that aims to provide an easy-to-use, customizable interface along with an extensible framework.
+
+Please note that **this is not a CMS**, and it's far from being one (yet! 😉). My only focus right now is to provide a better admin experience the firebase admin panel.
+
+## How does it work?
+
+Th setup is pretty simple:
+
+1. Define your firebase config
+2. Initialize your root element
+3. Render Firenook with any plugins you need
+
+```tsx
+import { createRoot } from 'react-dom/client'
+import { Firenook } from 'firenook'
+import StorePlugin from 'fireook/plugins/store'
+import logo from './assets/logo.png'
+
+const config = {
+	apiKey: 'AIzaSyCHJdqYGjsXWlciLt21lN5i8qheX6tBqoQ',
+	authDomain: 'rgdevme.firebaseapp.com',
+	projectId: 'rgdevme',
+	storageBucket: 'rgdevme.firebasestorage.app',
+	messagingSenderId: '615649263196',
+	appId: '1:615649263196:web:26c5e77cf3c4f56de1f099',
+	measurementId: 'G-7P0LGV13FP'
+}
+
+const root = createRoot(document.getElementById('root')!)
+
+root.render(
+	<Firenook
+		config={config}
+		logo={logo}
+		plugins={[
+			StorePlugin
+			//... Other plugins
+		]}
+	/>
+)
+```
+
+> **IMPORTANT:** As you can see, this does not run on a server but merely on the browser.
+>
+> **This is not a secure-by-default application.**
+>
+> If you intend to host this to use it as your admin, please follow the best practices to secure your firestore data, and be sure to hide your admin from undesired users.
+
+## Plugins?
+
+Yes. Each functionality in Firenook can be traced to a plugin. This makes it easy for me to maintain the framework, and enables you to develop your own functionality!
+
+Here is the list of plugins and their status:
+
+| Name        | Status | Description                                                                          |
+| ----------- | ------ | ------------------------------------------------------------------------------------ |
+| Firestore   | 🔥     | CRUD operation and schema management for firestore collections and records           |
+| Storage     | 🔥     | CRUD operation and schema management for folders in a single firebase storage bucket |
+| Permissions | 🚧     | CRUD operation and schema management for folders in a single firebase storage bucket |
+| Pages       | ❓     | CRUD operation and schema management for folders in a single firebase storage bucket |
+
+> ❓ Pending, 🚧 Work in progress, 🔥 Ready
+
+### Plugin development
+
+The core priciple is simple: Each plugin must render something.
+
+Each plugin is a simple function that passes in a sigle parameter holding the Firenook app configuration.
+
+```tsx
+import { FirenookPlugin } from 'firenook/plugins/core'
+import { MyContextProvider } from '..'
+import { MyRoute } from '..'
+
+const StorePlugin: FirenookPlugin = (config) => ({
+	name: 'fn-store-plugin',
+	provider: MyContextProvider // (optional) A context
+	routes: [
+		{
+      element: MyRoute, // A JSX element for your rendered,
+      path: 'c/:cid' // The path to a react-router route
+    },
+	]
+})
+
+export default StorePlugin
+
+```
+
+| Property | Description                                                                |
+| -------- | -------------------------------------------------------------------------- |
+| provider | FunctionComponent that will be rendered as context                         |
+| routes   | An array of objects containing a route and their corresponding JSX.Element |
