@@ -7,21 +7,15 @@ import {
 	MapProperty,
 	MarkdownProperty,
 	NumberProperty,
+	PropertyDefaultValue,
+	PropertyProps,
+	PropertyType,
 	ReferenceProperty,
 	StringProperty
 } from '@firenook/core'
 import { Input } from '@nextui-org/react'
 import { FunctionComponent, useMemo } from 'react'
 import { useCollections } from '../../context/collections'
-import { MappedProperty, PropertyDefaultValue, PropertyType } from '../../type'
-
-export type PropertyProps<T = any> = {
-	label: string
-	type: PropertyType
-	value?: T
-	schema?: MappedProperty[]
-	onChange: (val: T) => void
-}
 
 export const RecordProperties = ({
 	record = {},

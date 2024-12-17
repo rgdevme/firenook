@@ -1,5 +1,9 @@
 import { FunctionComponent } from 'react'
-import { FirenookElements, FirenookPlugin, FirenookProvider } from '../type'
+import {
+	FirenookElements,
+	FirenookPlugin,
+	FirenookProvider
+} from '../types/app'
 
 export const initializePlugins = (plugins: FirenookPlugin[]) => {
 	const header: FunctionComponent[] = []

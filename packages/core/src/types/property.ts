@@ -27,6 +27,14 @@ export enum MappedPropertyType {
 	BOOLEAN = 'boolean'
 }
 
+export type PropertyProps<T = any> = {
+	label: string
+	type: PropertyType
+	value?: T
+	schema?: MappedProperty[]
+	onChange: (val: T) => void
+}
+
 export enum PropertyType {
 	boolean = 'boolean',
 	computed = 'computed',

@@ -31,7 +31,7 @@ import {
 	MappedProperty,
 	MappedPropertyType,
 	PropertyDefaultValue
-} from '../../firebase/types/Property'
+} from '../../type'
 import { Item } from './property'
 
 export const MapSchemaProperty = ({

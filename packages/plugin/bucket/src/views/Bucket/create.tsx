@@ -11,7 +11,7 @@ import {
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useBucketsList } from '../../context/bucket'
-import { BucketData } from '../../type'
+import { BucketData } from '../../types/Bucket'
 
 const [useBucketModalValue, useBucketModalToggle] = createGlobalToggle()
 export { useBucketModalToggle }

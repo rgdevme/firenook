@@ -1,10 +1,7 @@
 import { Accordion, AccordionItem, Input, Switch } from '@nextui-org/react'
-import { VscSymbolNumeric, VscSymbolString } from 'react-icons/vsc'
-import {
-	MappedProperty,
-	MappedPropertyType
-} from '../../firebase/types/Property'
 import { useEffect, useState } from 'react'
+import { VscSymbolNumeric, VscSymbolString } from 'react-icons/vsc'
+import { MappedProperty, MappedPropertyType } from '../../types'
 
 export const MapProperty = ({
 	label,

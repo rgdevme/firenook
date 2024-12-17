@@ -25,8 +25,7 @@ import {
 } from 'react'
 import { LuTrash } from 'react-icons/lu'
 import { MdDragHandle } from 'react-icons/md'
-import { PropertyProps } from '../../../../plugin/store/src/views/Record/properties'
-import { PropertyDefaultValue } from '../../firebase/types/Property'
+import { PropertyDefaultValue, PropertyProps } from '../../types'
 
 export const ArrayProperty = ({
 	label,

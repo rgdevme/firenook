@@ -1,7 +1,7 @@
 import { Input } from '@nextui-org/react'
 import { useState } from 'react'
 import { z, ZodSchema } from 'zod'
-import { PropertyType } from '../../firebase/types/Property'
+import { PropertyType } from '../../types'
 
 export const StringProperty = ({
 	type,

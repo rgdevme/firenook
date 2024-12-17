@@ -14,7 +14,7 @@ import { Path } from './routes'
 
 import './index.css'
 
-export * from './type'
+export * from './types'
 export * from './components'
 export * from './hooks'
 

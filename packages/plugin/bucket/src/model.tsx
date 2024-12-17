@@ -1,6 +1,11 @@
 import { Firestore } from 'firebase/firestore'
 import { FirebormStore } from 'fireborm'
-import { BucketDefault, BucketDoc, BucketModel, BucketRef } from './type'
+import {
+	BucketDefault,
+	BucketDoc,
+	BucketModel,
+	BucketRef
+} from './types/Bucket'
 
 export const initBucketStore = (firestore?: Firestore) => {
 	const store = new FirebormStore<

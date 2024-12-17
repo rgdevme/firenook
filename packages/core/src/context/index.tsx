@@ -11,7 +11,7 @@ import {
 	useState
 } from 'react'
 import { initializeFirebase } from '../firebase'
-import { AppConfig, FirenookPlugin } from '../type'
+import { AppConfig, FirenookPlugin } from '../types/app'
 import { initializePlugins } from '../utils/init'
 
 export type AppConfigProps = {

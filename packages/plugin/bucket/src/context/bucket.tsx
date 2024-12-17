@@ -3,7 +3,7 @@ import { useList } from '@uidotdev/usehooks'
 import { equals } from 'ramda'
 import { createContext, useContext, useEffect } from 'react'
 import { initBucketStore } from '../model'
-import { BucketData } from '../type'
+import { BucketData } from '../types/Bucket'
 
 const BucketsCtx = createContext({
 	buckets: [] as BucketData[],

@@ -11,8 +11,8 @@ import {
 import { forwardRef, PropsWithChildren, useState } from 'react'
 import { BiTrash } from 'react-icons/bi'
 import { MdDragHandle } from 'react-icons/md'
+import { Property, PropertyType } from '../../type'
 import { MapSchemaProperty } from './map'
-import { Property, PropertyType } from '../../firebase/types/Property'
 
 export const Item = forwardRef<HTMLDivElement, PropsWithChildren<any>>(
 	(props, ref) => (
