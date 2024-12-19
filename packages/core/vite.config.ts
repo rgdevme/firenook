@@ -3,14 +3,8 @@ import chalk from 'chalk'
 import { relative, resolve } from 'path'
 import { BuildEnvironmentOptions, defineConfig } from 'vite'
 import dts, { PluginOptions } from 'vite-plugin-dts'
-import pkg from './package.json'
 
 const root = resolve(__dirname)
-const external = [
-	/firebase/,
-	...Object.keys(pkg.devDependencies),
-	...Object.keys(pkg.peerDependencies)
-]
 
 // Reused by plugins. DO NOT CHANGE. Overwrite when used
 export const dtsOptions = (rootPath: string): PluginOptions => ({
@@ -33,8 +27,19 @@ export const dtsOptions = (rootPath: string): PluginOptions => ({
 })
 
 // Reused by plugins. DO NOT CHANGE. Overwrite when used
-export const buildOptions = (rootPath: string) =>
-	({
+export const buildOptions = async (rootPath: string) => {
+	const { dependencies, peerDependencies } = await import('./package.json')
+	const deps = { ...dependencies, ...peerDependencies }
+	const external = [
+		/node_modules\/(@|)firebase/,
+		...Object.keys(deps).sort((a, b) => a.localeCompare(b))
+	]
+
+	console.log(
+		chalk.gray.dim(`externals:${external.map(dep => `\n  - ${dep}`).join('')}`)
+	)
+
+	return {
 		lib: {
 			entry: resolve(rootPath, './src/index.tsx'),
 			name: 'index',
@@ -48,10 +53,11 @@ export const buildOptions = (rootPath: string) =>
 			external,
 			output: { inlineDynamicImports: true }
 		}
-	} satisfies BuildEnvironmentOptions)
+	} satisfies BuildEnvironmentOptions
+}
 
-export default defineConfig({
+export default defineConfig(async () => ({
 	root: root,
-	plugins: [dts({ ...dtsOptions(root) }), react()],
-	build: buildOptions(root)
-})
+	plugins: [dts(dtsOptions(root)), react()],
+	build: await buildOptions(root)
+}))
