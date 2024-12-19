@@ -13,44 +13,52 @@ import { AppConfigProps, AppConfigProvider, useAppConfig } from './context'
 import { Path } from './routes'
 
 import './index.css'
+import { PropsWithChildren } from 'react'
 
+export * from './firebase'
 export * from './types'
 export * from './components'
 export * from './hooks'
 
-const Routing = () => {
-	const app = useAppConfig()
-	const navigate = useNavigate()
+export const Firenook = (props: AppConfigProps) => {
+	return (
+		<BrowserRouter>
+			<Contexts {...props}>
+				<Routing />
+			</Contexts>
+		</BrowserRouter>
+	)
+}
 
+const Contexts = (props: PropsWithChildren<AppConfigProps>) => {
+	const navigate = useNavigate()
 	return (
 		<NextUIProvider id='next-root' navigate={navigate} useHref={useHref}>
-			<Routes>
-				<Route index element={<Splash />} />
-				<Route path={Path.LOGIN} element={<SignFlow />}>
-					<Route index element={<Login />} />
-				</Route>
-				<Route path='/' element={<Private />}>
-					<Route path={Path.DASHBOARD} element={<div>Welcome!</div>} />
-					{Object.values(app.routes).map(({ path, element: Elem }) => (
-						<Route
-							key={path}
-							path={path}
-							element={<Elem {...{ app, params: {} }} />}
-						/>
-					))}
-					<Route path={Path.SUBCOLLECTION} element={<div>Subcollection</div>} />
-				</Route>
-			</Routes>
+			<AppConfigProvider {...props} />
 		</NextUIProvider>
 	)
 }
 
-export const Firenook = (props: AppConfigProps) => {
+const Routing = () => {
+	const app = useAppConfig()
+
 	return (
-		<BrowserRouter>
-			<AppConfigProvider {...props}>
-				<Routing />
-			</AppConfigProvider>
-		</BrowserRouter>
+		<Routes>
+			<Route index element={<Splash />} />
+			<Route path={Path.LOGIN} element={<SignFlow />}>
+				<Route index element={<Login />} />
+			</Route>
+			<Route path='/' element={<Private />}>
+				<Route path={Path.DASHBOARD} element={<div>Welcome!</div>} />
+				{Object.values(app.routes).map(({ path, element: Elem }) => (
+					<Route
+						key={path}
+						path={path}
+						element={<Elem {...{ app, params: {} }} />}
+					/>
+				))}
+				<Route path={Path.SUBCOLLECTION} element={<div>Subcollection</div>} />
+			</Route>
+		</Routes>
 	)
 }
