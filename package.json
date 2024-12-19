@@ -4,12 +4,8 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "serve": "vite",
     "build": "npm run build -w packages/**",
-    "postother": "git add -A && git commit -m \"chore: update dist\"",
-    "prebump": "npm run build",
-    "bump": "npx bumpp",
-    "emu": "firebase emulators:start --import=./backup --export-on-exit"
+    "bump": "npx bumpp"
   },
   "engines": {
     "node": ">=20"

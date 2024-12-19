@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "vite",
-    "emu": "firebase emulators:start"
+    "emu": "firebase emulators:start --import=../../backup --export-on-exit"
   },
   "keywords": [],
   "author": "",
