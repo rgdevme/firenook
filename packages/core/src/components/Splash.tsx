@@ -8,11 +8,8 @@ export const Splash = () => {
 	const [search] = useSearchParams()
 	const nav = useNavigate()
 
-	console.log({ user, loading })
-
 	useEffect(() => {
 		if (loading) return
-		console.log({ user, loading })
 		const redir = search.get('redir')
 		nav(
 			user

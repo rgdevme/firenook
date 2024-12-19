@@ -49,7 +49,6 @@ export const FileProperty = ({
 				if (record) name = `${record}-${file.name}`
 
 				if (storageFiles.some(f => f.name === name)) return
-				console.log({ storageFiles, name })
 
 				increment()
 				const url = await bucket.upload(name, file)

@@ -21,7 +21,6 @@ export const MapProperty = ({
 	)
 
 	useEffect(() => {
-		console.log({ value, schema, state })
 		onChange(state)
 	}, [state])
 

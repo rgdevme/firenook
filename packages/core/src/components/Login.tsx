@@ -44,7 +44,6 @@ export const Login = () => {
 				const user = result.user
 				// IdP data available using getAdditionalUserInfo(result)
 				// ...
-				console.log({ token, user })
 			} catch (error) {
 				console.error({ error })
 			} finally {
@@ -68,7 +67,7 @@ export const Login = () => {
 							startContent={<FcGoogle size={24} />}
 							variant='light'
 							color='primary'
-							onClick={onSubmit}
+							onPress={onSubmit}
 							isLoading={loading}>
 							Sign in with Google
 						</Button>
