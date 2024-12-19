@@ -49,12 +49,11 @@ export const ArrayProperty = ({
 		}))
 	)
 
-	const sensors = useSensors(
-		useSensor(PointerSensor),
-		useSensor(KeyboardSensor, {
-			coordinateGetter: sortableKeyboardCoordinates
-		})
-	)
+	const pointerSensor = useSensor(PointerSensor)
+	const keyboardSensor = useSensor(KeyboardSensor, {
+		coordinateGetter: sortableKeyboardCoordinates
+	})
+	const sensors = useSensors(pointerSensor, keyboardSensor)
 
 	function handleDragEnd(event) {
 		const { active, over } = event
@@ -92,8 +91,6 @@ export const ArrayProperty = ({
 						<div className='flex flex-col gap-2'>
 							{array.length ? (
 								array.map((p, i) => {
-									console.log({ p, El })
-
 									return (
 										<ArrayPropertyElement
 											key={p._id}
@@ -133,7 +130,7 @@ export const ArrayProperty = ({
 					variant='flat'
 					color='primary'
 					className='w-full mb-3 mt-2'
-					onClick={() => {
+					onPress={() => {
 						push({
 							value: PropertyDefaultValue[type],
 							type,
