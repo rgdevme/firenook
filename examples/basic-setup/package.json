@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "vite"
+    "start": "vite",
+    "emu": "firebase emulators:start"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "@firenook/core": "^1.0.0",
+    "@firenook/bucket": "^1.0.0",
     "firebase": "^10.5.0",
     "fireborm": "^0.1.3",
     "react": "^18.3.1",
