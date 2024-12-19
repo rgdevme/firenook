@@ -7,7 +7,7 @@ import {
 	CollectionModel,
 	CollectionRef,
 	PropertyType
-} from './type'
+} from '../type'
 
 export const initCollectionStore = (firestore?: Firestore) => {
 	const store = new FirebormStore<

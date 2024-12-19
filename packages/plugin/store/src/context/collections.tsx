@@ -1,8 +1,8 @@
 import { FirenookProvider } from '@firenook/core'
 import { useList } from '@uidotdev/usehooks'
 import { arrayUnion } from 'firebase/firestore'
+import { FirebormStore } from 'fireborm'
 import { createContext, useContext, useEffect, useMemo } from 'react'
-import { initCollectionStore } from '../model'
 import { CollectionData } from '../type'
 
 const CollectionsCtx = createContext({
@@ -15,8 +15,11 @@ const CollectionsCtx = createContext({
 	addCollection: (async () => {}) as (data: CollectionData) => Promise<void>
 })
 
-export const CollectionsProvider: FirenookProvider = ({ children, app }) => {
-	const store = initCollectionStore(app.firestore)
+export const CollectionsProvider = ({
+	children,
+	app,
+	store
+}: Parameters<FirenookProvider>[0] & { store: FirebormStore }) => {
 	const [results, { set }] = useList<CollectionData>()
 	const { index, current } = useMemo(() => {
 		const index = results.findIndex(x => x.path === app.params.cid)

@@ -1,7 +1,13 @@
-import { FirenookElements, FirenookPlugin, FirenookRoute } from '@firenook/core'
+import {
+	FirenookElements,
+	FirenookPluginFunction,
+	FirenookRoute
+} from '@firenook/core'
+import { FirebormStore } from 'fireborm'
 import { CollectionProvider } from './context/collection'
 import { CollectionsProvider } from './context/collections'
 import { RecordProvider } from './context/record'
+import { initCollectionStore } from './models/collections'
 import { List } from './views/Collection/list'
 import { CollectionModal } from './views/Modals/collection.create'
 import { CollectionSchema } from './views/Modals/collection.schema'
@@ -21,21 +27,25 @@ export const PluginRoutes = {
 	})
 } satisfies FirenookElements
 
-export const StoresPlugin: FirenookPlugin = () => ({
-	name: 'fn-store-plugin',
-	provider: ({ children, app }) => (
-		<CollectionsProvider app={app}>
-			<CollectionProvider app={app}>
-				<RecordProvider app={app}>
-					{children}
-					<CollectionModal />
-					<CollectionSchema />
-					<CreateRecord />
-				</RecordProvider>
-			</CollectionProvider>
-		</CollectionsProvider>
-	),
-	routes: PluginRoutes,
-	menuItems: MenuItems,
-	header: PluginControls
-})
+export const StoresPlugin: FirenookPluginFunction = ({ firestore }) => {
+	const store = initCollectionStore(firestore) as unknown as FirebormStore
+
+	return {
+		name: 'fn-store-plugin',
+		provider: ({ children, app }) => (
+			<CollectionsProvider app={app} store={store}>
+				<CollectionProvider app={app}>
+					<RecordProvider app={app}>
+						{children}
+						<CollectionModal />
+						<CollectionSchema />
+						<CreateRecord />
+					</RecordProvider>
+				</CollectionProvider>
+			</CollectionsProvider>
+		),
+		routes: PluginRoutes,
+		menuItems: MenuItems,
+		header: PluginControls
+	}
+}
