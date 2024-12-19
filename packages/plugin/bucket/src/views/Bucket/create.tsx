@@ -30,8 +30,6 @@ export const BucketModal = () => {
 	const onSubmit = async (data: BucketData) => {
 		try {
 			setLoading(true)
-			console.log('creating: ', { data, create })
-
 			await create(data)
 			toggleModal(false)
 		} catch (error) {
