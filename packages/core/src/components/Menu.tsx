@@ -23,7 +23,7 @@ export const Menu = () => {
 				variant='solid'
 				color='default'
 				data-active={toggle}
-				onClick={() => setToggle(p => !p)}
+				onPress={() => setToggle(p => !p)}
 				className='p-1 absolute z-50 top-12 right-0 text-zinc-400 -translate-x-3 transition-all hover:text-zinc-600 data-[active=true]:-rotate-180 data-[active=true]:-translate-x-5'>
 				<PiCaretCircleDoubleLeft
 					size={20}
@@ -57,7 +57,7 @@ export const Menu = () => {
 					variant='light'
 					color='danger'
 					startContent={<MdLogout />}
-					onClick={() => signOut(getAuth())}>
+					onPress={() => signOut(getAuth())}>
 					Logout
 				</Button>
 			</div>
