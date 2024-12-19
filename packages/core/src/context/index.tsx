@@ -1,22 +1,24 @@
-import { FirebaseOptions } from '@firebase/app'
 import { useToggle } from '@uidotdev/usehooks'
+import { FirebaseApp } from 'firebase/app'
 import { Auth, User } from 'firebase/auth'
+import { Firestore } from 'firebase/firestore'
+import { FirebaseStorage } from 'firebase/storage'
 import { FireBorm } from 'fireborm'
 import {
 	createContext,
 	PropsWithChildren,
 	useContext,
 	useEffect,
-	useMemo,
 	useState
 } from 'react'
-import { initializeFirebase } from '../firebase'
 import { AppConfig, FirenookPlugin } from '../types/app'
 import { initializePlugins } from '../utils/init'
 
 export type AppConfigProps = {
-	config: FirebaseOptions
-	useEmulator?: boolean
+	app: FirebaseApp
+	firestore: Firestore
+	storage: FirebaseStorage
+	auth: Auth
 	logo?: string
 	plugins?: FirenookPlugin[]
 }
@@ -26,51 +28,36 @@ const appConfigCtxValue = {} as AppConfig
 const appConfigCtx = createContext(appConfigCtxValue)
 
 export const AppConfigProvider = ({
-	config,
-	useEmulator = false,
 	logo,
 	children,
+	auth,
+	firestore,
+	storage,
 	plugins = []
 }: PropsWithChildren<AppConfigProps>) => {
-	const [fireborm, setFireBorm] = useState<object>()
-	const [auth, setAuth] = useState<Auth>()
-	const [loadingPlugins, toggleLoadingPlugins] = useToggle(true)
-	const [loadingFireBorm, toggleLoadingFireBorm] = useToggle(true)
-	const loading = useMemo(
-		() => loadingPlugins || loadingFireBorm,
-		[loadingFireBorm, loadingPlugins]
-	)
+	const fireborm = FireBorm({ firestore, storage })
+	const [loading, toggleLoadingAuth] = useToggle(true)
 	const [params, exposeParams] = useState({})
 	const [user, setIsAuthenticated] = useState<User>()
 
-	const { PluginsProvider, menuItems, routes, header } = useMemo(() => {
-		toggleLoadingPlugins(true)
-		const result = initializePlugins(plugins)
-		toggleLoadingPlugins(false)
-		return result
-	}, [plugins, fireborm])
+	const {
+		PluginsProvider,
+		menuItems = [],
+		routes = {},
+		header = []
+	} = initializePlugins(plugins)
 
 	useEffect(() => {
-		toggleLoadingFireBorm(true)
-		const firebase = initializeFirebase(config, useEmulator)
-
-		setAuth(firebase.auth)
-		setFireBorm(
-			FireBorm({
-				firestore: firebase.firestore,
-				storage: firebase.storage
-			})
-		)
-
-		const unsub = firebase.auth.onAuthStateChanged(user => {
+		if (!auth) return
+		const unsub = auth.onAuthStateChanged(user => {
 			setIsAuthenticated(user ?? undefined)
-			toggleLoadingFireBorm(false)
+			toggleLoadingAuth(false)
 		})
 
 		return unsub
-	}, [config])
+	}, [auth?.app.options.appId])
 
-	const app = {
+	const value = {
 		fireborm,
 		auth,
 		user,
@@ -81,8 +68,8 @@ export const AppConfigProvider = ({
 	}
 
 	return (
-		<appConfigCtx.Provider value={{ ...app, menuItems, routes, header }}>
-			<PluginsProvider app={app}>{children}</PluginsProvider>
+		<appConfigCtx.Provider value={{ ...value, menuItems, routes, header }}>
+			<PluginsProvider app={value}>{children}</PluginsProvider>
 		</appConfigCtx.Provider>
 	)
 }
