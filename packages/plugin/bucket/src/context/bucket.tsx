@@ -1,8 +1,8 @@
 import { FirenookProvider } from '@firenook/core'
 import { useList } from '@uidotdev/usehooks'
+import { FirebormStore } from 'fireborm'
 import { equals } from 'ramda'
 import { createContext, useContext, useEffect } from 'react'
-import { initBucketStore } from '../model'
 import { BucketData } from '../types/Bucket'
 
 const BucketsCtx = createContext({
@@ -11,16 +11,17 @@ const BucketsCtx = createContext({
 	remove: (async () => {}) as (data: BucketData) => Promise<void>
 })
 
-export const BucketsProvider: FirenookProvider = ({ children, app }) => {
+export const BucketsProvider = ({
+	children,
+	store
+}: Parameters<FirenookProvider>[0] & { store?: FirebormStore }) => {
 	const [results, { set }] = useList<BucketData>()
-	const store = initBucketStore(app.firestore)
 
 	const create = async (data: BucketData) => {
 		if (results.some(x => equals(x, data))) return
-		const res = await store?.save('buckets', {
+		await store?.save('buckets', {
 			buckets: [...results, data]
 		})
-		console.log({ res })
 	}
 
 	const remove = async (data: BucketData) => {
