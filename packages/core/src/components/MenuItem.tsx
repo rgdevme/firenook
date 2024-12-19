@@ -1,7 +1,13 @@
 import { Button } from '@nextui-org/react'
 import { Link } from 'react-router'
 
-export const MenuItem = ({ path, label }: { path: string; label: string }) => {
+export const FNMenuItem = ({
+	path,
+	label
+}: {
+	path: string
+	label: string
+}) => {
 	return (
 		<Button
 			size='sm'

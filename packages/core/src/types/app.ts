@@ -3,6 +3,7 @@ import { Firestore } from 'firebase/firestore'
 import { FirebaseStorage } from 'firebase/storage'
 import { FunctionComponent, PropsWithChildren } from 'react'
 import { Params } from 'react-router'
+import { FirenookPluginProps } from '../firebase'
 
 export type AppConfig = {
 	firestore?: Firestore
@@ -61,7 +62,7 @@ export class FirenookRoute {
 
 export type FirenookElements = { [key: string]: FirenookRoute }
 
-type FirenookPluginProps = {
+export type FirenookPlugin = {
 	name: `fn-${string}-plugin`
 	routes?: FirenookElements
 	menuItems?: FunctionComponent
@@ -69,4 +70,6 @@ type FirenookPluginProps = {
 	provider?: FirenookProvider
 }
 
-export type FirenookPlugin = () => FirenookPluginProps
+export type FirenookPluginFunction = (
+	app: FirenookPluginProps
+) => FirenookPlugin

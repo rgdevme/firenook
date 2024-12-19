@@ -25,5 +25,7 @@ export const initializeFirebase = (config: object, emulate: boolean) => {
 		connectStorageEmulator(storage, '127.0.0.1', 9199)
 	}
 
-	return { storage, firestore, auth }
+	return { app, storage, firestore, auth }
 }
+
+export type FirenookPluginProps = ReturnType<typeof initializeFirebase>
