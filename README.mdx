@@ -19,30 +19,27 @@ Th setup is pretty simple:
 3. Render Firenook with any plugins you need
 
 ```tsx
+import { BucketsPlugin } from '@firenook/bucket'
+import { Firenook, initializeFirebase } from '@firenook/core'
 import { createRoot } from 'react-dom/client'
-import { Firenook } from 'firenook'
-import StorePlugin from 'fireook/plugins/store'
+import yourFirebaseConfig from './firebase.config.json'
+
+import '@firenook/core/index.css'
 import logo from './assets/logo.png'
 
-const config = {
-	apiKey: 'AIzaSyCHJdqYGjsXWlciLt21lN5i8qheX6tBqoQ',
-	authDomain: 'rgdevme.firebaseapp.com',
-	projectId: 'rgdevme',
-	storageBucket: 'rgdevme.firebasestorage.app',
-	messagingSenderId: '615649263196',
-	appId: '1:615649263196:web:26c5e77cf3c4f56de1f099',
-	measurementId: 'G-7P0LGV13FP'
-}
+const config = initializeFirebase(
+	yourFirebaseConfig,
+	true // Tell firebase you want to run its emulators
+)
 
 const root = createRoot(document.getElementById('root')!)
-
 root.render(
 	<Firenook
-		config={config}
+		{...config}
 		logo={logo}
 		plugins={[
-			StorePlugin
-			//... Other plugins
+			BucketsPlugin(config)
+			// ... other plugins
 		]}
 	/>
 )
@@ -76,22 +73,23 @@ The core priciple is simple: Each plugin must render something.
 Each plugin is a simple function that passes in a sigle parameter holding the Firenook app configuration.
 
 ```tsx
-import { FirenookPlugin } from 'firenook/plugins/core'
-import { MyContextProvider } from '..'
-import { MyRoute } from '..'
+import { FirenookPluginFunction } from '@firenook/core'
+import { provider, routes, menuItems, header } from '..'
 
-const StorePlugin: FirenookPlugin = (config) => ({
-	name: 'fn-store-plugin',
-	provider: MyContextProvider // (optional) A context
-	routes: [
-		{
-      element: MyRoute, // A JSX element for your rendered,
-      path: 'c/:cid' // The path to a react-router route
-    },
-	]
-})
+export const MyPlugin: FirenookPluginFunction = ({ firestore, auth, storage, app }) => {
 
-export default StorePlugin
+	/** Handle stores' intializations and or whatever fits your needs */
+
+	return {
+		name: 'fn-[your-custom-name]-plugin',
+		provider: () => (...),  // Context provider
+		routes, // Object containing your routes
+		menuItems, // Function component that renders your menu items
+		header // Function component that renders your header
+	}
+}
+
+export default MyPlugin
 
 ```
 
