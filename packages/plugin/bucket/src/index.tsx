@@ -11,7 +11,7 @@ import { initBucketStore } from './model'
 import { FirebormStore } from 'fireborm'
 
 export const PluginRoutes = {
-	collection: new FirenookRoute({
+	buckets: new FirenookRoute({
 		element: BucketList,
 		path: 'b/:bid'
 	})
