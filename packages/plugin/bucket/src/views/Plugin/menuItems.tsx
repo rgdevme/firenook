@@ -15,7 +15,7 @@ export const MenuItems = () => {
 				action={<IconBtn icon={TbCirclePlus} onPress={() => set(true)} />}
 			/>
 			{buckets.map(curr => (
-				<MenuItem key={curr.path} path={`c/${curr.path}`} label={curr.name} />
+				<MenuItem key={curr.path} path={`b/${curr.path}`} label={curr.name} />
 			))}
 		</>
 	)
