@@ -132,3 +132,4 @@ dist
 .vscode
 .vite
 backup
+firebase.config.json
