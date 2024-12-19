@@ -19,7 +19,7 @@ export const initializePlugins = (plugins: FirenookPlugin[]): PluginsOutput => {
 	let PluginsProvider: FirenookProvider = ({ children }) => children
 
 	plugins.forEach(({ provider: NewProvider, ...plugin }) => {
-		if (plugin.routes) routes = plugin.routes
+		if (plugin.routes) routes = { ...routes, ...plugin.routes }
 		if (plugin.menuItems) menuItems.push(plugin.menuItems)
 		if (plugin.header) header.push(plugin.header)
 		if (NewProvider) {
