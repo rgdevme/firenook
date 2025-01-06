@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-export type PluginFunction = () => Plugin
+export type PluginFunction = () => Plugin | Promise<Plugin>
 
 export interface Plugin {
 	name: string
