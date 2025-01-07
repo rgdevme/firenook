@@ -9,6 +9,7 @@ import { PrivateLayout } from './componets/layout/private'
 import { PublicLayout } from './componets/layout/public'
 import {
 	authed,
+	getSettingsStore,
 	orm,
 	pluginRoutes,
 	pluginsFunctions,
@@ -18,6 +19,7 @@ import {
 import { FirenookPluginFunction } from './types'
 
 export * from './types'
+export { getSettingsStore }
 export const getFireborm = () => orm.get()
 
 export const initializeFirenookConnection = (
@@ -52,6 +54,7 @@ export const Firenook = ({ logo, plugins }: FirenookProps) => {
 const App = () => {
 	useAtomValue(ps)
 	const routes = useAtomValue(pluginRoutes.atom)
+
 	const { app } = useAtomValue(orm.atom)
 	const auth = getAuth(app)
 

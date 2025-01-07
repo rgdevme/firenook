@@ -1,7 +1,7 @@
 import { Fireborm } from 'fireborm'
 import { atom, createStore, ExtractAtomValue, SetStateAction } from 'jotai'
-import { FirenookPluginFunction } from './types'
 import { FC } from 'react'
+import { FirenookPluginFunction } from './types'
 
 export const state = createStore() as ReturnType<typeof createStore>
 
@@ -16,6 +16,23 @@ const createAtom = <T>(value?: T) => {
 
 export const orm = createAtom<Fireborm>(undefined)
 export const ormReady = atom(get => !!get(orm.atom))
+
+const settingsStoreAtom = atom(get => {
+	return get(orm.atom)?.createStore({
+		singular: 'Settings',
+		plural: 'Settings',
+		path: '_settings',
+		defaultData: {},
+		toDocument: ({ _ref, id, ...doc }) => doc,
+		toModel: doc => {
+			const { id, ref } = doc
+			const data = doc.data()
+			return { id, _ref: ref, ...data }
+		}
+	})
+})
+
+export const getSettingsStore = () => state.get(settingsStoreAtom)
 
 export const pluginsFunctions = createAtom<FirenookPluginFunction[]>([])
 export const pluginRoutes = createAtom<
