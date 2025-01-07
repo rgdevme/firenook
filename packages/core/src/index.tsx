@@ -17,6 +17,7 @@ import {
 } from './context'
 import { FirenookPluginFunction } from './types'
 
+export * from './types'
 export const getFireborm = () => orm.get()
 
 export const initializeFirenookConnection = (
