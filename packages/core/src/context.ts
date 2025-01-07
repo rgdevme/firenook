@@ -43,18 +43,16 @@ export const plugins = atom(async get => {
 			}))
 		)
 		menu.push(
-			...Object.entries(m)
-				.map(([id, { element, priority = 10 }]) => ({
-					key: `${name}-${id}`,
-					element,
-					priority
-				}))
-				.sort((a, b) => a.priority - b.priority)
+			...Object.entries(m).map(([id, { element, priority = 10 }]) => ({
+				key: `${name}-${id}`,
+				element,
+				priority
+			}))
 		)
 	})
 
 	pluginRoutes.set(routes)
-	pluginMenu.set(menu)
+	pluginMenu.set(menu.sort((a, b) => a.priority - b.priority))
 })
 
 export const authed = createAtom(false)
