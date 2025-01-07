@@ -15,7 +15,7 @@ import {
 	plugins as ps,
 	state
 } from './context'
-import { PluginFunction } from './types'
+import { FirenookPluginFunction } from './types'
 
 export const getFireborm = () => orm.get()
 
@@ -28,7 +28,7 @@ export const initializeFirenookConnection = (
 
 export interface FirenookProps {
 	logo?: string
-	plugins: PluginFunction[]
+	plugins: FirenookPluginFunction[]
 }
 
 export const Firenook = ({ logo, plugins }: FirenookProps) => {
