@@ -29,11 +29,11 @@
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.4.0"
   },
-  "peerDependencies": {
-    "firebase": "^10.14.1",
-    "fireborm": "file:../../../fireborm"
-  },
   "dependencies": {
-    "jotai": "^2.11.0"
+    "firebase": "^10.14.1",
+    "fireborm": "file:../../../fireborm",
+    "jotai": "^2.11.0",
+    "react": "^19.0.0",
+    "react-router": "^7.1.1"
   }
 }
