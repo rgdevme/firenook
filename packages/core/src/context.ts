@@ -18,7 +18,7 @@ export const orm = createAtom<Fireborm>(undefined)
 export const ormReady = atom(get => !!get(orm.atom))
 
 const settingsStoreAtom = atom(get => {
-	return get(orm.atom)?.createStore({
+	return get(orm.atom)?.createStore<any>({
 		singular: 'Settings',
 		plural: 'Settings',
 		path: '_settings',
