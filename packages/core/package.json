@@ -25,11 +25,20 @@
     "bump": "npx bumpp"
   },
   "devDependencies": {
+    "@types/chroma-js": "^3.1.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "chroma-js": "^3.1.2",
+    "postcss": "^8.4.49",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^3.4.17",
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.4.0"
   },
   "dependencies": {
+    "@mantine/core": "^7.15.3",
+    "@mantine/hooks": "^7.15.3",
     "firebase": "^10.14.1",
     "fireborm": "file:../../../fireborm",
     "jotai": "^2.11.0",
