@@ -1,9 +1,12 @@
+import { MantineProvider } from '@mantine/core'
 import { FirebaseOptions } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { Fireborm, FirebormSettings } from 'fireborm'
 import { Provider, useAtomValue } from 'jotai'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
+import resolveConfig from 'tailwindcss/resolveConfig'
+import tailwindConfig from '../tailwind.config'
 import { Loading } from './componets/layout/loading'
 import { PrivateLayout } from './componets/layout/private'
 import { PublicLayout } from './componets/layout/public'
@@ -16,6 +19,8 @@ import {
 	plugins as ps,
 	state
 } from './context'
+import './index.css'
+import { ColorName, mantineColors } from './styles/colors'
 import { FirenookPluginFunction } from './types'
 
 export * from './types'
@@ -34,6 +39,8 @@ export interface FirenookProps {
 	plugins: FirenookPluginFunction[]
 }
 
+const { theme } = resolveConfig(tailwindConfig)
+
 export const Firenook = ({ logo, plugins }: FirenookProps) => {
 	useEffect(() => {
 		console.log('setting plugins functions')
@@ -42,11 +49,25 @@ export const Firenook = ({ logo, plugins }: FirenookProps) => {
 
 	return (
 		<Provider store={state}>
-			<BrowserRouter>
-				<Suspense fallback={<Loading />}>
-					<App />
-				</Suspense>
-			</BrowserRouter>
+			<MantineProvider
+				theme={{
+					colors: mantineColors,
+					defaultRadius: 'xl',
+					breakpoints: {
+						xs: theme.screens.sm,
+						sm: theme.screens.md,
+						md: theme.screens.lg,
+						lg: theme.screens.xl,
+						xl: theme.screens['2xl']
+					},
+					primaryColor: 'sky' as ColorName
+				}}>
+				<BrowserRouter>
+					<Suspense fallback={<Loading />}>
+						<App />
+					</Suspense>
+				</BrowserRouter>
+			</MantineProvider>
 		</Provider>
 	)
 }
