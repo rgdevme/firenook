@@ -60,6 +60,8 @@ export const Firenook = ({ logo, plugins }: FirenookProps) => {
 						lg: theme.screens.xl,
 						xl: theme.screens['2xl']
 					},
+					fontFamily: theme.fontFamily.sans.join(', '),
+					fontFamilyMonospace: theme.fontFamily.mono.join(', '),
 					primaryColor: 'sky' as ColorName
 				}}>
 				<BrowserRouter>
