@@ -19,7 +19,7 @@ import {
 	plugins as ps,
 	state
 } from './context'
-import './index.css'
+import './styles/index.css'
 import { ColorName, mantineColors } from './styles/colors'
 import { FirenookPluginFunction } from './types'
 
