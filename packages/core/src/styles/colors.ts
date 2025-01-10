@@ -1,30 +1,23 @@
-import {
-	DefaultMantineColor,
-	MantineColorsTuple,
-	MantineThemeColors,
-	colorsTuple
-} from '@mantine/core'
+import { DefaultMantineColor, MantineColorsTuple } from '@mantine/core'
 import chroma from 'chroma-js'
 import colors from 'tailwindcss/colors'
+import { DefaultColors } from 'tailwindcss/types/generated/colors'
 
 const getShades = (hex: string) =>
 	chroma.scale(['white', hex, 'black']).colors(10)
 
-const pallete = {
-	sky: colors.sky,
-	emerald: colors.emerald,
-	rose: colors.rose,
-	amber: colors.amber,
-	orange: colors.orange,
-	fuchsia: colors.fuchsia,
-	indigo: colors.indigo,
-	teal: colors.teal,
-	stone: colors.stone
-} as const
-
-export type ColorName = keyof typeof pallete
+export type ColorName =
+	| 'sky'
+	| 'emerald'
+	| 'rose'
+	| 'amber'
+	| 'orange'
+	| 'fuchsia'
+	| 'indigo'
+	| 'teal'
+	| 'stone'
 type ShadesNames =
-	| keyof Omit<(typeof pallete)[ColorName], '50' | '950'>
+	| keyof Omit<DefaultColors[ColorName], '50' | '950'>
 	| 'DEFAULT'
 
 type TailwindColors = {
@@ -34,7 +27,17 @@ type MantineColors = {
 	[name in ColorName]: MantineColorsTuple
 }
 
-export const [mantineColors, tailwindColors] = Object.entries(pallete).reduce(
+export const [mantineColors, tailwindColors] = Object.entries({
+	sky: colors.sky,
+	emerald: colors.emerald,
+	rose: colors.rose,
+	amber: colors.amber,
+	orange: colors.orange,
+	fuchsia: colors.fuchsia,
+	indigo: colors.indigo,
+	teal: colors.teal,
+	stone: colors.stone
+}).reduce(
 	(obj, [name, shades]) => {
 		const middleShade = shades[500]
 		const newShades = getShades(middleShade)
