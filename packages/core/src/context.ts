@@ -14,6 +14,8 @@ const createAtom = <T>(value?: T) => {
 	return { get, set, atom: atomAtom }
 }
 
+export const menuState = createAtom(false)
+
 export const orm = createAtom<Fireborm>(undefined)
 export const ormReady = atom(get => !!get(orm.atom))
 
