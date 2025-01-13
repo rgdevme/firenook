@@ -21,7 +21,7 @@
   "packageManager": "^npm@10.8.1",
   "scripts": {
     "build": "npm run build -w packages/**",
-    "watch": "npm run watch -w packages/**",
+    "watch:all": "node ./scripts/runWorkspaces.js watch",
     "bump": "npx bumpp"
   },
   "workspaces": [
@@ -32,6 +32,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "chalk": "^5.3.0",
+    "concurrently": "^9.1.2",
     "typescript": "5.4.2"
   }
 }
