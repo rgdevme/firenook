@@ -5,8 +5,6 @@ import { Fireborm, FirebormSettings } from 'fireborm'
 import { Provider, useAtomValue } from 'jotai'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
-import resolveConfig from 'tailwindcss/resolveConfig'
-import tailwindConfig from '../tailwind.config'
 import { Loading } from './componets/layout/loading'
 import { PrivateLayout } from './componets/layout/private'
 import { PublicLayout } from './componets/layout/public'
@@ -19,40 +17,52 @@ import {
 	plugins as ps,
 	state
 } from './context'
-import './styles/index.css'
 import { ColorName, mantineColors } from './styles/colors'
+import './styles/index.css'
+import { resolvedTailwindTheme as theme } from './styles/resolvedTailwindConfig'
 import { FirenookPluginFunction } from './types'
 
+export * from './componets'
 export * from './types'
 export { getSettingsStore }
 export const getFireborm = () => orm.get()
 
-export const initializeFirenookConnection = (
-	config: FirebaseOptions,
-	settings: FirebormSettings
-) => {
+interface InitFirebormProps {
+	config: FirebaseOptions
+	settings?: FirebormSettings
+	plugins?: FirenookPluginFunction[]
+}
+
+const initializeContext = async ({
+	config,
+	settings = {},
+	plugins = []
+}: InitFirebormProps) => {
 	orm.set(new Fireborm(config, settings))
+	pluginsFunctions.set(plugins)
+	console.log('setting plugins functions')
 }
 
-export interface FirenookProps {
+export interface FirenookProps extends InitFirebormProps {
 	logo?: string
-	plugins: FirenookPluginFunction[]
 }
 
-const { theme } = resolveConfig(tailwindConfig)
-
-export const Firenook = ({ logo, plugins }: FirenookProps) => {
+export const Firenook = ({
+	logo,
+	plugins,
+	config,
+	settings
+}: FirenookProps) => {
 	useEffect(() => {
-		console.log('setting plugins functions')
-		pluginsFunctions.set(plugins)
-	}, [])
+		initializeContext({ config, settings, plugins })
+	}, [plugins, config, settings])
 
 	return (
 		<Provider store={state}>
 			<MantineProvider
 				theme={{
 					colors: mantineColors,
-					defaultRadius: 'xl',
+					defaultRadius: 'md',
 					breakpoints: {
 						xs: theme.screens.sm,
 						sm: theme.screens.md,
@@ -78,11 +88,10 @@ const App = () => {
 	useAtomValue(ps)
 	const routes = useAtomValue(pluginRoutes.atom)
 
-	const { app } = useAtomValue(orm.atom)
-	const auth = getAuth(app)
+	const fireborm = useAtomValue(orm.atom)
+	const auth = getAuth(fireborm?.app)
 
 	useEffect(() => {
-		console.log('auth changed')
 		if (!auth) return
 		const unsub = auth.onAuthStateChanged(user => authed.set(!!user))
 		return unsub
@@ -90,11 +99,11 @@ const App = () => {
 
 	return (
 		<Routes>
-			<Route element={<PrivateLayout />}>
-				<Route index element={<div>Private</div>} />
-			</Route>
 			<Route element={<PublicLayout />}>
 				<Route path='login' element={<div>Public</div>} />
+			</Route>
+			<Route element={<PrivateLayout />}>
+				<Route index element={<div>Private</div>} />
 				{routes.map(({ element: E, key, path }) => (
 					<Route key={key} path={path} element={<E />} />
 				))}
