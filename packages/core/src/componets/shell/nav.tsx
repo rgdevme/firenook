@@ -1,8 +1,8 @@
-import { useAtomValue } from 'jotai'
-import { pluginMenu } from '../../context'
+import { MenuItemElement } from '../../context/app'
+import { useAppState } from '../../context/index'
 
 export function DoubleNavbar() {
-	const menuItems = useAtomValue(pluginMenu.atom)
+	const [menuItems] = useAppState<MenuItemElement[]>('menuItems')
 
 	return (
 		<nav>

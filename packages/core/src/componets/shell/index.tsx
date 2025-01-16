@@ -1,15 +1,14 @@
 import { AppShell, Burger } from '@mantine/core'
-import { useAtom } from 'jotai'
 import { FC, PropsWithChildren } from 'react'
 import { Outlet } from 'react-router'
-import { menuState } from '../../context'
+import { useAppState } from '../../context/index'
 import { DoubleNavbar } from './nav'
 
 const SIDEBAR_MINW = 56
 const SIDEBAR_BP = 'xs'
 
 export const Shell: FC<PropsWithChildren> = () => {
-	const [opened, setOpened] = useAtom(menuState.atom)
+	const [opened, setOpened] = useAppState<boolean>('menuState')
 	const toggle = () => setOpened(p => !p)
 
 	return (
