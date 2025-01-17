@@ -2,7 +2,7 @@ import { MantineProvider } from '@mantine/core'
 import { FirebaseOptions } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { Fireborm, FirebormSettings } from 'fireborm'
-import { Provider } from 'jotai'
+import { Provider, useAtomValue } from 'jotai'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { Loading } from './componets/layout/loading'
@@ -14,11 +14,11 @@ import {
 	MenuItemElement,
 	RouteElement
 } from './context/app'
+import { state } from './context/utils'
 import { ColorName, mantineColors } from './styles/colors'
 import './styles/index.css'
 import { resolvedTailwindTheme as theme } from './styles/resolvedTailwindConfig'
 import { FirenookPluginFunction } from './types'
-import { state } from './context/utils'
 
 export * from './componets'
 export * from './context'
@@ -105,9 +105,8 @@ export const Firenook = ({
 }
 
 const App = () => {
-	// useAtomValue(ps)
+	const fireborm = useAtomValue(getAppState<Fireborm>('fireborm').atom)
 	const [routes] = useAppState<RouteElement[]>('routes')
-	const [fireborm] = useAppState<Fireborm>('fireborm')
 	const auth = !fireborm ? null : getAuth(fireborm?.app)
 
 	useEffect(() => {
