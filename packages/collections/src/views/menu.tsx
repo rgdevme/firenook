@@ -1,21 +1,24 @@
-import { getAppState, MenuItem } from '@firenook/core'
+import { MenuItem, useAppState } from '@firenook/core'
 import { Menu } from '@mantine/core'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect } from 'react'
 import { TbFolders, TbPlus } from 'react-icons/tb'
 import { Link, matchPath, useLocation } from 'react-router'
 import { CollectionData, CollectionStore } from '../types/collection'
 
 export const CollectionMenu: FC = () => {
-	const store = getAppState<CollectionStore>('settingsStore').get()
 	const { pathname } = useLocation()
-	const [collections, setCollections] = useState<
-		Record<string, CollectionData>
-	>({})
+	const [store] = useAppState<CollectionStore>('settingsStore')
+	const [collections, setCollections] =
+		useAppState<CollectionData[]>('collections')
 
 	useEffect(() => {
 		const unsub = store.subscribe('col', {
 			onChange: data => {
-				setCollections(data ?? {})
+				setCollections(
+					Object.entries(data || {})
+						.filter(([k]) => !['id', '_ref'].includes(k))
+						.map(([_, v]) => v as (typeof collections)[number])
+				)
 			}
 		})
 		return unsub
@@ -39,20 +42,22 @@ export const CollectionMenu: FC = () => {
 			</Menu.Target>
 
 			<Menu.Dropdown>
-				<Menu.Label>Collections</Menu.Label>
-				{Object.entries(collections).map(([key, value]) =>
-					['id', '_ref'].includes(key) ? null : (
-						<Menu.Item
-							key={key}
-							component={Link}
-							to={`/col/${key}`}
-							data-active={!!matchPath(pathname, `/col/${key}`)}
-							className='text-sm text-stone-500 *:data-[active=true]:text-sky'>
-							{value.plural}
-						</Menu.Item>
-					)
+				{collections.length && (
+					<>
+						<Menu.Label>Collections</Menu.Label>
+						{collections.map(col => (
+							<Menu.Item
+								key={col.path}
+								component={Link}
+								to={`/col/${col.path}`}
+								data-active={!!matchPath(pathname, `/col/${col.path}`)}
+								className='text-sm text-stone-500 *:data-[active=true]:text-sky'>
+								{col.plural}
+							</Menu.Item>
+						))}
+						<Menu.Divider />
+					</>
 				)}
-				<Menu.Divider />
 				<Menu.Item
 					component={Link}
 					to='/col/new'

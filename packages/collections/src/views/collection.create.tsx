@@ -57,7 +57,8 @@ export const CreateCollection: FC<{
 			plural: '',
 			singular: '',
 			defaultData: {},
-			schema: []
+			schema: [],
+			showId: true
 		},
 		validateInputOnChange: true,
 		onValuesChange: (current, previous) => {
@@ -70,13 +71,6 @@ export const CreateCollection: FC<{
 			if (current.plural === getPlural(previous.singular)) {
 				form.setFieldValue('plural', getPlural(current.singular))
 			}
-		},
-		transformValues: values => {
-			const transformed = { ...values }
-
-			transformed.path = '/' + transformed.path
-
-			return transformed
 		},
 		validate: {
 			path: isNotEmpty('Please provide a path'),
@@ -104,9 +98,8 @@ export const CreateCollection: FC<{
 	}
 
 	const handleSubmit = async (data: CollectionData) => {
-		const col_id = data.path.replace('/', '')
-		await store.save('col', { [col_id]: data } as any)
-		nav(`/col/${col_id}`)
+		await store.save('col', { [data.path]: data } as any)
+		nav(`/col/${data.path}`)
 	}
 
 	const { left, right } = form.getValues().schema.reduce(
@@ -184,12 +177,22 @@ export const CreateCollection: FC<{
 						{...form.getInputProps('path', { type: 'input' })}
 					/>
 				</SimpleGrid>
-				<Switch
-					label='Allow custom IDs'
-					description='Allow for the user to define a personalized ID instead of using an auto-generated one.'
-					key={form.key('customId')}
-					{...form.getInputProps('customId', { type: 'checkbox' })}
-				/>
+				<Flex>
+					<Switch
+						label='Allow custom IDs'
+						flex='1 1 auto'
+						description='Allow for the user to define a personalized ID instead of using an auto-generated one.'
+						key={form.key('customId')}
+						{...form.getInputProps('customId', { type: 'checkbox' })}
+					/>
+					<Switch
+						label='Show ID'
+						flex='1 1 auto'
+						description='Show ID as the first cell in the row.'
+						key={form.key('showId')}
+						{...form.getInputProps('showId', { type: 'checkbox' })}
+					/>
+				</Flex>
 				<Divider label={<Title order={4}>Schema</Title>} labelPosition='left' />
 				<Grid>
 					<Grid.Col span={{ md: 8, xs: 12 }}>

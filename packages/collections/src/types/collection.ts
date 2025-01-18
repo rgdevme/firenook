@@ -8,6 +8,7 @@ export type CollectionData = {
 	customId: boolean
 	schema: SchemaProperty[]
 	defaultData: object
+	showId: boolean
 }
 
 export type CollectionDoc = { [col_id: string]: CollectionData }
