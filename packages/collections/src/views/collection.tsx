@@ -1,17 +1,43 @@
+import { useAppState } from '@firenook/core'
 import { ActionIcon, Button, Flex, Menu, Table, TextInput } from '@mantine/core'
-import { FirebormStore } from 'fireborm'
-import { FC, useEffect } from 'react'
+import { Fireborm, FirebormStore } from 'fireborm'
+import { FC, useEffect, useState } from 'react'
 import { TbDotsVertical, TbFilter, TbPlus, TbSearch } from 'react-icons/tb'
+import { useParams } from 'react-router'
+import { CollectionData } from '../types/collection'
+import { SchemaProperty } from '../types/schema'
 
 export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
-	// const fireborm = getAppState<Fireborm>('fireborm').get()
-	// const store = fireborm.createStore({})
+	const { col_id } = useParams()
+	const [fireborm] = useAppState<Fireborm>('fireborm')
+	const [collections] = useAppState<CollectionData[]>('collections')
+	const collection = collections.find(x => x.path === col_id)
+	const [rows, setRows] = useState<any[]>([])
+	const [headers, setHeaders] = useState<SchemaProperty[]>([])
 
 	useEffect(() => {
-		console.log()
-	}, [])
+		setRows([])
+		setHeaders([])
+		if (!collection) return
+		setHeaders(getTableHeads(collection))
+		const store = fireborm.createStore({
+			...collection,
+			toModel: doc => {
+				const { id, ref } = doc
+				return {
+					id,
+					_ref: ref,
+					...doc.data()
+				}
+			},
+			toDocument: ({ id, _ref, ...doc }) => doc
+		})
+		store.subscribeMany({ where: [], onChange: setRows })
+	}, [collection])
 
-	return (
+	return !collection ? (
+		'loading'
+	) : (
 		<div>
 			<Flex gap='md'>
 				<TextInput
@@ -50,14 +76,43 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 					</Menu.Dropdown>
 				</Menu>
 			</Flex>
+			{/* Replace with https://v2.mantine-react-table.com/ */}
 			<Table
 				highlightOnHover
 				withColumnBorders
 				stickyHeader
 				stickyHeaderOffset={60}
-				verticalSpacing='xs'
-				data={{ head: ['Head'], body: [['Jimmy']] }}
-			/>
+				verticalSpacing='xs'>
+				<Table.Thead>
+					<Table.Tr>
+						{headers.map(header => (
+							<Table.Th key={header.id}>
+								{header.label}
+								{' ['}
+								{[header.sortable && 'S', header.filterable && 'F']
+									.filter(x => x)
+									.join('-')}
+								{']'}
+							</Table.Th>
+						))}
+					</Table.Tr>
+				</Table.Thead>
+				<Table.Tbody>
+					{rows.map(row => (
+						<Table.Tr key={row.id}>
+							{headers.map(header => (
+								<Table.Td key={`${row.id}-${header.id}`}>
+									{row[header.name]}
+								</Table.Td>
+							))}
+						</Table.Tr>
+					))}
+				</Table.Tbody>
+			</Table>
 		</div>
 	)
+}
+
+const getTableHeads = (collection: CollectionData) => {
+	return collection.schema.filter(x => x.show)
 }
