@@ -1,39 +1,131 @@
 import { useAppState } from '@firenook/core'
-import { ActionIcon, Button, Flex, Menu, Table, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Flex, Menu, Text, TextInput } from '@mantine/core'
 import { Fireborm, FirebormStore } from 'fireborm'
-import { FC, useEffect, useState } from 'react'
-import { TbDotsVertical, TbFilter, TbPlus, TbSearch } from 'react-icons/tb'
-import { useParams } from 'react-router'
+import {
+	MantineReactTable,
+	useMantineReactTable,
+	type MRT_ColumnDef
+} from 'mantine-react-table'
+import { FC, useEffect, useMemo, useState } from 'react'
+import {
+	TbDotsVertical,
+	TbFilter,
+	TbPlus,
+	TbSearch,
+	TbTrash
+} from 'react-icons/tb'
+import { Link, useParams } from 'react-router'
 import { CollectionData } from '../types/collection'
-import { SchemaProperty } from '../types/schema'
 
 export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 	const { col_id } = useParams()
 	const [fireborm] = useAppState<Fireborm>('fireborm')
 	const [collections] = useAppState<CollectionData[]>('collections')
 	const collection = collections.find(x => x.path === col_id)
-	const [rows, setRows] = useState<any[]>([])
-	const [headers, setHeaders] = useState<SchemaProperty[]>([])
+	const store = useMemo(
+		() =>
+			!collection
+				? undefined
+				: fireborm.createStore({
+						...collection,
+						toModel: doc => {
+							const { id, ref } = doc
+							return {
+								id,
+								_ref: ref,
+								...doc.data()
+							}
+						},
+						toDocument: ({ id, _ref, ...doc }) => doc
+				  }),
+		[collection]
+	)
+
+	const [data, setData] = useState<any[]>([])
+	const columns = useMemo<MRT_ColumnDef<any>[]>(() => {
+		const cols: MRT_ColumnDef<any>[] = []
+		if (!collection) return cols
+
+		if (collection.showId) {
+			cols.push({
+				header: 'ID',
+				accessorKey: 'id',
+				enableSorting: false,
+				enableColumnFilter: false,
+				enableClickToCopy: true,
+				grow: false,
+				maxSize: 200,
+				minSize: 10
+			})
+		}
+
+		collection.schema.forEach((column, index) => {
+			cols.push({
+				header: column.label,
+				accessorKey: column.name,
+				enableSorting: column.sortable,
+				enableColumnFilter: column.filterable,
+				Cell: ({ row }) => {
+					return (
+						<Flex gap='xs' align='center'>
+							<Text flex='1 1 auto'>{row.original[column.name]}</Text>
+							{!index && (
+								<>
+									<Button
+										variant='light'
+										size='xs'
+										component={Link}
+										to={`/col/${col_id}/doc/${row.original.id}`}>
+										Edit
+									</Button>
+									<Menu>
+										<Menu.Target>
+											<ActionIcon variant='light' size='md'>
+												<TbDotsVertical />
+											</ActionIcon>
+										</Menu.Target>
+										<Menu.Dropdown>
+											<Menu.Item
+												leftSection={<TbTrash />}
+												onClick={() => store?.destroy(row.original.id)}>
+												Delete
+											</Menu.Item>
+										</Menu.Dropdown>
+									</Menu>
+								</>
+							)}
+						</Flex>
+					)
+				}
+			})
+		})
+
+		return cols
+	}, [store])
+	const table = useMantineReactTable({
+		enableRowSelection: true,
+		enableSelectAll: true,
+		enableDensityToggle: false,
+		enableFullScreenToggle: false,
+		columns,
+		data,
+		layoutMode: 'grid',
+		initialState: { density: 'xs' },
+		mantinePaperProps: {
+			withBorder: false,
+			shadow: undefined
+		},
+		onPaginationChange: console.log,
+		onSortingChange: console.log,
+		onGlobalFilterChange: console.log,
+		onColumnOrderChange: console.log,
+		onColumnFiltersChange: console.log
+	})
 
 	useEffect(() => {
-		setRows([])
-		setHeaders([])
-		if (!collection) return
-		setHeaders(getTableHeads(collection))
-		const store = fireborm.createStore({
-			...collection,
-			toModel: doc => {
-				const { id, ref } = doc
-				return {
-					id,
-					_ref: ref,
-					...doc.data()
-				}
-			},
-			toDocument: ({ id, _ref, ...doc }) => doc
-		})
-		store.subscribeMany({ where: [], onChange: setRows })
-	}, [collection])
+		if (!store) return
+		store.subscribeMany({ where: [], onChange: setData })
+	}, [store])
 
 	return !collection ? (
 		'loading'
@@ -53,13 +145,14 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 						</ActionIcon>
 					</Menu.Target>
 					<Menu.Dropdown>
-						<Menu.Label>Collection options</Menu.Label>
-						<Menu.Item>Edit</Menu.Item>
-						<Menu.Item>Delete Collection</Menu.Item>
-						<Menu.Item>Standardize</Menu.Item>
+						<Menu.Label>Filtering options</Menu.Label>
 					</Menu.Dropdown>
 				</Menu>
-				<Button variant='light' leftSection={<TbPlus />}>
+				<Button
+					variant='light'
+					leftSection={<TbPlus />}
+					component={Link}
+					to={`/col/${col_id}/new`}>
 					New
 				</Button>
 				<Menu position='bottom-end'>
@@ -70,49 +163,16 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Label>Collection options</Menu.Label>
-						<Menu.Item>Edit</Menu.Item>
+						<Menu.Item component={Link} to={`/col/${col_id}/edit`}>
+							Edit
+						</Menu.Item>
 						<Menu.Item>Delete Collection</Menu.Item>
 						<Menu.Item>Standardize</Menu.Item>
 					</Menu.Dropdown>
 				</Menu>
 			</Flex>
-			{/* Replace with https://v2.mantine-react-table.com/ */}
-			<Table
-				highlightOnHover
-				withColumnBorders
-				stickyHeader
-				stickyHeaderOffset={60}
-				verticalSpacing='xs'>
-				<Table.Thead>
-					<Table.Tr>
-						{headers.map(header => (
-							<Table.Th key={header.id}>
-								{header.label}
-								{' ['}
-								{[header.sortable && 'S', header.filterable && 'F']
-									.filter(x => x)
-									.join('-')}
-								{']'}
-							</Table.Th>
-						))}
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>
-					{rows.map(row => (
-						<Table.Tr key={row.id}>
-							{headers.map(header => (
-								<Table.Td key={`${row.id}-${header.id}`}>
-									{row[header.name]}
-								</Table.Td>
-							))}
-						</Table.Tr>
-					))}
-				</Table.Tbody>
-			</Table>
+
+			<MantineReactTable table={table} />
 		</div>
 	)
-}
-
-const getTableHeads = (collection: CollectionData) => {
-	return collection.schema.filter(x => x.show)
 }
