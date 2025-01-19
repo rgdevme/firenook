@@ -13,7 +13,7 @@ import {
 	Title
 } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
-import { FC, ReactNode, useMemo } from 'react'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
 import {
 	TbCategoryPlus,
 	TbChevronDown,
@@ -41,7 +41,10 @@ const examples = [
 export const CreateCollection: FC<{
 	edit?: true
 }> = ({ edit = false }) => {
-	const store = getAppState<CollectionStore>('settingsStore').get()
+	const { col_id } = useParams()
+	const [store] = useAppState<CollectionStore>('settingsStore')
+	const [collections] = useAppState<CollectionData[]>('collections')
+
 	const nav = useNavigate()
 
 	const [singularPlaceholder, pluralPlaceholder, pathPlaceholder] = useMemo(
@@ -117,6 +120,14 @@ export const CreateCollection: FC<{
 		{ left: [], right: [] } as { left: ReactNode[]; right: ReactNode[] }
 	)
 
+	useEffect(() => {
+		if (!col_id) return
+		const collection = collections.find(x => x.path === col_id)
+		if (!collection) return
+		form.setInitialValues(collection)
+		form.reset()
+	}, [col_id, collections])
+
 	return (
 		<Flex gap='sm' direction='column'>
 			<Flex direction='row' justify='space-between'>
@@ -126,7 +137,7 @@ export const CreateCollection: FC<{
 						Cancel
 					</Button>
 					<Button type='submit' form='collection-create'>
-						{edit ? 'Edit' : 'Create'}
+						{edit ? 'Save' : 'Create'}
 					</Button>
 				</Flex>
 			</Flex>
@@ -225,9 +236,9 @@ export const CreateCollection: FC<{
 	)
 }
 
-import { getAppState } from '@firenook/core'
+import { useAppState } from '@firenook/core'
 import { useDebouncedCallback, useElementSize, useToggle } from '@mantine/hooks'
-import { useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 
 const ProvisionalPropertyComponent = ({
 	onChange,
