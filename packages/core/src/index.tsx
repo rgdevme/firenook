@@ -1,4 +1,4 @@
-import { MantineProvider } from '@mantine/core'
+import { ActionIcon, MantineProvider } from '@mantine/core'
 import { FirebaseOptions } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { Fireborm, FirebormSettings } from 'fireborm'
@@ -83,6 +83,11 @@ export const Firenook = ({
 				theme={{
 					colors: mantineColors,
 					defaultRadius: 'md',
+					components: {
+						ActionIcon: ActionIcon.extend({
+							defaultProps: { size: 'sm' }
+						})
+					},
 					breakpoints: {
 						xs: theme.screens.sm,
 						sm: theme.screens.md,
