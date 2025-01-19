@@ -23,7 +23,7 @@ export const registerAppState = <T = undefined>(
 	const registered = getRegisteredAppStates()
 
 	if (!override && key in registered) {
-		throw new Error('This state already exists')
+		throw new Error(`State ${key} already exists`)
 	}
 
 	console.log('state:', key, typeof value)
@@ -45,7 +45,7 @@ export const getAppState = <T>(key: string) => {
 	const atoms = getRegisteredAppStates()
 
 	if (!(key in atoms)) {
-		throw new Error("App state doesn't exist")
+		throw `${key} state doesn't exist`
 	}
 	return atoms[key] as AppState<T>
 }
