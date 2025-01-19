@@ -1,15 +1,7 @@
-export interface SchemaProperty {
-	defaultValue: any // Depends on type
-	filterable: boolean
+import { PropertySchema } from '../components/property/property'
+
+export interface SchemaProperty extends Omit<PropertySchema, 'element'> {
 	id: ReturnType<Crypto['randomUUID']>
-	isArray: boolean
-	label: string
-	name: string
-	nullable: boolean
-	show: boolean
-	side: 'left' | 'right'
-	sortable: boolean
-	type: string // Modify later
 }
 
 export interface ComputedSchemaProperty extends SchemaProperty {
@@ -26,6 +18,7 @@ export const getDefaultSchemaProperty = (
 	isArray: false,
 	label: '',
 	name: '',
+	description: '',
 	nullable: true,
 	show: true,
 	sortable: true,
