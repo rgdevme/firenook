@@ -1,11 +1,31 @@
 import { getAppState, useAppState } from '@firenook/core'
 import { PropertySchema } from './property'
+import { CollectionData } from '../../types/collection'
+import { useMemo } from 'react'
 
 const getPropertiesSchemas = () =>
 	getAppState<Map<string, PropertySchema>>('property_schema').get()
 
-export const usePropertiesSchemas = () =>
-	useAppState<Map<string, PropertySchema>>('property_schema')
+export const usePropertiesSchemas = (
+	collection: CollectionData | undefined
+): PropertySchema[] => {
+	const [properties] =
+		useAppState<Map<string, PropertySchema>>('property_schema')
+
+	return useMemo(
+		() =>
+			(collection?.schema ?? []).map(col_schema => {
+				const { element, filter, cell } = properties.get(col_schema.type)!
+				return {
+					...col_schema,
+					element,
+					filter,
+					cell
+				} as PropertySchema
+			}),
+		[properties, collection]
+	)
+}
 
 export const getPropertySchema = (name: string) => {
 	const properties = getPropertiesSchemas()
@@ -14,19 +34,16 @@ export const getPropertySchema = (name: string) => {
 	return
 }
 
-export const registerPropertySchema = <
-	T extends Omit<PropertySchema, 'id' | 'type'> = PropertySchema
->(
-	type: string,
-	propertySchema: T
+export const registerPropertySchema = (
+	propertySchema: Omit<PropertySchema, 'id'>
 ) => {
 	const properties = getPropertiesSchemas()
 
-	if (!properties.has(type)) {
-		properties.set(type, { ...propertySchema, type: type })
+	if (!properties.has(propertySchema.type)) {
+		properties.set(propertySchema.type, propertySchema as PropertySchema)
 	} else {
 		console.error(
-			`Attempt to register ${type} property schema failed, as property schemas cant be overwritten.`
+			`Attempt to register ${propertySchema.type} property schema failed, as property schemas cant be overwritten.`
 		)
 	}
 }
