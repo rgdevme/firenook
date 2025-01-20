@@ -13,8 +13,9 @@ import { CollectionMenu } from './views/menu'
 
 import '@mantine/dates/styles.css' //if using mantine date picker features
 import 'mantine-react-table/styles.css' //import MRT styles
-import { NumberField, StringField } from './components/property'
+import { NumberField } from './components/property/number'
 import { registerPropertySchema } from './components/property/context'
+import { StringField } from './components/property/string'
 
 export const Collections: FirenookPluginFunction = () => {
 	const store = getAppState<FirebormStore<{}>>('settingsStore').get()
@@ -22,7 +23,8 @@ export const Collections: FirenookPluginFunction = () => {
 	registerAppState<CollectionData[]>('collections', [], true)
 	registerAppState('property_schema', new Map())
 
-	registerPropertySchema('string', {
+	registerPropertySchema({
+		type: 'string',
 		name: '',
 		label: '',
 		description: '',
@@ -33,10 +35,13 @@ export const Collections: FirenookPluginFunction = () => {
 		nullable: false,
 		show: true,
 		sortable: true,
-		element: StringField
+		element: StringField,
+		filter: () => null,
+		cell: () => null
 	})
 
-	registerPropertySchema('number', {
+	registerPropertySchema({
+		type: 'number',
 		name: '',
 		label: '',
 		description: '',
@@ -47,7 +52,9 @@ export const Collections: FirenookPluginFunction = () => {
 		nullable: false,
 		show: true,
 		sortable: true,
-		element: NumberField
+		element: NumberField,
+		filter: () => null,
+		cell: () => null
 	})
 
 	return {

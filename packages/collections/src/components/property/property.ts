@@ -1,7 +1,7 @@
 import { GetInputPropsReturnType } from '@mantine/form/lib/types'
 import { FC } from 'react'
 
-export interface PropertySchema {
+export interface BasePropertySchema {
 	defaultValue: any // Depends on type
 	filterable: boolean
 	isArray: boolean
@@ -12,26 +12,30 @@ export interface PropertySchema {
 	show: boolean
 	side: 'left' | 'right'
 	sortable: boolean
-	type: string // Modify later
-	element: FC<FieldProps<PropertySchema>>
+	element: FC<any>
+	filter?: FC<any>
+	cell?: FC<any>
+	type: string
 }
 
-type FieldProps<P extends PropertySchema> = Omit<P, 'element'> & {
-	dirty: boolean
-	submitting: boolean
-	inputProps: GetInputPropsReturnType
-}
-
-export interface StringPropertySchema extends PropertySchema {
+export interface StringPropertySchema extends BasePropertySchema {
+	type: 'string'
 	defaultValue: string
 	minLength?: number
 	maxLength?: number
 	prefix?: string
 	suffix?: string
+	searchable?: boolean
 	element: FC<FieldProps<StringPropertySchema>>
+	filter: FC<{
+		fields: StringPropertySchema[]
+		inputProps: GetInputPropsReturnType
+	}>
+	cell: FC<FieldProps<StringPropertySchema>>
 }
 
-export interface NumberPropertySchema extends PropertySchema {
+export interface NumberPropertySchema extends BasePropertySchema {
+	type: 'number'
 	defaultValue: number
 	min?: number
 	max?: number
@@ -39,4 +43,19 @@ export interface NumberPropertySchema extends PropertySchema {
 	prefix?: string
 	suffix?: string
 	element: FC<FieldProps<NumberPropertySchema>>
+	filter: FC<
+		NumberPropertySchema & {
+			minInputProps: GetInputPropsReturnType
+			maxInputProps: GetInputPropsReturnType
+		}
+	>
+	cell: FC<FieldProps<NumberPropertySchema>>
+}
+
+export type PropertySchema = StringPropertySchema | NumberPropertySchema
+
+type FieldProps<P> = Omit<P, 'element'> & {
+	dirty: boolean
+	submitting: boolean
+	inputProps: GetInputPropsReturnType
 }
