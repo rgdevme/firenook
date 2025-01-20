@@ -1,12 +1,12 @@
 import { ConvertedModel, DefaultModel, FirebormStore } from 'fireborm'
-import { SchemaProperty } from './schema'
+import { PropertySchema } from '../components/property/property'
 
 export type CollectionData = {
 	path: string
 	singular: string
 	plural: string
 	customId: boolean
-	schema: SchemaProperty[]
+	schema: PropertySchema[]
 	defaultData: object
 	showId: boolean
 }
