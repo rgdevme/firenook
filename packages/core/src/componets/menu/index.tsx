@@ -2,6 +2,7 @@ import { Button, Menu } from '@mantine/core'
 import { PropsWithChildren } from 'react'
 import { IconType } from 'react-icons'
 import { useAppState } from '../../context'
+export * from './link'
 
 export const MenuDivider = Menu.Divider
 export const MenuItem = Menu.Item
