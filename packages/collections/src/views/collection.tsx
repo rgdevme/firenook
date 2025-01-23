@@ -49,7 +49,7 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 	const [count, setCount] = useState(0)
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 2
+		pageSize: 20
 	})
 	const [pointers, setPointers] = useState({
 		first: null as null | any,
