@@ -1,14 +1,9 @@
 import { useForm } from '@mantine/form'
 import { useDebouncedValue } from '@mantine/hooks'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { PropertySchema } from '../components/property/property'
 
 export const useQueryFilter = (schemas: PropertySchema[] | undefined = []) => {
-	const stringFilters = useMemo(
-		() => schemas.filter(x => x.type === 'string'),
-		[schemas]
-	)
-
 	const filter = useForm({
 		initialValues: {
 			searchBy: '',
@@ -24,9 +19,10 @@ export const useQueryFilter = (schemas: PropertySchema[] | undefined = []) => {
 	const [debounced] = useDebouncedValue(filter.getValues(), 300)
 
 	useEffect(() => {
-		if (!stringFilters?.[0]) return
+		const stringFilters = schemas.filter(x => x.type === 'string')
+		if (!stringFilters.length) return
 		filter.setValues({ searchBy: stringFilters?.[0].name })
-	}, [stringFilters])
+	}, [schemas])
 
 	return {
 		values: filter.getTransformedValues(),
