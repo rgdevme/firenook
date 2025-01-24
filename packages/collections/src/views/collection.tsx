@@ -1,129 +1,56 @@
 import {
 	ActionIcon,
 	Button,
-	CopyButton,
 	Flex,
 	Menu,
 	Popover,
 	Text,
-	TextInput,
-	Tooltip
+	TextInput
 } from '@mantine/core'
 import { FirebormStore } from 'fireborm'
-import {
-	MantineReactTable,
-	useMantineReactTable,
-	type MRT_ColumnDef
-} from 'mantine-react-table'
-import { FC, useMemo } from 'react'
-import {
-	TbCheck,
-	TbDotsVertical,
-	TbFilter,
-	TbKey,
-	TbPencil,
-	TbPlus,
-	TbSearch,
-	TbTrash
-} from 'react-icons/tb'
+import { MantineReactTable, useMantineReactTable } from 'mantine-react-table'
+import { FC } from 'react'
+import { TbDotsVertical, TbFilter, TbPlus, TbSearch } from 'react-icons/tb'
 import { Link, useParams } from 'react-router'
+import {
+	Cell,
+	CellActionCopy,
+	CellActionEdit,
+	CellActionTrash
+} from '../components/cell'
 import { usePropertiesSchemas } from '../components/property/context'
 import { StringFilter } from '../components/property/string'
 import { useCollectionStore } from '../context/collections'
 import { useQueryResult } from '../hooks/useQueryresult'
+import { useTableColumns } from '../hooks/useTableColumns'
 
 export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 	const { col_id } = useParams()
 	const { collection, store } = useCollectionStore()
-
-	const [query, { onPaginationChange, getInputProps }] = useQueryResult()
-
 	const schemas = usePropertiesSchemas(collection)
-	const stringFilters = useMemo(
-		() => schemas.filter(x => x.type === 'string'),
-		[schemas]
-	)
-
-	const columns = useMemo<MRT_ColumnDef<any>[]>(() => {
-		const cols: MRT_ColumnDef<any>[] = []
-		if (!collection) return cols
-
-		collection.schema.forEach((column, index) => {
-			cols.push({
-				header: column.label,
-				accessorKey: column.name,
-				enableSorting: column.sortable,
-				enableColumnFilter: column.filterable,
-				Cell: ({ row }) => {
-					return (
-						<Flex gap='xs' align='center' w='100%'>
-							<Text flex='1 1 auto'>{row.original[column.name]}</Text>
-							{!index && (
-								<>
-									<CopyButton value={row.original.id} timeout={2000}>
-										{({ copied, copy }) => (
-											<Tooltip
-												label={copied ? 'ID copied' : 'Copy ID'}
-												position='left'>
-												<ActionIcon
-													variant='subtle'
-													color='stone.3'
-													size='md'
-													onClick={copy}>
-													{copied ? <TbCheck /> : <TbKey />}
-												</ActionIcon>
-											</Tooltip>
-										)}
-									</CopyButton>
-
-									<Tooltip label='Edit' position='left'>
-										<ActionIcon
-											variant='light'
-											size='md'
-											component={Link}
-											to={`/col/${col_id}/doc/${row.original.id}`}>
-											<TbPencil />
-										</ActionIcon>
-									</Tooltip>
-
-									<Menu>
-										<Menu.Target>
-											<ActionIcon variant='subtle' color='stone.3' size='md'>
-												<TbDotsVertical />
-											</ActionIcon>
-										</Menu.Target>
-										<Menu.Dropdown>
-											<Menu.Label>Row actions</Menu.Label>
-											<Menu.Item
-												leftSection={<TbTrash />}
-												onClick={() => store?.destroy(row.original.id)}>
-												Delete
-											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
-								</>
-							)}
-						</Flex>
-					)
-				}
-			})
-		})
-
-		if (cols.length === 0) {
-			cols.push({
-				header: 'ID',
-				accessorKey: 'id',
-				enableSorting: false,
-				enableColumnFilter: false,
-				enableClickToCopy: true,
-				grow: false,
-				maxSize: 200,
-				minSize: 10
-			})
+	const [query, { onPaginationChange, getInputProps }] = useQueryResult()
+	const stringFilters = schemas.filter(x => x.type === 'string')
+	const columns = useTableColumns({
+		cell: ({ row, first, column }) => {
+			return (
+				<Cell
+					column={column}
+					row={row}
+					actions={
+						first && (
+							<>
+								<CellActionCopy value={row.original.id} />
+								<CellActionEdit to={`/col/${col_id}/doc/${row.original.id}`} />
+								<CellActionTrash
+									onClick={() => store?.destroy(row.original.id)}
+								/>
+							</>
+						)
+					}
+				/>
+			)
 		}
-
-		return cols
-	}, [store])
+	})
 
 	const table = useMantineReactTable({
 		columns,
