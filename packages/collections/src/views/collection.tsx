@@ -38,14 +38,11 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 
 	const [query, { onPaginationChange, getInputProps }] = useQueryResult()
 
-	// Filter form state
 	const schemas = usePropertiesSchemas(collection)
 	const stringFilters = useMemo(
 		() => schemas.filter(x => x.type === 'string'),
 		[schemas]
 	)
-
-	// Filter form state end
 
 	const columns = useMemo<MRT_ColumnDef<any>[]>(() => {
 		const cols: MRT_ColumnDef<any>[] = []
@@ -73,12 +70,7 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 													color='stone.3'
 													size='md'
 													onClick={copy}>
-													{copied ? (
-														<TbCheck />
-													) : (
-														<TbKey />
-														// <IconCopy size={16} />
-													)}
+													{copied ? <TbCheck /> : <TbKey />}
 												</ActionIcon>
 											</Tooltip>
 										)}
@@ -154,20 +146,14 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 		mantinePaginationProps: {
 			controls: false
 		},
-		// onRowSelectionChange: setRowSelection,
-		// onColumnFiltersChange: setColumnFilters,
 		onPaginationChange,
-		// onSortingChange: setSorting,
 		getRowId: row => row.id,
 		rowCount: query.count,
 		state: {
 			isLoading: false,
 			showProgressBars: false,
 			showAlertBanner: false,
-			// columnFilters,
 			pagination: query.pagination
-			// sorting,
-			// rowSelection
 		}
 	})
 
