@@ -19,6 +19,7 @@ export const useCurrentCollection = () => {
 export const useCollectionStore = () => {
 	const [fireborm] = useAppState<Fireborm>('fireborm')
 	const collection = useCurrentCollection()
+	const idOnly = !collection?.schema.some(x => x.show)
 	const store = useMemo(
 		() =>
 			!collection
@@ -27,11 +28,9 @@ export const useCollectionStore = () => {
 						...collection,
 						toModel: doc => {
 							const { id, ref } = doc
-							return {
-								id,
-								_ref: ref,
-								...doc.data()
-							}
+							let res = { id, _ref: ref }
+							if (idOnly) return res
+							return { ...res, ...doc.data() }
 						},
 						toDocument: ({ id, _ref, ...doc }) => doc
 				  }),
