@@ -1,7 +1,8 @@
 import { getAppState, useAppState } from '@firenook/core'
-import { PropertySchema } from './property'
-import { CollectionData } from '../../types/collection'
 import { useMemo } from 'react'
+import { CollectionData } from '../../types/collection'
+import { BasePropertySchema, PropertySchema, PropertyType } from './property'
+import { StringCell } from './string/cell'
 
 const getPropertiesSchemas = () =>
 	getAppState<Map<string, PropertySchema>>('property_schema').get()
@@ -34,16 +35,46 @@ export const getPropertySchema = (name: string) => {
 	return
 }
 
-export const registerPropertySchema = (
-	propertySchema: Omit<PropertySchema, 'id'>
+export const registerPropertySchema = <
+	T extends PropertySchema = PropertySchema
+>(
+	propertySchema: Partial<T> & Pick<T, 'type'>
 ) => {
 	const properties = getPropertiesSchemas()
+	const def = getDefaultPropertySchema()
 
 	if (!properties.has(propertySchema.type)) {
-		properties.set(propertySchema.type, propertySchema as PropertySchema)
+		properties.set(propertySchema.type, {
+			...def,
+			...propertySchema
+		})
 	} else {
 		console.error(
 			`Attempt to register ${propertySchema.type} property schema failed, as property schemas cant be overwritten.`
 		)
 	}
 }
+
+export const getDefaultPropertySchema = (): BasePropertySchema => ({
+	defaultValue: '',
+	filterable: false,
+	isArray: false,
+	label: '',
+	name: '',
+	description: '',
+	nullable: true,
+	show: true,
+	sortable: true,
+	type: PropertyType.STRING,
+	side: 'left',
+	element: () => null,
+	cell: StringCell,
+	filter: () => null
+})
+
+export const getDocumentDefaultValues = (
+	collection: CollectionData
+): Record<string, any> =>
+	Object.fromEntries(
+		collection.schema.map(prop => [prop.name, prop.defaultValue])
+	)
