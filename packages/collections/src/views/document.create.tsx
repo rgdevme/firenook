@@ -8,7 +8,7 @@ import {
 	Title
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { FC, useEffect } from 'react'
+import { FC, ReactNode, useEffect, useState } from 'react'
 import { TbArrowNarrowLeft, TbDeviceFloppy, TbTrash } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router'
 import {
@@ -23,13 +23,18 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	const { col_id, doc_id } = useParams()
 	const { collection, store } = useCollectionStore()
 
-	console.log({ collection })
+	const [initialValues, setInitialValues] = useState(() =>
+		!collection ? {} : getDocumentDefaultValues(collection)
+	)
+	const [columns, setColumns] = useState<{
+		left: ReactNode[]
+		right: ReactNode[]
+	}>({ left: [], right: [] })
 
 	const form = useForm({
 		mode: 'uncontrolled',
 		onSubmitPreventDefault: 'always',
-		initialValues: {},
-		onValuesChange: console.log
+		initialValues
 	})
 
 	const handleSubmit = async (data: any) => {
@@ -41,32 +46,57 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	}
 
 	useEffect(() => {
-		if (!collection) return
-		const def = getDocumentDefaultValues(collection)
-		console.log({ def })
-		if (Object.keys(def).length) return
-		form.setInitialValues(def)
-		form.setValues(def)
-		form.reset()
-	}, [collection])
+		if (!collection || !store || !doc_id) return
 
-	useEffect(() => {
-		if (!store || !doc_id) return
 		store.subscribe(doc_id, {
 			onChange: data => {
 				if (!data) return
-				const upd = {}
+				const upd = getDocumentDefaultValues(collection)
 
 				collection?.schema.forEach(prop => {
 					upd[prop.name] = data[prop.name]
 				})
 
-				form.setInitialValues(upd)
-				form.setValues(upd)
-				form.reset()
+				setInitialValues({ ...upd })
 			}
 		})
 	}, [store, doc_id])
+
+	useEffect(() => {
+		if (!collection) return
+
+		console.log({ initialValues })
+		form.setInitialValues(initialValues)
+		form.setValues(initialValues)
+		form.reset()
+
+		setColumns(
+			collection.schema.reduce(
+				(cols, item) => {
+					const el: BasePropertySchema | undefined = getPropertySchema(
+						item.type
+					)
+					const inputProps = form.getInputProps(item.name, { type: 'input' })
+
+					console.log({ inputProps })
+
+					if (el && inputProps.defaultValue !== undefined) {
+						cols[el.side].push(
+							<el.element
+								{...item}
+								key={item.name}
+								submitting={form.submitting}
+								dirty={form.isDirty(item.name)}
+								inputProps={inputProps}
+							/>
+						)
+					}
+					return cols
+				},
+				{ left: [], right: [] } as typeof columns
+			)
+		)
+	}, [JSON.stringify(initialValues)])
 
 	return !collection ? null : (
 		<Flex gap='sm' direction='column'>
@@ -121,45 +151,12 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 				<Grid>
 					<Grid.Col span={{ md: 8, xs: 12 }}>
 						<Flex direction='column' gap='xs'>
-							{(collection?.schema ?? [])
-								.filter(({ side }) => side === 'left')
-								.map(item => {
-									const el: BasePropertySchema | undefined = getPropertySchema(
-										item.type
-									)
-									if (!el) return
-									return (
-										<el.element
-											key={item.name}
-											submitting={form.submitting}
-											dirty={form.isDirty(item.name)}
-											inputProps={form.getInputProps(item.name)}
-											{...item}
-										/>
-									)
-								})}
+							{columns.left}
 						</Flex>
 					</Grid.Col>
 					<Grid.Col span={{ md: 4, xs: 12 }}>
 						<Flex direction='column' gap='xs'>
-							{(collection?.schema ?? [])
-								.filter(({ side }) => side === 'right')
-								.map(item => {
-									const el: BasePropertySchema | undefined = getPropertySchema(
-										item.type
-									)
-
-									if (!el) return
-									return (
-										<el.element
-											{...item}
-											key={item.name}
-											submitting={form.submitting}
-											dirty={form.isDirty(item.name)}
-											inputProps={form.getInputProps(item.name)}
-										/>
-									)
-								})}
+							{columns.right}
 						</Flex>
 					</Grid.Col>
 				</Grid>
