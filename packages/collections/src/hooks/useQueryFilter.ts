@@ -1,9 +1,11 @@
 import { useForm } from '@mantine/form'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useEffect } from 'react'
-import { PropertySchema } from '../components/property/property'
+import { CollectionSchemaProperty } from '../types/collection'
 
-export const useQueryFilter = (schemas: PropertySchema[] | undefined = []) => {
+export const useQueryFilter = (
+	schemas: CollectionSchemaProperty[] | undefined = []
+) => {
 	const filter = useForm({
 		initialValues: {
 			searchBy: '',

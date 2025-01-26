@@ -1,18 +1,9 @@
-import { PropertySchema } from '../components/property/property'
-
-export interface SchemaProperty extends Omit<PropertySchema, 'element'> {
-	id: ReturnType<Crypto['randomUUID']>
-}
-
-export interface ComputedSchemaProperty extends SchemaProperty {
-	type: 'computed'
-	nullable: true
-	computed?: string
-}
+import { PropertySchema, PropertyType } from '../components/property/property'
+import { CollectionSchemaProperty } from './collection'
 
 export const getDefaultSchemaProperty = (
-	side: SchemaProperty['side']
-): SchemaProperty => ({
+	side: PropertySchema['side']
+): CollectionSchemaProperty => ({
 	defaultValue: '',
 	filterable: false,
 	isArray: false,
@@ -22,7 +13,7 @@ export const getDefaultSchemaProperty = (
 	nullable: true,
 	show: true,
 	sortable: true,
-	type: 'string',
+	type: PropertyType.STRING,
 	id: crypto.randomUUID(),
 	side
 })

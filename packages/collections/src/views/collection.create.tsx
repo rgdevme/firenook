@@ -20,8 +20,12 @@ import {
 	TbGripHorizontal,
 	TbTrash
 } from 'react-icons/tb'
-import { CollectionData, CollectionStore } from '../types/collection'
-import { getDefaultSchemaProperty, SchemaProperty } from '../types/schema'
+import {
+	CollectionData,
+	CollectionSchemaProperty,
+	CollectionStore
+} from '../types/collection'
+import { getDefaultSchemaProperty } from '../types/schema'
 
 const getPath = (singular: string) => singular.toLowerCase().replace(/ +/g, '_')
 
@@ -59,7 +63,6 @@ export const CreateCollection: FC<{
 			path: '',
 			plural: '',
 			singular: '',
-			defaultData: {},
 			schema: [],
 			showId: true
 		},
@@ -82,13 +85,14 @@ export const CreateCollection: FC<{
 		}
 	})
 
-	const updateSchemaProperty = (index: number) => (schema: SchemaProperty) => {
-		const update = [...form.getValues().schema]
-		update.splice(index, 1, schema)
-		form.setFieldValue('schema', update)
-	}
+	const updateSchemaProperty =
+		(index: number) => (schema: CollectionSchemaProperty) => {
+			const update = [...form.getValues().schema]
+			update.splice(index, 1, schema)
+			form.setFieldValue('schema', update)
+		}
 
-	const addSchemaProperty = (side: SchemaProperty['side']) => () => {
+	const addSchemaProperty = (side: CollectionSchemaProperty['side']) => () => {
 		const update = [...form.getValues().schema]
 		update.push(getDefaultSchemaProperty(side))
 		form.setFieldValue('schema', update)
@@ -244,15 +248,15 @@ const ProvisionalPropertyComponent = ({
 	onChange,
 	onTrash,
 	...props
-}: SchemaProperty & {
-	onChange: (data: SchemaProperty) => void
+}: CollectionSchemaProperty & {
+	onChange: (data: CollectionSchemaProperty) => void
 	onTrash: () => void
 }) => {
 	const [open, toggle] = useToggle()
 	const { ref, height } = useElementSize()
 	const debouncedOnChange = useDebouncedCallback(onChange, 350)
 
-	const form = useForm<SchemaProperty>({
+	const form = useForm<CollectionSchemaProperty>({
 		initialValues: props,
 		onValuesChange: (current, previous) => {
 			if (current.name === getPath(previous.label)) {

@@ -19,7 +19,7 @@ import {
 	CellActionTrash
 } from '../components/cell'
 import { usePropertiesSchemas } from '../components/property/context'
-import { StringFilter } from '../components/property/string'
+import { StringPropertySchema } from '../components/property/property'
 import { useCollectionStore } from '../context/collections'
 import { useQueryResult } from '../hooks/useQueryresult'
 import { useTableColumns } from '../hooks/useTableColumns'
@@ -29,7 +29,11 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 	const { collection, store } = useCollectionStore()
 	const schemas = usePropertiesSchemas(collection)
 	const [query, { onPaginationChange, getInputProps }] = useQueryResult()
-	const stringFilters = schemas.filter(x => x.type === 'string')
+	const stringFilters = schemas.filter(
+		x => x.type === 'string'
+	) as StringPropertySchema[]
+	const StringFilterComponent =
+		stringFilters.length === 0 ? null : stringFilters[0].filter
 	const columns = useTableColumns({
 		cell: ({ row, first, column }) => {
 			return (
@@ -107,8 +111,8 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 							<Text size='xs' c='dimmed' fw={500} px='xs' py={4}>
 								Filtering options
 							</Text>
-							{stringFilters.length > 0 && (
-								<StringFilter
+							{StringFilterComponent && (
+								<StringFilterComponent
 									fields={stringFilters}
 									inputProps={getInputProps('searchBy')}
 								/>
