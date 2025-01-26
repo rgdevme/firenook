@@ -1,5 +1,11 @@
 import { GetInputPropsReturnType } from '@mantine/form/lib/types'
-import { FC } from 'react'
+import { MRT_Row } from 'mantine-react-table'
+import { FC, ReactNode } from 'react'
+
+export enum PropertyType {
+	STRING = 'string',
+	NUMBER = 'number'
+}
 
 export interface BasePropertySchema {
 	defaultValue: any // Depends on type
@@ -15,11 +21,11 @@ export interface BasePropertySchema {
 	element: FC<any>
 	filter?: FC<any>
 	cell?: FC<any>
-	type: string
+	type: PropertyType
 }
 
 export interface StringPropertySchema extends BasePropertySchema {
-	type: 'string'
+	type: PropertyType.STRING
 	defaultValue: string
 	minLength?: number
 	maxLength?: number
@@ -31,11 +37,11 @@ export interface StringPropertySchema extends BasePropertySchema {
 		fields: StringPropertySchema[]
 		inputProps: GetInputPropsReturnType
 	}>
-	cell: FC<FieldProps<StringPropertySchema>>
+	cell: FC<CellProps<StringPropertySchema>>
 }
 
 export interface NumberPropertySchema extends BasePropertySchema {
-	type: 'number'
+	type: PropertyType.NUMBER
 	defaultValue: number
 	min?: number
 	max?: number
@@ -49,13 +55,25 @@ export interface NumberPropertySchema extends BasePropertySchema {
 			maxInputProps: GetInputPropsReturnType
 		}
 	>
-	cell: FC<FieldProps<NumberPropertySchema>>
+	cell: FC<CellProps<NumberPropertySchema>>
 }
 
-export type PropertySchema = StringPropertySchema | NumberPropertySchema
+export type PropertySchema =
+	| BasePropertySchema
+	| StringPropertySchema
+	| NumberPropertySchema
 
-type FieldProps<P> = Omit<P, 'element'> & {
+type FieldProps<P extends PropertySchema> = Omit<
+	P,
+	'element' | 'filter' | 'cell'
+> & {
 	dirty: boolean
 	submitting: boolean
 	inputProps: GetInputPropsReturnType
+}
+
+type CellProps<P extends PropertySchema> = {
+	row: MRT_Row<any>
+	property: Omit<P, 'element' | 'filter' | 'cell'>
+	actions?: ReactNode
 }
