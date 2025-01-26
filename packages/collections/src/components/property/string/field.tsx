@@ -12,24 +12,22 @@ export const StringField: StringPropertySchema['element'] = ({
 	suffix,
 	prefix,
 	description
-}) => {
-	return (
-		<Indicator
-			position='top-end'
-			size={12}
-			withBorder
-			disabled={!dirty}
-			processing={submitting}>
-			<TextInput
-				label={label}
-				placeholder={label}
-				description={description}
-				leftSection={prefix || <TbLetterCase />}
-				rightSection={suffix}
-				minLength={minLength}
-				maxLength={maxLength}
-				{...inputProps}
-			/>
-		</Indicator>
-	)
-}
+}) => (
+	<Indicator
+		position='top-end'
+		size={12}
+		withBorder
+		disabled={!dirty}
+		processing={submitting}>
+		<TextInput
+			label={label}
+			placeholder={label}
+			description={description}
+			leftSection={prefix || <TbLetterCase />}
+			rightSection={suffix}
+			minLength={minLength}
+			maxLength={maxLength}
+			{...inputProps}
+		/>
+	</Indicator>
+)
