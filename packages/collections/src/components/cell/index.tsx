@@ -25,8 +25,10 @@ export const Cell = ({
 	actions?: ReactNode
 }) => {
 	return (
-		<Flex gap='xs' align='center' w='100%'>
-			<Text flex='1 1 auto'>{row.original[column.name]}</Text>
+		<Flex gap='xs' align='center' w='100%' className='[&>*]:flex-1'>
+			<div className='flex-1'>
+				{column?.cell && <column.cell row={row} property={column} />}
+			</div>
 			{actions}
 		</Flex>
 	)

@@ -1,4 +1,3 @@
-import { getAppState, useAppState } from '@firenook/core'
 import {
 	ActionIcon,
 	Button,
@@ -9,58 +8,47 @@ import {
 	Title
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { Fireborm } from 'fireborm'
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useEffect } from 'react'
 import { TbArrowNarrowLeft, TbDeviceFloppy, TbTrash } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router'
-import { getPropertySchema } from '../components/property/context'
-import { CollectionData } from '../types/collection'
+import {
+	getDocumentDefaultValues,
+	getPropertySchema
+} from '../components/property/context'
+import { BasePropertySchema } from '../components/property/property'
+import { useCollectionStore } from '../context/collections'
 
 export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	const nav = useNavigate()
+	const { col_id, doc_id } = useParams()
+	const { collection, store } = useCollectionStore()
+
+	console.log({ collection })
+
 	const form = useForm({
 		mode: 'uncontrolled',
-		onSubmitPreventDefault: 'always'
+		onSubmitPreventDefault: 'always',
+		initialValues: {},
+		onValuesChange: console.log
 	})
 
-	const { col_id, doc_id } = useParams()
-	const schema = getAppState('property_schema').get()
-	console.log({ schema })
-
-	const [fireborm] = useAppState<Fireborm>('fireborm')
-	const [collections] = useAppState<CollectionData[]>('collections')
-
-	const collection = useMemo(
-		() => collections.find(x => x.path === col_id),
-		[col_id, collections]
-	)
-
-	const store = useMemo(
-		() =>
-			!collection
-				? undefined
-				: fireborm.createStore({
-						...collection,
-						toModel: doc => {
-							const { id, ref } = doc
-							return {
-								id,
-								_ref: ref,
-								...doc.data()
-							}
-						},
-						toDocument: ({ id, _ref, ...doc }) => doc
-				  }),
-		[collection]
-	)
-
-	const handleSubmit = async (data: object) => {
+	const handleSubmit = async (data: any) => {
 		if (!store) return
 		if (!doc_id) {
-			const res = await store.create(data as any)
+			const res = await store.create(data)
 			nav(`/col/${col_id}/doc/${res.id}`, { replace: true })
 		} else await store.save(doc_id, data)
 	}
+
+	useEffect(() => {
+		if (!collection) return
+		const def = getDocumentDefaultValues(collection)
+		console.log({ def })
+		if (Object.keys(def).length) return
+		form.setInitialValues(def)
+		form.setValues(def)
+		form.reset()
+	}, [collection])
 
 	useEffect(() => {
 		if (!store || !doc_id) return
@@ -80,7 +68,7 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 		})
 	}, [store, doc_id])
 
-	return (
+	return !collection ? null : (
 		<Flex gap='sm' direction='column'>
 			<Flex direction='row' gap='sm' align='center'>
 				<ActionIcon variant='subtle' color='red' onClick={() => nav(-1)}>
@@ -136,7 +124,9 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 							{(collection?.schema ?? [])
 								.filter(({ side }) => side === 'left')
 								.map(item => {
-									const el = getPropertySchema(item.type)
+									const el: BasePropertySchema | undefined = getPropertySchema(
+										item.type
+									)
 									if (!el) return
 									return (
 										<el.element
@@ -155,15 +145,18 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 							{(collection?.schema ?? [])
 								.filter(({ side }) => side === 'right')
 								.map(item => {
-									const el = getPropertySchema(item.type)
+									const el: BasePropertySchema | undefined = getPropertySchema(
+										item.type
+									)
+
 									if (!el) return
 									return (
 										<el.element
+											{...item}
 											key={item.name}
 											submitting={form.submitting}
 											dirty={form.isDirty(item.name)}
 											inputProps={form.getInputProps(item.name)}
-											{...item}
 										/>
 									)
 								})}
