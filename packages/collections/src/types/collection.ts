@@ -1,13 +1,19 @@
 import { ConvertedModel, DefaultModel, FirebormStore } from 'fireborm'
 import { PropertySchema } from '../components/property/property'
 
+export type CollectionSchemaProperty = Omit<
+	PropertySchema,
+	'element' | 'cell' | 'filter'
+> & {
+	id: ReturnType<Crypto['randomUUID']>
+}
+
 export type CollectionData = {
 	path: string
 	singular: string
 	plural: string
 	customId: boolean
-	schema: PropertySchema[]
-	defaultData: object
+	schema: CollectionSchemaProperty[]
 	showId: boolean
 }
 
