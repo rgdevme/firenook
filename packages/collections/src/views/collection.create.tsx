@@ -25,7 +25,6 @@ import {
 	CollectionSchemaProperty,
 	CollectionStore
 } from '../types/collection'
-import { getDefaultSchemaProperty } from '../types/schema'
 
 const getPath = (singular: string) => singular.toLowerCase().replace(/ +/g, '_')
 
@@ -88,13 +87,27 @@ export const CreateCollection: FC<{
 	const updateSchemaProperty =
 		(index: number) => (schema: CollectionSchemaProperty) => {
 			const update = [...form.getValues().schema]
-			update.splice(index, 1, schema)
+			let newSchema = { ...schema }
+
+			if (update[index].type !== schema.type) {
+				const def = getPropertySchema(schema.type)!
+				newSchema = {
+					...schema,
+					defaultValue: def.defaultValue
+				}
+			}
+
+			update.splice(index, 1, newSchema)
 			form.setFieldValue('schema', update)
 		}
 
 	const addSchemaProperty = (side: CollectionSchemaProperty['side']) => () => {
 		const update = [...form.getValues().schema]
-		update.push(getDefaultSchemaProperty(side))
+		update.push({
+			...getPropertySchema(PropertyType.STRING)!,
+			id: crypto.randomUUID(),
+			side
+		})
 		form.setFieldValue('schema', update)
 	}
 
@@ -243,6 +256,8 @@ export const CreateCollection: FC<{
 import { useAppState } from '@firenook/core'
 import { useDebouncedCallback, useElementSize, useToggle } from '@mantine/hooks'
 import { useNavigate, useParams } from 'react-router'
+import { getPropertySchema } from '../components/property/context'
+import { PropertyType } from '../components/property/property'
 
 const ProvisionalPropertyComponent = ({
 	onChange,
@@ -256,6 +271,8 @@ const ProvisionalPropertyComponent = ({
 	const { ref, height } = useElementSize()
 	const debouncedOnChange = useDebouncedCallback(onChange, 350)
 
+	const schemaProp = getPropertySchema(props.type)
+
 	const form = useForm<CollectionSchemaProperty>({
 		initialValues: props,
 		onValuesChange: (current, previous) => {
@@ -266,7 +283,7 @@ const ProvisionalPropertyComponent = ({
 		}
 	})
 
-	return (
+	return !schemaProp ? null : (
 		<Paper p='xs' withBorder>
 			<Flex gap='xs' direction='column'>
 				<Flex direction='row' wrap='nowrap' gap='xs' align='center'>
@@ -332,12 +349,11 @@ const ProvisionalPropertyComponent = ({
 						]}
 						{...form.getInputProps('type', { type: 'input' })}
 					/>
-					<TextInput
-						size='xs'
-						variant='filled'
-						flex='1 1 45%'
-						placeholder='Default value'
-						{...form.getInputProps('defaultValue', { type: 'input' })}
+					<schemaProp.element
+						dirty={false}
+						submitting={false}
+						inputProps={form.getInputProps('defaultValue', { type: 'input' })}
+						{...schemaProp}
 					/>
 					<Switch
 						size='xs'
