@@ -1,3 +1,4 @@
+import { getField } from '@firenook/core'
 import {
 	ActionIcon,
 	Button,
@@ -11,21 +12,14 @@ import { useForm } from '@mantine/form'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { TbArrowNarrowLeft, TbDeviceFloppy, TbTrash } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router'
-import {
-	getDocumentDefaultValues,
-	getPropertySchema
-} from '../components/property/context'
-import { BasePropertySchema } from '../components/property/property'
 import { useCollectionStore } from '../context/collections'
 
 export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	const nav = useNavigate()
 	const { col_id, doc_id } = useParams()
-	const { collection, store } = useCollectionStore()
+	const { collection, store, defaultData } = useCollectionStore()
 
-	const [initialValues, setInitialValues] = useState(() =>
-		!collection ? {} : getDocumentDefaultValues(collection)
-	)
+	const [initialValues, setInitialValues] = useState({ ...defaultData })
 	const [columns, setColumns] = useState<{
 		left: ReactNode[]
 		right: ReactNode[]
@@ -51,10 +45,10 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 		store.subscribe(doc_id, {
 			onChange: data => {
 				if (!data) return
-				const upd = getDocumentDefaultValues(collection)
+				const upd = { ...defaultData }
 
 				collection?.schema.forEach(prop => {
-					upd[prop.name] = data[prop.name]
+					upd[prop.keyname] = data[prop.keyname]
 				})
 
 				setInitialValues({ ...upd })
@@ -73,21 +67,17 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 		setColumns(
 			collection.schema.reduce(
 				(cols, item) => {
-					const el: BasePropertySchema | undefined = getPropertySchema(
-						item.type
-					)
-					const inputProps = form.getInputProps(item.name, { type: 'input' })
+					const el = getField(item.type)
+					const inputProps = form.getInputProps(item.keyname, { type: 'input' })
 
-					console.log({ inputProps })
-
-					if (el && inputProps.defaultValue !== undefined) {
-						cols[el.side].push(
-							<el.element
+					if (el?.input && inputProps.defaultValue !== undefined) {
+						cols[item.side].push(
+							<el.input
 								{...item}
-								key={item.name}
-								submitting={form.submitting}
-								dirty={form.isDirty(item.name)}
-								inputProps={inputProps}
+								key={item.keyname}
+								isSubmitting={form.submitting}
+								isDirty={form.isDirty(item.keyname)}
+								{...inputProps}
 							/>
 						)
 					}

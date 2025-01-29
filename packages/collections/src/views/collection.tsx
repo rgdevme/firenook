@@ -1,3 +1,4 @@
+import { useField } from '@firenook/core'
 import {
 	ActionIcon,
 	Button,
@@ -7,9 +8,8 @@ import {
 	Text,
 	TextInput
 } from '@mantine/core'
-import { FirebormStore } from 'fireborm'
 import { MantineReactTable, useMantineReactTable } from 'mantine-react-table'
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { TbDotsVertical, TbFilter, TbPlus, TbSearch } from 'react-icons/tb'
 import { Link, useParams } from 'react-router'
 import {
@@ -18,24 +18,23 @@ import {
 	CellActionEdit,
 	CellActionTrash
 } from '../components/cell'
-import { usePropertiesSchemas } from '../components/property/context'
-import { StringPropertySchema } from '../components/property/property'
 import { useCollectionStore } from '../context/collections'
 import { useQueryResult } from '../hooks/useQueryresult'
 import { useTableColumns } from '../hooks/useTableColumns'
+import { CollectionData, CollectionSchemaProperty } from '../types/collection'
 
-export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
+export const Collection: FC = () => {
 	const { col_id } = useParams()
 	const { collection, store } = useCollectionStore()
-	const schemas = usePropertiesSchemas(collection)
-	const [query, { onPaginationChange, getInputProps }] = useQueryResult()
-	const stringFilters = schemas.filter(
-		x => x.type === 'string'
-	) as StringPropertySchema[]
-	const StringFilterComponent =
-		stringFilters.length === 0 ? null : stringFilters[0].filter
+	const [query, { onPaginationChange, getInputProps }] = useQueryResult({
+		collection,
+		store
+	})
+	const stringFilters = useStringFilters(collection)
+
 	const columns = useTableColumns({
-		cell: ({ row, first, column }) => {
+		collection,
+		Cell: ({ row, first, column }) => {
 			return (
 				<Cell
 					column={column}
@@ -77,6 +76,7 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 		mantinePaginationProps: {
 			controls: false
 		},
+		renderEmptyRowsFallback: () => null,
 		onPaginationChange,
 		getRowId: row => row.id,
 		rowCount: query.count,
@@ -111,10 +111,15 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 							<Text size='xs' c='dimmed' fw={500} px='xs' py={4}>
 								Filtering options
 							</Text>
-							{StringFilterComponent && (
-								<StringFilterComponent
-									fields={stringFilters}
-									inputProps={getInputProps('searchBy')}
+							{stringFilters.filter && (
+								<stringFilters.filter
+									fields={stringFilters.properties}
+									keyname='filters'
+									label=''
+									type='string'
+									isDirty={false}
+									isSubmitting={false}
+									{...getInputProps('searchBy')}
 								/>
 							)}
 						</Flex>
@@ -147,4 +152,23 @@ export const Collection: FC<{ store: FirebormStore<{}> }> = () => {
 			<MantineReactTable table={table} />
 		</div>
 	)
+}
+
+const useStringFilters = (collection?: CollectionData) => {
+	const field = useField('string')
+
+	const state = useMemo(() => {
+		const res = {
+			filter: undefined as NonNullable<typeof field>['filter'],
+			properties: [] as CollectionSchemaProperty[]
+		}
+		if (!collection || !field) return res
+		const properties = collection.schema.filter(x => x.type === 'string')
+		if (!properties.length) return res
+		res.properties = properties
+		res.filter = field.filter
+		return res
+	}, [collection, field])
+
+	return state
 }

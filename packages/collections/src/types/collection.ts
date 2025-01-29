@@ -1,12 +1,18 @@
+import { FieldBaseProps, FieldProps } from '@firenook/core'
 import { ConvertedModel, DefaultModel, FirebormStore } from 'fireborm'
-import { PropertySchema } from '../components/property/property'
 
-export type CollectionSchemaProperty = Omit<
-	PropertySchema,
-	'element' | 'cell' | 'filter'
-> & {
-	id: ReturnType<Crypto['randomUUID']>
-}
+/** Stored as array items in the collection.schema, each item represents
+ * a property in a collection's object. */
+export type CollectionSchemaProperty = Required<FieldBaseProps> &
+	Required<Pick<FieldProps, 'defaultValue'>> & {
+		id: ReturnType<Crypto['randomUUID']>
+		side: 'left' | 'right'
+		isArray?: boolean
+		isNullable?: boolean
+		isShown?: boolean
+		isFilter?: boolean
+		isSort?: boolean
+	}
 
 export type CollectionData = {
 	path: string

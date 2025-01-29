@@ -1,20 +1,18 @@
 import {
 	MenuDivider,
 	MenuItem,
+	MenuLink,
 	MenuSection,
-	useAppState,
-	MenuLink
+	useAppState
 } from '@firenook/core'
 import { FC, useEffect } from 'react'
 import { TbFolders, TbPlus } from 'react-icons/tb'
 import { Link, matchPath, useLocation } from 'react-router'
-import { CollectionData, CollectionStore } from '../types/collection'
 
 export const CollectionMenu: FC = () => {
 	const { pathname } = useLocation()
-	const [store] = useAppState<CollectionStore>('settingsStore')
-	const [collections, setCollections] =
-		useAppState<CollectionData[]>('collections')
+	const [store] = useAppState('settingsStore')
+	const [collections, setCollections] = useAppState('collections')
 
 	const paths = [...collections.map(c => `/col/${c.path}`), `/col/new`]
 	const active = paths.find(path => !!matchPath(pathname, path))

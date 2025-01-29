@@ -20,11 +20,7 @@ import {
 	TbGripHorizontal,
 	TbTrash
 } from 'react-icons/tb'
-import {
-	CollectionData,
-	CollectionSchemaProperty,
-	CollectionStore
-} from '../types/collection'
+import { CollectionData, CollectionSchemaProperty } from '../types/collection'
 
 const getPath = (singular: string) => singular.toLowerCase().replace(/ +/g, '_')
 
@@ -45,8 +41,8 @@ export const CreateCollection: FC<{
 	edit?: true
 }> = ({ edit = false }) => {
 	const { col_id } = useParams()
-	const [store] = useAppState<CollectionStore>('settingsStore')
-	const [collections] = useAppState<CollectionData[]>('collections')
+	const [store] = useAppState('settingsStore')
+	const [collections] = useAppState('collections')
 
 	const nav = useNavigate()
 
@@ -90,11 +86,8 @@ export const CreateCollection: FC<{
 			let newSchema = { ...schema }
 
 			if (update[index].type !== schema.type) {
-				const def = getPropertySchema(schema.type)!
-				newSchema = {
-					...schema,
-					defaultValue: def.defaultValue
-				}
+				const { defaultValue } = getField(schema.type)!
+				newSchema = { ...schema, defaultValue }
 			}
 
 			update.splice(index, 1, newSchema)
@@ -103,11 +96,7 @@ export const CreateCollection: FC<{
 
 	const addSchemaProperty = (side: CollectionSchemaProperty['side']) => () => {
 		const update = [...form.getValues().schema]
-		update.push({
-			...getPropertySchema(PropertyType.STRING)!,
-			id: crypto.randomUUID(),
-			side
-		})
+		update.push({ ...getDefaultSchemaPropertyData(), side })
 		form.setFieldValue('schema', update)
 	}
 
@@ -122,19 +111,37 @@ export const CreateCollection: FC<{
 		nav(`/col/${data.path}`)
 	}
 
-	const { left, right } = form.getValues().schema.reduce(
-		(sides, item, index) => {
-			sides[item.side].push(
-				<ProvisionalPropertyComponent
-					key={item.id}
-					onChange={updateSchemaProperty(index)}
-					onTrash={removeSchemaPropety(index)}
-					{...item}
-				/>
-			)
-			return sides
-		},
-		{ left: [], right: [] } as { left: ReactNode[]; right: ReactNode[] }
+	const initalSchema = getDefaultSchemaPropertyData()
+	const { left, right } = useMemo(
+		() =>
+			form.getValues().schema.reduce(
+				(sides, item, index) => {
+					const passedProps = { ...initalSchema }
+
+					for (const key in initalSchema) {
+						if (key in item) passedProps[key] = item[key]
+					}
+
+					console.log({
+						item,
+						initalSchema,
+						values: form.getValues(),
+						passedProps
+					})
+
+					sides[item.side].push(
+						<ProvisionalPropertyComponent
+							key={passedProps.keyname}
+							item={passedProps}
+							onChange={updateSchemaProperty(index)}
+							onTrash={removeSchemaPropety(index)}
+						/>
+					)
+					return sides
+				},
+				{ left: [], right: [] } as { left: ReactNode[]; right: ReactNode[] }
+			),
+		[form.getValues().schema.length]
 	)
 
 	useEffect(() => {
@@ -253,37 +260,43 @@ export const CreateCollection: FC<{
 	)
 }
 
-import { useAppState } from '@firenook/core'
+import { getField, useAppState, useField, useFields } from '@firenook/core'
 import { useDebouncedCallback, useElementSize, useToggle } from '@mantine/hooks'
 import { useNavigate, useParams } from 'react-router'
-import { getPropertySchema } from '../components/property/context'
-import { PropertyType } from '../components/property/property'
+import { getDefaultSchemaPropertyData } from '../context/collections'
 
 const ProvisionalPropertyComponent = ({
 	onChange,
 	onTrash,
-	...props
-}: CollectionSchemaProperty & {
+	item
+}: {
+	item: CollectionSchemaProperty
 	onChange: (data: CollectionSchemaProperty) => void
 	onTrash: () => void
 }) => {
 	const [open, toggle] = useToggle()
 	const { ref, height } = useElementSize()
 	const debouncedOnChange = useDebouncedCallback(onChange, 350)
+	const [fields] = useFields()
 
-	const schemaProp = getPropertySchema(props.type)
+	const fieldTypes = [...fields.values()].map(f => ({
+		label: f.name,
+		value: f.type
+	}))
+
+	const schemaProp = useField(item.type)
 
 	const form = useForm<CollectionSchemaProperty>({
-		initialValues: props,
+		initialValues: item,
 		onValuesChange: (current, previous) => {
-			if (current.name === getPath(previous.label)) {
-				form.setFieldValue('name', getPath(current.label))
+			if (current.keyname === getPath(previous.label)) {
+				form.setFieldValue('keyname', getPath(current.label))
 			}
 			debouncedOnChange(current)
 		}
 	})
 
-	return !schemaProp ? null : (
+	return !schemaProp?.input ? null : (
 		<Paper p='xs' withBorder>
 			<Flex gap='xs' direction='column'>
 				<Flex direction='row' wrap='nowrap' gap='xs' align='center'>
@@ -303,7 +316,7 @@ const ProvisionalPropertyComponent = ({
 							variant='filled'
 							flex='1 1 auto'
 							placeholder='property_key'
-							{...form.getInputProps('name', { type: 'input' })}
+							{...form.getInputProps('keyname', { type: 'input' })}
 						/>
 					</Flex>
 					<ActionIcon variant='subtle' onClick={onTrash}>
@@ -340,40 +353,37 @@ const ProvisionalPropertyComponent = ({
 						variant='filled'
 						flex='1 1 45%'
 						placeholder='Select a type'
-						data={[
-							{ label: 'Text', value: 'string' },
-							{ label: 'Number', value: 'number' },
-							{ label: 'Email', value: 'email' },
-							{ label: 'Phone', value: 'phone' },
-							{ label: 'Checkbox', value: 'checkbox' }
-						]}
+						data={fieldTypes}
 						{...form.getInputProps('type', { type: 'input' })}
 					/>
-					<schemaProp.element
-						dirty={false}
-						submitting={false}
-						inputProps={form.getInputProps('defaultValue', { type: 'input' })}
-						{...schemaProp}
+					<schemaProp.input
+						isDirty={false}
+						isSubmitting={false}
+						{...item}
+						{...form.getInputProps('defaultValue', { type: 'input' })}
+						label={undefined}
+						placeholder='Default value'
+						key={item.keyname}
 					/>
 					<Switch
 						size='xs'
 						label='Nullable'
-						{...form.getInputProps('nullable', { type: 'checkbox' })}
+						{...form.getInputProps('isNullable', { type: 'checkbox' })}
 					/>
 					<Switch
 						size='xs'
 						label='Sort'
-						{...form.getInputProps('sortable', { type: 'checkbox' })}
+						{...form.getInputProps('isSort', { type: 'checkbox' })}
 					/>
 					<Switch
 						size='xs'
 						label='Filter'
-						{...form.getInputProps('filterable', { type: 'checkbox' })}
+						{...form.getInputProps('isFilter', { type: 'checkbox' })}
 					/>
 					<Switch
 						size='xs'
 						label='Show'
-						{...form.getInputProps('show', { type: 'checkbox' })}
+						{...form.getInputProps('isShown', { type: 'checkbox' })}
 					/>
 					<Switch
 						size='xs'
