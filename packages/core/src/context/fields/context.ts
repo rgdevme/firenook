@@ -12,7 +12,6 @@ export const getField = <Key extends FieldType = FieldType>(type: Key) => {
 export const useField = <Key extends FieldType = FieldType>(type: Key) => {
 	const fields = useAtomValue(getAppState('firenookFields').atom)
 	const field = fields.get(type) as FirenookFieldContext[Key] | undefined
-	console.log('useField', type, { field })
 	return field
 }
 
@@ -33,6 +32,4 @@ export const registerField: (
 	const update = new Map(fields)
 	update.set(field.type, field)
 	fieldsState.set(update)
-
-	console.log(fields, update, fieldsState.get())
 }
