@@ -1,8 +1,7 @@
-import { MenuItemElement } from '../../context/app'
 import { useAppState } from '../../context/index'
 
 export function DoubleNavbar() {
-	const [menuItems] = useAppState<MenuItemElement[]>('menuItems')
+	const [menuItems] = useAppState('menuItems')
 
 	return (
 		<nav>

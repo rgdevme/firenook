@@ -8,13 +8,12 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { Loading } from './componets/layout/loading'
 import { PrivateLayout } from './componets/layout/private'
 import { PublicLayout } from './componets/layout/public'
-import { getAppState, useAppState } from './context'
+import { getAppState, state, useAppState } from './context'
 import {
 	initializeAppState,
 	MenuItemElement,
 	RouteElement
 } from './context/app'
-import { state } from './context/utils'
 import { ColorName, mantineColors } from './styles/colors'
 import './styles/index.css'
 import { resolvedTailwindTheme as theme } from './styles/resolvedTailwindConfig'
@@ -110,8 +109,8 @@ export const Firenook = ({
 }
 
 const App = () => {
-	const fireborm = useAtomValue(getAppState<Fireborm>('fireborm').atom)
-	const [routes] = useAppState<RouteElement[]>('routes')
+	const fireborm = useAtomValue(getAppState('fireborm').atom)
+	const [routes] = useAppState('routes')
 	const auth = !fireborm ? null : getAuth(fireborm?.app)
 
 	useEffect(() => {

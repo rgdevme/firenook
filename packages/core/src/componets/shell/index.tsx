@@ -8,7 +8,7 @@ const SIDEBAR_MINW = 56
 const SIDEBAR_BP = 'xs'
 
 export const Shell: FC<PropsWithChildren> = () => {
-	const [opened, setOpened] = useAppState<boolean>('menuState')
+	const [opened, setOpened] = useAppState('menuState')
 	const toggle = () => setOpened(p => !p)
 
 	return (

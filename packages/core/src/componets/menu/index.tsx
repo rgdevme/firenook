@@ -17,7 +17,7 @@ export const MenuSection = ({
 	icon: IconType
 	label: string
 }>) => {
-	const [opened] = useAppState<boolean>('menuState')
+	const [opened] = useAppState('menuState')
 
 	return (
 		<Menu
