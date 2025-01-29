@@ -1,3 +1,4 @@
+import { useField } from '@firenook/core'
 import {
 	ActionIcon,
 	Button,
@@ -13,7 +14,7 @@ import { ReactNode } from 'react'
 import { IconType } from 'react-icons'
 import { TbCheck, TbKey, TbPencil, TbTrash } from 'react-icons/tb'
 import { Link } from 'react-router'
-import { PropertySchema } from '../property/property'
+import { CollectionSchemaProperty } from '../../types/collection'
 
 export const Cell = ({
 	row,
@@ -21,13 +22,25 @@ export const Cell = ({
 	actions
 }: {
 	row: MRT_Row<any>
-	column: PropertySchema
+	column: CollectionSchemaProperty
 	actions?: ReactNode
 }) => {
+	const field = useField(column.type)
+
+	console.log({ colField: field })
+
 	return (
 		<Flex gap='xs' align='center' w='100%' className='[&>*]:flex-1'>
 			<div className='flex-1'>
-				{column?.cell && <column.cell row={row} property={column} />}
+				{field?.static && (
+					<field.static
+						value={row.getValue(column.keyname)}
+						keyname={column.keyname}
+						key={'cell'}
+						type={field.type}
+						onChange={undefined}
+					/>
+				)}
 			</div>
 			{actions}
 		</Flex>

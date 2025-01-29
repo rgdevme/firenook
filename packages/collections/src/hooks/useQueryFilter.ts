@@ -6,13 +6,14 @@ import { CollectionSchemaProperty } from '../types/collection'
 export const useQueryFilter = (
 	schemas: CollectionSchemaProperty[] | undefined = []
 ) => {
+	const initialValues = {
+		searchBy: '',
+		search: '',
+		direction: 'asc' as 'asc' | 'desc',
+		order: ''
+	}
 	const filter = useForm({
-		initialValues: {
-			searchBy: '',
-			search: '',
-			direction: 'asc' as 'asc' | 'desc',
-			order: ''
-		},
+		initialValues,
 		transformValues: ({ order, ...values }) => ({
 			...values,
 			order: order.length > 0 ? order : undefined
@@ -23,7 +24,10 @@ export const useQueryFilter = (
 	useEffect(() => {
 		const stringFilters = schemas.filter(x => x.type === 'string')
 		if (!stringFilters.length) return
-		filter.setValues({ searchBy: stringFilters?.[0].name })
+		const upd = { searchBy: stringFilters?.[0].keyname }
+		filter.setValues(upd)
+		filter.setInitialValues({ ...initialValues, ...upd })
+		filter.reset()
 	}, [schemas])
 
 	return {

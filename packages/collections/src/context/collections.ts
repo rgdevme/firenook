@@ -1,41 +1,85 @@
 import { registerAppState, useAppState } from '@firenook/core'
-import { Fireborm } from 'fireborm'
 import { useMemo } from 'react'
 import { useParams } from 'react-router'
-import { CollectionData } from '../types/collection'
+import { CollectionData, CollectionSchemaProperty } from '../types/collection'
 
-export const createContext = () => {
-	registerAppState<CollectionData[]>('collections', [], true)
+declare global {
+	interface FirenookAppStateContext {
+		collections: CollectionData[]
+	}
 }
 
-export const useCollections = () => useAppState<CollectionData[]>('collections')
+export const createContext = () => {
+	registerAppState('collections', [], true)
+}
 
-export const useCurrentCollection = () => {
+export const useCollection = (path?: string) => {
 	const { col_id } = useParams()
-	const [collections] = useCollections()
-	return collections.find(x => x.path === col_id)
+	const [collections] = useAppState('collections')
+	const target = !!path?.length ? path : col_id
+	const collection = target
+		? collections.find(collection => collection.path === target)
+		: undefined
+	// Although path is always corretly defined, the user might access the
+	// url manually and commit a typo, resulting in a possibly wrong col_id
+	return collection
+}
+
+export const getDefaultDocumentData = (collection: CollectionData) => {
+	const entries = collection.schema.map(prop => [
+		prop.keyname,
+		prop.defaultValue
+	])
+	return Object.fromEntries(entries) as Record<string, any>
+}
+
+export const getDefaultSchemaPropertyData =
+	(): Required<CollectionSchemaProperty> => ({
+		type: 'string',
+		keyname: '',
+		label: '',
+		description: '',
+		defaultValue: '',
+		isFilter: false,
+		isArray: false,
+		isNullable: true,
+		isShown: true,
+		isSort: true,
+		side: 'left',
+		id: crypto.randomUUID()
+	})
+
+export const useCollectionDetails = (collection?: CollectionData) => {
+	const details = useMemo(() => {
+		const res = { defaultData: {} as Record<string, any>, idOnly: true }
+		if (!collection) return res
+		res.defaultData = getDefaultDocumentData(collection)
+		res.idOnly = !collection.schema.some(x => x.isShown)
+		return res
+	}, [collection])
+	return details
 }
 
 export const useCollectionStore = () => {
-	const [fireborm] = useAppState<Fireborm>('fireborm')
-	const collection = useCurrentCollection()
-	const idOnly = !collection?.schema.some(x => x.show)
-	const store = useMemo(
-		() =>
-			!collection
-				? undefined
-				: fireborm.createStore<any>({
-						...collection,
-						toModel: doc => {
-							const { id, ref } = doc
-							let res = { id, _ref: ref }
-							if (idOnly) return res
-							return { ...res, ...doc.data() }
-						},
-						toDocument: ({ id, _ref, ...doc }) => doc
-				  }),
-		[collection]
-	)
+	const [fireborm] = useAppState('fireborm')
+	const collection = useCollection()
+	const { defaultData, idOnly } = useCollectionDetails(collection)
 
-	return { collection, store }
+	const store = useMemo(() => {
+		if (!collection) return undefined
+
+		return fireborm.createStore<any>({
+			...collection,
+			defaultData,
+			toModel: doc => {
+				const { id, ref } = doc
+				let res = { id, _ref: ref }
+				if (idOnly) return res
+				return { ...res, ...doc.data() }
+			},
+			toDocument: ({ id, _ref, ...doc }) => doc
+		})
+	}, [collection])
+
+	return { collection, store, defaultData, idOnly }
 }

@@ -1,43 +1,61 @@
 import { MRT_ColumnDef, MRT_Row } from 'mantine-react-table'
 import { FC, useMemo } from 'react'
-import { usePropertiesSchemas } from '../components/property/context'
-import { PropertySchema } from '../components/property/property'
-import { useCurrentCollection } from '../context/collections'
+import { useCollectionDetails } from '../context/collections'
+import { CollectionData, CollectionSchemaProperty } from '../types/collection'
 
 export const useTableColumns = ({
-	cell
+	collection,
+	Cell
 }: {
-	cell: FC<{ row: MRT_Row<any>; first: boolean; column: PropertySchema }>
+	collection?: CollectionData
+	Cell: FC<{
+		row: MRT_Row<any>
+		first: boolean
+		column: CollectionSchemaProperty
+	}>
 }) => {
-	const collection = useCurrentCollection()
-	const idOnly = !collection?.schema.some(x => x.show)
-	const schemas = usePropertiesSchemas(collection)
+	const { idOnly } = useCollectionDetails(collection)
 
 	const columns = useMemo<MRT_ColumnDef<any>[]>(() => {
-		if (!collection) return []
-		const cols: MRT_ColumnDef<any>[] = idOnly
-			? [
-					{
-						header: 'ID',
-						accessorKey: 'id',
-						enableSorting: false,
-						enableColumnFilter: false,
-						enableClickToCopy: true,
-						grow: false,
-						maxSize: 200,
-						minSize: 10
-					}
-			  ]
-			: schemas.map((column, index) => ({
-					header: column.label,
-					accessorKey: column.name,
-					enableSorting: column.sortable,
-					enableColumnFilter: column.filterable,
-					Cell: ({ row }) => cell({ row, first: index === 0, column })
-			  }))
+		const cols = collection
+			? idOnly
+				? [idColumnDef]
+				: getColumnDefs(collection).map(f => f(Cell))
+			: []
+
+		console.log({ collection, idOnly, cols })
 
 		return cols
-	}, [schemas])
+	}, [collection, idOnly])
 
 	return columns
+}
+
+const idColumnDef: MRT_ColumnDef<any> = {
+	header: 'ID',
+	accessorKey: 'id',
+	enableSorting: false,
+	enableColumnFilter: false,
+	enableClickToCopy: true,
+	grow: false,
+	maxSize: 200,
+	minSize: 10
+}
+
+const getColumnDefs = (
+	collection: CollectionData
+): ((
+	Cell: FC<{
+		row: MRT_Row<any>
+		first: boolean
+		column: CollectionSchemaProperty
+	}>
+) => MRT_ColumnDef<any>)[] => {
+	return collection.schema.map((column, index) => Cell => ({
+		header: column.label,
+		accessorKey: column.keyname,
+		enableSorting: column.isSort,
+		enableColumnFilter: column.isFilter,
+		Cell: ({ row }) => <Cell {...{ row, first: index === 0, column }} />
+	}))
 }

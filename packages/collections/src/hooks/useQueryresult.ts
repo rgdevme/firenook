@@ -1,12 +1,16 @@
-import { Where } from 'fireborm'
+import { FirebormStore, Where } from 'fireborm'
 import { useEffect, useState } from 'react'
-import { useCollectionStore } from '../context/collections'
-import { useQueryPagination } from './useQueryPagination'
+import { CollectionData } from '../types/collection'
 import { useQueryFilter } from './useQueryFilter'
+import { useQueryPagination } from './useQueryPagination'
 
-export const useQueryResult = () => {
-	const { collection, store } = useCollectionStore()
-
+export const useQueryResult = ({
+	collection,
+	store
+}: {
+	collection?: CollectionData
+	store?: FirebormStore<any>
+}) => {
 	const [state, setState] = useState({
 		data: [] as any[],
 		count: 0,
@@ -27,7 +31,7 @@ export const useQueryResult = () => {
 
 		const where: Where = []
 
-		if (searchBy.length && search.length) {
+		if (searchBy?.length && search?.length) {
 			where.push({
 				and: [
 					[searchBy, '>=', search],
