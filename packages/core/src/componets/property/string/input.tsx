@@ -1,24 +1,34 @@
 import { Indicator, TextInput } from '@mantine/core'
+import { FC } from 'react'
 import { TbLetterCase } from 'react-icons/tb'
-import { StringPropertySchema } from '../property'
+import { FieldProps } from '../../../context'
 
-export const StringField: StringPropertySchema['element'] = ({
-	dirty,
-	submitting,
+export const StringInput: FC<
+	FieldProps<string> & {
+		minLength?: number
+		maxLength?: number
+		suffix?: string
+		prefix?: string
+	}
+> = ({
+	isDirty,
+	isSubmitting,
 	label,
-	inputProps,
+	key,
+	type,
 	minLength,
 	maxLength,
 	suffix,
 	prefix,
-	description
+	description,
+	...inputProps
 }) => (
 	<Indicator
 		position='top-end'
 		size={12}
 		withBorder
-		disabled={!dirty}
-		processing={submitting}>
+		disabled={!isDirty}
+		processing={isSubmitting}>
 		<TextInput
 			label={label}
 			placeholder={label}

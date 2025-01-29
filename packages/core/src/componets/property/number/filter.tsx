@@ -1,13 +1,15 @@
 import { Flex, NumberInput, Text } from '@mantine/core'
-import { NumberPropertySchema } from '../property'
+import { FC } from 'react'
+import { FieldBaseProps, FieldInputProps } from '../../../context'
 
-export const NumberFilter: NumberPropertySchema['filter'] = ({
-	label,
-	decimals,
-
-	minInputProps,
-	maxInputProps
-}) => {
+export const NumberFilter: FC<
+	FieldBaseProps & {
+		fields?: any[]
+		decimals?: number
+		minInputProps: FieldInputProps<number>
+		maxInputProps: FieldInputProps<number>
+	}
+> = ({ label, decimals, minInputProps, maxInputProps }) => {
 	return (
 		<Flex
 			direction='row'
