@@ -14,14 +14,18 @@ export const StringInput: FC<
 	isDirty,
 	isSubmitting,
 	label,
-	key,
-	type,
 	minLength,
 	maxLength,
 	suffix,
 	prefix,
 	description,
-	...inputProps
+	defaultValue,
+	value,
+	checked,
+	error,
+	onChange,
+	onFocus,
+	onBlur
 }) => (
 	<Indicator
 		position='top-end'
@@ -30,6 +34,9 @@ export const StringInput: FC<
 		disabled={!isDirty}
 		processing={isSubmitting}>
 		<TextInput
+			size='xs'
+			variant='filled'
+			flex='1 1 45%'
 			label={label}
 			placeholder={label}
 			description={description}
@@ -37,7 +44,13 @@ export const StringInput: FC<
 			rightSection={suffix}
 			minLength={minLength}
 			maxLength={maxLength}
-			{...inputProps}
+			defaultValue={defaultValue}
+			value={value}
+			onChange={onChange}
+			checked={checked}
+			error={error}
+			onFocus={onFocus}
+			onBlur={onBlur}
 		/>
 	</Indicator>
 )

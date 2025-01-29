@@ -11,6 +11,7 @@ export type NumberField = Field<
 >
 export const NumberField: NumberField = {
 	type: 'number',
+	name: 'Number',
 	defaultValue: 0,
 	filter: NumberFilter,
 	static: NumberStatic,

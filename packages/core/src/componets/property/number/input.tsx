@@ -21,9 +21,13 @@ export const NumberInput: FC<
 	prefix,
 	suffix,
 	description,
-	type,
-	key,
-	...inputProps
+	defaultValue,
+	value,
+	checked,
+	error,
+	onChange,
+	onFocus,
+	onBlur
 }) => (
 	<Indicator
 		position='top-end'
@@ -32,6 +36,9 @@ export const NumberInput: FC<
 		disabled={!isDirty}
 		processing={isSubmitting}>
 		<NI
+			size='xs'
+			variant='filled'
+			flex='1 1 45%'
 			label={label}
 			placeholder={label}
 			description={description}
@@ -41,7 +48,13 @@ export const NumberInput: FC<
 			min={min}
 			max={max}
 			decimalScale={decimals}
-			{...inputProps}
+			defaultValue={defaultValue}
+			value={value}
+			checked={checked}
+			error={error}
+			onChange={onChange}
+			onFocus={onFocus}
+			onBlur={onBlur}
 		/>
 	</Indicator>
 )

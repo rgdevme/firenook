@@ -11,6 +11,7 @@ export type StringField = Field<
 >
 export const StringField: StringField = {
 	type: 'string',
+	name: 'Text',
 	defaultValue: '',
 	static: StringStatic,
 	input: StringInput,
