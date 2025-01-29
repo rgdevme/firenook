@@ -1,20 +1,35 @@
+import { Fireborm, FirebormStore } from 'fireborm'
 import { FC } from 'react'
-import { registerAppState } from './utils'
-import { Fireborm } from 'fireborm'
+import { FieldsContext, registerAppState, registerField } from '.'
+import { NumberField } from '../componets/property/number'
+import { StringField } from '../componets/property/string'
 
 export type RouteElement = { path: string; element: FC; key: string }
 export type MenuItemElement = { element: FC; key: string; priority: number }
 
+declare global {
+	interface FirenookAppStateContext {
+		fireborm: Fireborm
+		authed: boolean
+		menuItems: MenuItemElement[]
+		menuState: boolean
+		routes: RouteElement[]
+		settingsStore: FirebormStore<any>
+		firenookFields: FieldsContext
+	}
+	interface FirenookFieldContext {
+		string: StringField
+		number: NumberField
+		textArea: StringField
+	}
+}
+
 export const initializeAppState = () => {
-	const ormAtom = registerAppState<Fireborm>(
-		'fireborm',
-		new Promise(() => {}) as any
-	)
-	registerAppState('ormReady', get => !!get(ormAtom))
+	const ormAtom = registerAppState('fireborm', new Promise(() => {}) as any)
 	registerAppState('authed', false)
-	registerAppState('menuItems', [] as MenuItemElement[])
+	registerAppState('menuItems', [])
 	registerAppState('menuState', false)
-	registerAppState('routes', [] as RouteElement[])
+	registerAppState('routes', [])
 	registerAppState('settingsStore', async get => {
 		const orm = get(ormAtom)
 		return orm?.createStore<any>({
@@ -30,4 +45,7 @@ export const initializeAppState = () => {
 			}
 		})
 	})
+	registerAppState('firenookFields', new Map() as FieldsContext)
+	registerField(StringField)
+	registerField(NumberField)
 }
