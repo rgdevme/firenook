@@ -18,6 +18,7 @@ import { ColorName, mantineColors } from './styles/colors'
 import './styles/index.css'
 import { resolvedTailwindTheme as theme } from './styles/resolvedTailwindConfig'
 import { FirenookPluginFunction } from './types'
+import { NotFound } from './componets/layout/404'
 
 export * from './componets'
 export * from './context'
@@ -132,6 +133,7 @@ const App = () => {
 					<Route key={key} path={path} element={<E />} />
 				))}
 			</Route>
+			<Route path='*' element={<NotFound />} />
 		</Routes>
 	)
 }
