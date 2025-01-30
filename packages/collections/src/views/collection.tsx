@@ -12,9 +12,16 @@ import {
 	Text,
 	TextInput
 } from '@mantine/core'
-import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import { useElementSize } from '@mantine/hooks'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { TbDotsVertical, TbFilter, TbPlus, TbSearch } from 'react-icons/tb'
 import { Link, useParams } from 'react-router'
+import {
+	CellActionCopy,
+	CellActionEdit,
+	CellActionTrash
+} from '../components/cell'
+import { TableRow } from '../components/row'
 import { useCollectionStore } from '../context/collections'
 import { useQuery } from '../hooks/useQueryresult'
 import { CollectionData, CollectionSchemaProperty } from '../types/collection'
@@ -28,6 +35,7 @@ export const Collection: FC = () => {
 	] = useQuery(collection?.schema)
 	const stringFilters = useStringFilters(collection)
 	const [selectedRows, setSelectedRows] = useState<number[]>([])
+	const elem = useElementSize()
 
 	useEffect(() => {
 		if (!store) return
@@ -109,42 +117,62 @@ export const Collection: FC = () => {
 			</Flex>
 
 			<Table
+				ref={elem.ref}
 				flex='1 0 auto'
 				striped
 				highlightOnHover
 				horizontalSpacing='sm'
 				verticalSpacing='sm'
 				stickyHeader
-				stickyHeaderOffset={0}
-				data={{
-					head: [
-						<Checkbox
-							aria-label='Select all'
-							checked={selectedRows.length === data.length && data.length > 0}
-							onChange={event =>
+				stickyHeaderOffset={0}>
+				<Table.Thead>
+					<Table.Tr>
+						<Table.Th w={46}>
+							<Checkbox
+								aria-label='Select all'
+								checked={selectedRows.length === data.length && data.length > 0}
+								onChange={event =>
+									setSelectedRows(
+										event.currentTarget.checked ? data.map(x => x.id) : []
+									)
+								}
+							/>
+						</Table.Th>
+						{collection.schema.map((s, i) => (
+							<Table.Th
+								key={s.id}
+								w={Math.max(
+									i === 0 ? 200 : 0,
+									(elem.width - 46) / collection.schema.length
+								)}>
+								{s.label}
+							</Table.Th>
+						))}
+					</Table.Tr>
+				</Table.Thead>
+				<Table.Tbody>
+					{data.map(x => (
+						<TableRow
+							key={x.id}
+							item={x}
+							schema={collection.schema}
+							selected={selectedRows.includes(x.id)}
+							onSelect={val =>
 								setSelectedRows(
-									event.currentTarget.checked ? data.map(x => x.id) : []
-								)
-							}
-						/>,
-						...collection.schema.map(s => s.label)
-					],
-					body: data.map(x => [
-						<Checkbox
-							aria-label='Select row'
-							checked={selectedRows.includes(x.id)}
-							onChange={event =>
-								setSelectedRows(
-									event.currentTarget.checked
+									val
 										? [...selectedRows, x.id]
 										: selectedRows.filter(id => id !== x.id)
 								)
 							}
-						/>,
-						...collection.schema.map(s => x[s.keyname] as ReactNode)
-					])
-				}}
-			/>
+							actions={[
+								<CellActionCopy value={x.id} />,
+								<CellActionEdit to={`/col/${col_id}/doc/${x.id}`} />,
+								<CellActionTrash onClick={() => store?.destroy(x.id)} />
+							]}
+						/>
+					))}
+				</Table.Tbody>
+			</Table>
 			<Flex
 				flex='0 0 0'
 				direction='row'
