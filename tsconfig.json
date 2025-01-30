@@ -16,7 +16,6 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUncheckedSideEffectImports": true,
 
 		// Other stuff
 		"allowJs": true,
@@ -35,6 +34,5 @@
 		"strictNullChecks": true,
 		"typeRoots": ["./node_modules/@types"],
 		"useDefineForClassFields": true
-	},
-	"include": ["src", "types.d.ts", "index.tsx"]
+	}
 }
