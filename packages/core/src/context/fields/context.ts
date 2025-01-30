@@ -6,7 +6,7 @@ export const getFields = () => getAppState('firenookFields').get()
 export const useFields = () => useAppState('firenookFields')
 export const getField = <Key extends FieldType = FieldType>(type: Key) => {
 	const fields = getFields()
-	if (fields.has(type)) console.warn(`Field '${type}' hasn't been set yet.`)
+	if (!fields.has(type)) console.warn(`Field '${type}' hasn't been set yet.`)
 	return fields.get(type) as FirenookFieldContext[Key] | undefined
 }
 export const useField = <Key extends FieldType = FieldType>(type: Key) => {
