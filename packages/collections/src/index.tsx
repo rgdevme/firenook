@@ -5,9 +5,6 @@ import { CreateCollection } from './views/collection.create'
 import { CreateDocument } from './views/document.create'
 import { CollectionMenu } from './views/menu'
 
-import '@mantine/dates/styles.css' //if using mantine date picker features
-import 'mantine-react-table/styles.css' //import MRT styles
-
 declare global {
 	interface FirenookAppStateContext {
 		property_schema: Map<string, any>
