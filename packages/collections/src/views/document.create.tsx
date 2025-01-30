@@ -58,8 +58,6 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 
 	useEffect(() => {
 		if (!collection) return
-
-		console.log({ initialValues })
 		form.setInitialValues(initialValues)
 		form.setValues(initialValues)
 		form.reset()
@@ -89,7 +87,14 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	}, [JSON.stringify(initialValues)])
 
 	return !collection ? null : (
-		<Flex gap='sm' direction='column'>
+		<Flex
+			gap='sm'
+			direction='column'
+			w='100%'
+			maw={1024}
+			pos='relative'
+			left='50%'
+			style={{ transition: 'margin 150ms', transform: 'translateX(-50%)' }}>
 			<Flex direction='row' gap='sm' align='center'>
 				<ActionIcon variant='subtle' color='red' onClick={() => nav(-1)}>
 					<TbArrowNarrowLeft />
@@ -139,12 +144,12 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 				direction={'column'}
 				onSubmit={e => form.onSubmit(handleSubmit)(e as any)}>
 				<Grid>
-					<Grid.Col span={{ md: 8, xs: 12 }}>
+					<Grid.Col span={{ sm: 8, xs: 12 }}>
 						<Flex direction='column' gap='xs'>
 							{columns.left}
 						</Flex>
 					</Grid.Col>
-					<Grid.Col span={{ md: 4, xs: 12 }}>
+					<Grid.Col span={{ sm: 4, xs: 12 }}>
 						<Flex direction='column' gap='xs'>
 							{columns.right}
 						</Flex>
