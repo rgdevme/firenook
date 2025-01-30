@@ -1,11 +1,20 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
-import { dependencies } from './package.json'
+import { dependencies, devDependencies } from './package.json'
 
-const packages = Object.keys(dependencies).map(string => new RegExp(string))
+const packages = [
+	...new Set(
+		Object.keys({ ...dependencies, ...devDependencies }).flatMap(key => {
+			const [pkgroot] = key.split('/')
+			const patterns = [key]
+			if (pkgroot !== key) patterns.push(pkgroot)
+			return patterns
+		})
+	)
+].map(k => new RegExp(k))
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
 	root: './',
 	plugins: [
 		dts({
@@ -27,4 +36,4 @@ export default defineConfig(({ command }) => ({
 		minify: true,
 		rollupOptions: { external: packages }
 	}
-}))
+})
