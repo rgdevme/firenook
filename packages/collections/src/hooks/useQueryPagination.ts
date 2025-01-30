@@ -1,40 +1,51 @@
-import { MRT_PaginationState as PaginationState } from 'mantine-react-table'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 
-export const useQueryPagination = ({
-	first,
-	last
-}: {
+export type Pointers = {
 	first: any
 	last: any
-}) => {
+}
+export const useQueryPagination = () => {
+	const [pointers, setPointers] = useState<Pointers>({
+		first: null,
+		last: null
+	})
 	const [pagination, setPagination] = useState({
-		pageIndex: 0,
-		pageSize: 20,
+		index: 1,
+		size: 20,
 		include: false,
 		pointer: null as any,
 		start: true
 	})
 
-	const onPaginationChange = useCallback(
-		() => (val: (prev: PaginationState) => PaginationState) => {
-			const update = val(pagination)
-			const changedLimit = update.pageSize !== pagination.pageSize
-			const forward = update.pageIndex >= pagination.pageIndex
-
-			setPagination({
-				pageSize: update.pageSize,
-				pageIndex: update.pageIndex,
-				include: false,
+	const onChangePage = (index: number) => {
+		setPagination(prev => {
+			const forward = index >= prev.index
+			return {
+				...prev,
+				index,
 				start: forward,
-				pointer: changedLimit ? null : forward ? last : first
-			})
-		},
-		[first, last]
-	)
+				pointer: forward ? pointers.last : pointers.first
+			}
+		})
+	}
 
-	return [pagination, onPaginationChange] as [
-		typeof pagination,
-		typeof onPaginationChange
-	]
+	const onChangeSize = (size: string | null) => {
+		setPagination(prev => {
+			const newSize = size ? Number(size) : 20
+			const changedLimit = newSize !== prev.size
+			return {
+				...prev,
+				size: newSize,
+				pointer: changedLimit ? null : prev.pointer
+			}
+		})
+	}
+
+	const methods = {
+		onChangePage,
+		onChangeSize,
+		onChangePointers: (val: Pointers) => setPointers(val)
+	}
+
+	return [pagination, methods] as [typeof pagination, typeof methods]
 }

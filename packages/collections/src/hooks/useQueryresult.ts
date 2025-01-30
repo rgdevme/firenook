@@ -1,32 +1,19 @@
-import { FirebormStore, Where } from 'fireborm'
-import { useEffect, useState } from 'react'
-import { CollectionData } from '../types/collection'
+import { Where } from 'fireborm'
+import { useCallback, useState } from 'react'
+import { CollectionSchemaProperty } from '../types/collection'
 import { useQueryFilter } from './useQueryFilter'
-import { useQueryPagination } from './useQueryPagination'
+import { Pointers, useQueryPagination } from './useQueryPagination'
 
-export const useQueryResult = ({
-	collection,
-	store
-}: {
-	collection?: CollectionData
-	store?: FirebormStore<any>
-}) => {
-	const [state, setState] = useState({
-		data: [] as any[],
-		count: 0,
-		first: null as any,
-		last: null as any
-	})
+export const useQuery = (
+	schemas: CollectionSchemaProperty[] | undefined = []
+) => {
+	const [count, setCount] = useState(0)
+	const [data, setData] = useState([] as any[])
 
-	const filter = useQueryFilter(collection?.schema)
-	const [pagination, onPaginationChange] = useQueryPagination({
-		first: state.first,
-		last: state.last
-	})
+	const [pagination, paginationMethods] = useQueryPagination()
+	const [filter, filterMethods] = useQueryFilter(schemas)
 
-	useEffect(() => {
-		if (!store) return
-
+	const getQuery = useCallback(() => {
 		const { search, searchBy, ...rest } = filter.values
 
 		const where: Where = []
@@ -40,32 +27,32 @@ export const useQueryResult = ({
 			})
 		}
 
-		store.count(where).then(count => setState(p => ({ ...p, count })))
-		store.subscribeMany({
+		return {
 			where,
 			...rest,
 			pagination,
-			limit: pagination.pageSize,
+			limit: pagination.size,
 			order: 'name',
-			onChange: res => setState(p => ({ ...p, ...res }))
-		})
-	}, [store, filter.debounced, pagination])
+			onChange: ({ data, ...pointers }: { data: any[] } & Pointers) => {
+				setData(data)
+				paginationMethods.onChangePointers(pointers)
+			}
+		}
+	}, [filter.debounced, pagination.index, pagination.size])
 
 	const result = {
-		...state,
-		filter: {
-			values: filter.values,
-			debounced: filter.debounced
-		},
-		pagination: {
-			pageIndex: pagination.pageIndex,
-			pageSize: pagination.pageSize
-		}
+		count,
+		data,
+		pagination,
+		filter
 	}
+
 	const methods = {
-		onPaginationChange,
-		updateFilter: filter.update,
-		getInputProps: filter.getInputProps
+		getQuery,
+		onChangeCount: setCount,
+		onChangeData: setData,
+		...paginationMethods,
+		...filterMethods
 	}
 	return [result, methods] as [typeof result, typeof methods]
 }
