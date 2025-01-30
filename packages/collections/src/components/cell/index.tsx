@@ -1,4 +1,3 @@
-import { useField } from '@firenook/core'
 import {
 	ActionIcon,
 	Button,
@@ -9,43 +8,9 @@ import {
 	Tooltip
 } from '@mantine/core'
 import { useDisclosure, useToggle } from '@mantine/hooks'
-import { MRT_Row } from 'mantine-react-table'
-import { ReactNode } from 'react'
 import { IconType } from 'react-icons'
 import { TbCheck, TbKey, TbPencil, TbTrash } from 'react-icons/tb'
 import { Link } from 'react-router'
-import { CollectionSchemaProperty } from '../../types/collection'
-
-export const Cell = ({
-	row,
-	column,
-	actions
-}: {
-	row: MRT_Row<any>
-	column: CollectionSchemaProperty
-	actions?: ReactNode
-}) => {
-	const field = useField(column.type)
-
-	console.log({ colField: field })
-
-	return (
-		<Flex gap='xs' align='center' w='100%' className='[&>*]:flex-1'>
-			<div className='flex-1'>
-				{field?.static && (
-					<field.static
-						value={row.getValue(column.keyname)}
-						keyname={column.keyname}
-						key={'cell'}
-						type={field.type}
-						onChange={undefined}
-					/>
-				)}
-			</div>
-			{actions}
-		</Flex>
-	)
-}
 
 export const CellActionEdit = ({ to }: { to: string }) => (
 	<Tooltip label='Edit' position='left'>
@@ -64,8 +29,17 @@ export const CellActionCopy = ({
 }) => (
 	<CopyButton value={value} timeout={2000}>
 		{({ copied, copy }) => (
-			<Tooltip label={copied ? 'ID copied' : 'Copy ID'} position='left'>
-				<ActionIcon variant='subtle' color='stone.3' size='md' onClick={copy}>
+			<Tooltip
+				label={copied ? 'ID copied' : 'Copy ID'}
+				position='left'
+				style={{ transition: 'all' }}
+				color={copied ? 'emerald.4' : 'stone'}>
+				<ActionIcon
+					variant={copied ? 'filled' : 'subtle'}
+					color={copied ? 'emerald.3' : 'stone.3'}
+					style={{ transition: 'all' }}
+					size='md'
+					onClick={copy}>
 					{copied ? <TbCheck /> : <Icon />}
 				</ActionIcon>
 			</Tooltip>
