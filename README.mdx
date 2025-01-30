@@ -77,26 +77,41 @@ Here is the list of plugins and their status:
 
 The core priciple is simple: Each plugin must render something.
 
-Each plugin is a simple function that passes in a sigle parameter holding the Firenook app configuration.
+Each plugin is a simple function that returns a FirenookPlugin object.
 
 ```tsx
-import { FirenookPlugin } from 'firenook/plugins/core'
-import { MyContextProvider } from '..'
-import { MyRoute } from '..'
+import { FirenookPluginFunction } from '@firenook/core'
+import { createContext } from './context/buckets'
+import { CreateBucket } from './views/bucket.create'
+import { List } from './views/list'
+import { BucketsMenu } from './views/menu'
 
-const StorePlugin: FirenookPlugin = (config) => ({
-	name: 'fn-store-plugin',
-	provider: MyContextProvider // (optional) A context
-	routes: [
-		{
-      element: MyRoute, // A JSX element for your rendered,
-      path: 'c/:cid' // The path to a react-router route
-    },
-	]
-})
+// Extend the global context, so it can be accessed by anyone using your plugin.
+declare global {
+	interface FirenookAppStateContext {
+		myContext: myContextType
+	}
+}
 
-export default StorePlugin
+export const MyPlugin: FirenookPluginFunction = async () => {
+	// Run code before returning the object. Ex: setup, fetch, etc.
+	await createContext()
 
+	return {
+		name: 'buckets', // Plugin name
+		routes: {
+			// an object with react router routes as keys and react nodes as values
+			['my/route/:id']: () => <MyComponent />
+		},
+		menu: {
+			// Each item must have a FC as the element prop, and may have a priority for ordering.
+			collections: {
+				element: BucketsMenu,
+				priority: 10
+			}
+		}
+	}
+}
 ```
 
 | Property | Description                                                                |
