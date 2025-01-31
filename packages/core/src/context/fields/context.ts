@@ -1,4 +1,5 @@
 import { useAtomValue } from 'jotai'
+import { useMemo } from 'react'
 import { getAppState, useAppState } from '../appState'
 import { Field, FieldType } from './types'
 
@@ -11,7 +12,10 @@ export const getField = <Key extends FieldType = FieldType>(type: Key) => {
 }
 export const useField = <Key extends FieldType = FieldType>(type: Key) => {
 	const fields = useAtomValue(getAppState('firenookFields').atom)
-	const field = fields.get(type) as FirenookFieldContext[Key] | undefined
+	const field = useMemo(
+		() => fields.get(type) as FirenookFieldContext[Key] | undefined,
+		[type]
+	)
 	return field
 }
 
