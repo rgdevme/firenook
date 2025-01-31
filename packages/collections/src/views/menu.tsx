@@ -1,5 +1,6 @@
 import {
 	MenuDivider,
+	MenuEmptyState,
 	MenuItem,
 	MenuLink,
 	MenuSection,
@@ -33,14 +34,18 @@ export const CollectionMenu: FC = () => {
 
 	return (
 		<MenuSection label='Collections' icon={TbFolders} active={!!active}>
-			{collections.map(col => (
-				<MenuLink
-					key={col.path}
-					to={`/col/${col.path}`}
-					active={active === `/col/${col.path}`}
-					label={col.plural}
-				/>
-			))}
+			{collections.length ? (
+				collections.map(col => (
+					<MenuLink
+						key={col.path}
+						to={`/col/${col.path}`}
+						active={active === `/col/${col.path}`}
+						label={col.plural}
+					/>
+				))
+			) : (
+				<MenuEmptyState />
+			)}
 			<MenuDivider />
 			<MenuItem
 				component={Link}

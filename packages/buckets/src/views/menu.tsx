@@ -1,7 +1,7 @@
 import {
 	MenuDivider,
 	MenuItem,
-	MenuLink,
+	MenuEmptyState,
 	MenuSection,
 	useAppState
 } from '@firenook/core'
@@ -35,18 +35,23 @@ export const BucketsMenu: FC = () => {
 	}, [])
 
 	return (
-		<MenuSection label='Collections' icon={TbLibraryPhoto} active={!!active}>
-			{buckets.map(buc => {
-				const key = getAsParam(buc)
-				return (
-					<MenuLink
-						key={key}
-						to={`/buc/${key}`}
-						active={active === `/buc/${key}`}
-						label={buc.name}
-					/>
-				)
-			})}
+		<MenuSection label='Buckets' icon={TbLibraryPhoto} active={!!active}>
+			{buckets.length ? (
+				buckets.map(buc => {
+					const key = getAsParam(buc)
+					return (
+						<MenuLink
+							key={key}
+							to={`/buc/${key}`}
+							active={active === `/buc/${key}`}
+							label={buc.name}
+						/>
+					)
+				})
+			) : (
+				<MenuEmptyState />
+			)}
+
 			<MenuDivider />
 			<MenuItem
 				component={Link}
