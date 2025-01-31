@@ -26,7 +26,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"module": "CommonJS",
 		"noImplicitAny": false,
-		"noImplicitReturns": true,
+		"noImplicitReturns": false,
 		"outDir": "dist",
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
