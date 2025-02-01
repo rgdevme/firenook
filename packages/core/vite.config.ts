@@ -14,8 +14,6 @@ const packages = [
 	)
 ].map(k => new RegExp(k))
 
-console.log(packages.join('\n'))
-
 export default defineConfig({
 	root: './',
 	plugins: [
