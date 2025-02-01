@@ -1,20 +1,32 @@
 import { useField, useFields } from '@firenook/core'
 import {
 	ActionIcon,
+	Checkbox,
+	CheckboxProps,
+	Divider,
 	Flex,
 	Paper,
 	Select,
-	Switch,
-	TextInput
+	Text,
+	TextInput,
+	Tooltip,
+	TooltipFloatingProps
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useDebouncedCallback, useElementSize, useToggle } from '@mantine/hooks'
-import { useCallback } from 'react'
-import { TbChevronDown, TbGripHorizontal, TbTrash } from 'react-icons/tb'
+// import { useEffect } from 'react'
+import {
+	TbArrowsUpDown,
+	TbBracketsContain,
+	TbEyeCheck,
+	TbFilterCheck,
+	TbGripHorizontal,
+	TbQuestionMark,
+	TbTrash
+} from 'react-icons/tb'
 import { CollectionSchemaProperty } from '../../types/collection'
-import { getPath } from '../../utils'
+import { getFiledTypes, getPath } from '../../utils'
 
-export const ProvisionalPropertyComponent = ({
+export const Property = ({
 	onChange,
 	onTrash,
 	item
@@ -23,36 +35,15 @@ export const ProvisionalPropertyComponent = ({
 	onChange: (data: CollectionSchemaProperty) => void
 	onTrash: () => void
 }) => {
-	const [open, toggle] = useToggle()
-	const { ref, height } = useElementSize()
-	const debouncedOnChange = useDebouncedCallback(onChange, 350)
+	// const [open, toggle] = useToggle()
 	const [fields] = useFields()
-
-	const fieldTypes = [...fields.values()].map(f => ({
-		label: f.name,
-		value: f.type
-	}))
-
-	const updateDefaultValues = useCallback(() => {
-		console.log('type changed', item)
-		form.setFieldValue('defaultValue', item.defaultValue)
-		form.setFieldValue('value', item.defaultValue)
-	}, [item])
+	const schemaProp = useField(item.type)
 
 	const form = useForm<CollectionSchemaProperty>({
 		initialValues: item,
-		onValuesChange: (current, previous) => {
-			if (current.type !== previous.type) {
-				updateDefaultValues()
-			}
-			if (current.keyname === getPath(previous.label)) {
-				form.setFieldValue('keyname', getPath(current.label))
-			}
-			debouncedOnChange(current)
-		}
+		enhanceGetInputProps: () => ({ defaultValue: undefined }),
+		onValuesChange: current => onChange(current)
 	})
-
-	const schemaProp = useField(form.getValues().type)
 
 	return !schemaProp?.input ? null : (
 		<Paper p='xs' withBorder>
@@ -61,6 +52,7 @@ export const ProvisionalPropertyComponent = ({
 					<ActionIcon variant='subtle'>
 						<TbGripHorizontal />
 					</ActionIcon>
+
 					<Flex gap='xs' w='100%' direction='row'>
 						<TextInput
 							size='xs'
@@ -68,6 +60,17 @@ export const ProvisionalPropertyComponent = ({
 							flex='1 1 auto'
 							placeholder='Property name'
 							{...form.getInputProps('label', { type: 'input' })}
+							onChange={val => {
+								const prevLabel = form.values.label
+								const prevKey = form.values.keyname
+								const synced = prevKey === getPath(prevLabel)
+								const newLabel = val.target.value
+
+								form.setValues({
+									label: newLabel,
+									keyname: synced ? getPath(newLabel) : prevKey
+								})
+							}}
 						/>
 						<TextInput
 							size='xs'
@@ -76,11 +79,34 @@ export const ProvisionalPropertyComponent = ({
 							placeholder='property_key'
 							{...form.getInputProps('keyname', { type: 'input' })}
 						/>
+						<Select
+							size='xs'
+							variant='filled'
+							flex='1 1 auto'
+							placeholder='Select a type'
+							data={getFiledTypes(fields)}
+							{...form.getInputProps('type', { type: 'input' })}
+							onChange={val => {
+								if (!val) return
+								const f = fields.get(val as any)
+								if (!f) return
+								form.setValues({
+									type: f.type,
+									defaultValue: f.defaultValue
+								})
+							}}
+						/>
+						<schemaProp.input
+							isDirty={false}
+							isSubmitting={false}
+							{...form.getValues()}
+							{...form.getInputProps('defaultValue', { type: 'input' })}
+							label={undefined}
+							placeholder='Default value'
+							key={item.keyname}
+						/>
 					</Flex>
-					<ActionIcon variant='subtle' onClick={onTrash}>
-						<TbTrash />
-					</ActionIcon>
-					<ActionIcon variant='subtle' onClick={() => toggle()}>
+					{/* <ActionIcon variant='subtle' onClick={() => toggle()}>
 						<TbChevronDown
 							data-open={open}
 							style={{
@@ -88,68 +114,94 @@ export const ProvisionalPropertyComponent = ({
 								transition: 'all 150ms ease-in-out'
 							}}
 						/>
-					</ActionIcon>
-				</Flex>
+            </ActionIcon> */}
 
-				<Flex
-					ref={ref}
-					justify='space-between'
-					align='center'
-					wrap='wrap'
-					direction='row'
-					px={40}
-					gap='xs'
-					style={{
-						maxHeight: '5rem',
-						height: open ? height || 'auto' : 0,
-						opacity: open ? 1 : 0,
-						marginTop: !open ? '-8px' : 0,
-						transition: 'all'
-					}}>
-					<Select
-						size='xs'
-						variant='filled'
-						flex='1 1 45%'
-						placeholder='Select a type'
-						data={fieldTypes}
-						{...form.getInputProps('type', { type: 'input' })}
-					/>
-					<schemaProp.input
-						isDirty={false}
-						isSubmitting={false}
-						{...form.getValues()}
-						{...form.getInputProps('defaultValue', { type: 'input' })}
-						label={undefined}
-						placeholder='Default value'
-						key={item.keyname}
-					/>
-					<Switch
-						size='xs'
-						label='Nullable'
-						{...form.getInputProps('isNullable', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Sort'
-						{...form.getInputProps('isSort', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Filter'
-						{...form.getInputProps('isFilter', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Show'
-						{...form.getInputProps('isShown', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Array'
-						{...form.getInputProps('isArray', { type: 'checkbox' })}
-					/>
+					<Tooltip {...tooltipProps('Is it an array?')}>
+						<Checkbox
+							icon={TbBracketsContain}
+							{...checkboxProps(form.values.isArray)}
+							{...form.getInputProps('isArray', { type: 'checkbox' })}
+						/>
+					</Tooltip>
+
+					<Divider orientation='vertical' />
+
+					<Tooltip {...tooltipProps('Is it nullable?')}>
+						<Checkbox
+							icon={TbQuestionMark}
+							{...checkboxProps(form.values.isNullable)}
+							{...form.getInputProps('isNullable', { type: 'checkbox' })}
+						/>
+					</Tooltip>
+					<Tooltip
+						{...tooltipProps(
+							'Can be used for sorting in the collection table'
+						)}>
+						<Checkbox
+							icon={TbArrowsUpDown}
+							disabled={!form.values.isShown}
+							{...checkboxProps(form.values.isSort)}
+							{...form.getInputProps('isSort', { type: 'checkbox' })}
+						/>
+					</Tooltip>
+					<Tooltip
+						{...tooltipProps(
+							'Can be used for filtering in the collection table'
+						)}>
+						<Checkbox
+							icon={TbFilterCheck}
+							disabled={!form.values.isShown}
+							{...checkboxProps(form.values.isFilter)}
+							{...form.getInputProps('isFilter', { type: 'checkbox' })}
+						/>
+					</Tooltip>
+					<Tooltip {...tooltipProps('Display column in the collection table')}>
+						<Checkbox
+							icon={TbEyeCheck}
+							{...checkboxProps(form.values.isShown)}
+							{...form.getInputProps('isShown', { type: 'checkbox' })}
+							onChange={val => {
+								const checked = val.target.checked
+								if (checked) form.setFieldValue('isShown', checked)
+								else
+									form.setValues({
+										isShown: checked,
+										isFilter: false,
+										isSort: false
+									})
+							}}
+						/>
+					</Tooltip>
+
+					<Divider orientation='vertical' />
+
+					<ActionIcon variant='subtle' onClick={onTrash} color='rose' size='lg'>
+						<TbTrash />
+					</ActionIcon>
 				</Flex>
 			</Flex>
 		</Paper>
 	)
 }
+
+const tooltipProps = (
+	label: string
+): Omit<TooltipFloatingProps, 'children'> => ({
+	label: (
+		<Text size='xs' c='stone.5'>
+			{label}
+		</Text>
+	),
+	offset: 8,
+	position: 'bottom',
+	bg: 'stone.1'
+})
+
+const checkboxProps = (value: boolean | undefined): Partial<CheckboxProps> => ({
+	size: 'lg',
+	iconColor: value ? undefined : 'stone.3',
+	styles: {
+		input: { border: 'none', cursor: 'pointer' },
+		icon: { opacity: 1, transform: 'none' }
+	}
+})
