@@ -32,7 +32,8 @@ export const useQuery = (
 			...rest,
 			pagination,
 			limit: pagination.size,
-			order: 'name',
+			order: schemas.filter(x => x.isFilter && x.type === 'string').pop()
+				?.keyname,
 			onChange: ({ data, ...pointers }: { data: any[] } & Pointers) => {
 				setData(data)
 				paginationMethods.onChangePointers(pointers)
