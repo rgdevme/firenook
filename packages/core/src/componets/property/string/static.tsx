@@ -4,7 +4,7 @@ import { FieldProps } from '../../../context'
 
 export const StringStatic: FC<FieldProps<string>> = ({ value }) => {
 	return (
-		<Text size='xs' ff='monospace'>
+		<Text size='xs' ff='monospace' truncate='end'>
 			{value}
 		</Text>
 	)
