@@ -12,14 +12,16 @@ import { useForm } from '@mantine/form'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { TbArrowNarrowLeft, TbDeviceFloppy, TbTrash } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router'
-import { useCollectionStore } from '../context/collections'
+import {
+	getDefaultDocumentData,
+	useCollectionStore
+} from '../context/collections'
 
 export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	const nav = useNavigate()
 	const { col_id, doc_id } = useParams()
 	const { collection, store, defaultData } = useCollectionStore()
 
-	const [initialValues, setInitialValues] = useState({ ...defaultData })
 	const [columns, setColumns] = useState<{
 		left: ReactNode[]
 		right: ReactNode[]
@@ -27,8 +29,7 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 
 	const form = useForm({
 		mode: 'uncontrolled',
-		onSubmitPreventDefault: 'always',
-		initialValues
+		onSubmitPreventDefault: 'always'
 	})
 
 	const handleSubmit = async (data: any) => {
@@ -40,28 +41,27 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	}
 
 	useEffect(() => {
-		if (!collection || !store || !doc_id) return
+		if (!store) return
+
+		if (!doc_id) {
+			form.initialize(getDefaultDocumentData(collection!))
+			return
+		}
 
 		store.subscribe(doc_id, {
 			onChange: data => {
 				if (!data) return
 				const upd = { ...defaultData }
-
 				collection?.schema.forEach(prop => {
 					upd[prop.keyname] = data[prop.keyname]
 				})
-
-				setInitialValues({ ...upd })
+				form.initialize({ ...upd })
 			}
 		})
 	}, [store, doc_id])
 
 	useEffect(() => {
 		if (!collection) return
-		form.setInitialValues(initialValues)
-		form.setValues(initialValues)
-		form.reset()
-
 		setColumns(
 			collection.schema.reduce(
 				(cols, item) => {
@@ -84,9 +84,9 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 				{ left: [], right: [] } as typeof columns
 			)
 		)
-	}, [JSON.stringify(initialValues)])
+	}, [form.initialized, collection?.schema])
 
-	return !collection ? null : (
+	return !form.initialized ? null : (
 		<Flex
 			gap='sm'
 			direction='column'
@@ -144,16 +144,18 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 				direction={'column'}
 				onSubmit={e => form.onSubmit(handleSubmit)(e as any)}>
 				<Grid>
-					<Grid.Col span={{ sm: 8, xs: 12 }}>
+					<Grid.Col span={{ sm: columns.right.length ? 8 : 12, xs: 12 }}>
 						<Flex direction='column' gap='xs'>
 							{columns.left}
 						</Flex>
 					</Grid.Col>
-					<Grid.Col span={{ sm: 4, xs: 12 }}>
-						<Flex direction='column' gap='xs'>
-							{columns.right}
-						</Flex>
-					</Grid.Col>
+					{!!columns.right.length && (
+						<Grid.Col span={{ sm: 4, xs: 12 }}>
+							<Flex direction='column' gap='xs'>
+								{columns.right}
+							</Flex>
+						</Grid.Col>
+					)}
 				</Grid>
 			</Flex>
 		</Flex>
