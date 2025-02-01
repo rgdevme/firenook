@@ -1,4 +1,4 @@
-import { getField, useAppState } from '@firenook/core'
+import { useAppState } from '@firenook/core'
 import {
 	Button,
 	Divider,
@@ -11,10 +11,11 @@ import {
 	Title
 } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
+import { useListState } from '@mantine/hooks'
 import { FC, ReactNode, useEffect, useMemo } from 'react'
 import { TbCategoryPlus } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router'
-import { ProvisionalPropertyComponent } from '../components/schemaProperty'
+import { Property } from '../components/schemaProperty'
 import { getDefaultSchemaPropertyData } from '../context/collections'
 import { CollectionData, CollectionSchemaProperty } from '../types/collection'
 import { examples, getPath, getPlural } from '../utils'
@@ -45,8 +46,6 @@ export const CreateCollection: FC<{
 		},
 		validateInputOnChange: true,
 		onValuesChange: (current, previous) => {
-			console.log(current)
-
 			if (current.path === getPath(previous.singular)) {
 				form.setFieldValue('path', getPath(current.singular))
 			}
@@ -62,69 +61,36 @@ export const CreateCollection: FC<{
 		}
 	})
 
-	const updateSchemaProperty =
-		(index: number) => (schema: CollectionSchemaProperty) => {
-			const update = [...form.getValues().schema]
-			let newSchema = { ...schema }
-
-			if (update[index].type !== schema.type) {
-				const { defaultValue } = getField(schema.type)!
-				newSchema = { ...schema, defaultValue }
-			}
-
-			update.splice(index, 1, newSchema)
-			form.setFieldValue('schema', update)
-		}
-
-	const addSchemaProperty = (side: CollectionSchemaProperty['side']) => () => {
-		const update = [...form.getValues().schema]
-		update.push({ ...getDefaultSchemaPropertyData(), side })
-		form.setFieldValue('schema', update)
-	}
-
-	const removeSchemaPropety = (index: number) => () => {
-		const update = [...form.getValues().schema]
-		update.splice(index, 1)
-		form.setFieldValue('schema', update)
-	}
-
 	const handleSubmit = async (data: CollectionData) => {
 		await store.save('col', { [data.path]: data } as any)
 		nav(`/col/${data.path}`)
 	}
 
-	const initalSchema = getDefaultSchemaPropertyData()
-	const { left, right } = useMemo(
-		() =>
-			form.getValues().schema.reduce(
-				(sides, item, index) => {
-					const passedProps = { ...initalSchema }
+	const [schemaState, { append, remove, setItem }] =
+		useListState<CollectionSchemaProperty>()
 
-					for (const key in initalSchema) {
-						if (key in item) passedProps[key] = item[key]
-					}
+	useEffect(() => {
+		form.setFieldValue('schema', schemaState)
+	}, [schemaState])
 
-					console.log({
-						item,
-						initalSchema,
-						values: form.getValues(),
-						passedProps
-					})
+	const { left, right } = useMemo(() => {
+		console.log({ schema: schemaState })
 
-					sides[item.side].push(
-						<ProvisionalPropertyComponent
-							key={passedProps.keyname}
-							item={passedProps}
-							onChange={updateSchemaProperty(index)}
-							onTrash={removeSchemaPropety(index)}
-						/>
-					)
-					return sides
-				},
-				{ left: [], right: [] } as { left: ReactNode[]; right: ReactNode[] }
-			),
-		[form.getValues().schema.map(x => x.type)]
-	)
+		return schemaState.reduce(
+			(sides, item, index) => {
+				sides[item.side].push(
+					<Property
+						key={item.id}
+						item={item}
+						onChange={upd => setItem(index, upd)}
+						onTrash={() => remove(index)}
+					/>
+				)
+				return sides
+			},
+			{ left: [], right: [] } as { left: ReactNode[]; right: ReactNode[] }
+		)
+	}, [JSON.stringify(schemaState.map(x => x.type))])
 
 	useEffect(() => {
 		if (!col_id) return
@@ -219,7 +185,9 @@ export const CreateCollection: FC<{
 								fullWidth
 								variant='subtle'
 								leftSection={<TbCategoryPlus />}
-								onClick={addSchemaProperty('left')}>
+								onClick={() =>
+									append({ ...getDefaultSchemaPropertyData(), side: 'left' })
+								}>
 								Add schema property
 							</Button>
 						</Flex>
@@ -231,7 +199,9 @@ export const CreateCollection: FC<{
 								fullWidth
 								variant='subtle'
 								leftSection={<TbCategoryPlus />}
-								onClick={addSchemaProperty('right')}>
+								onClick={() =>
+									append({ ...getDefaultSchemaPropertyData(), side: 'right' })
+								}>
 								Add schema property
 							</Button>
 						</Flex>
