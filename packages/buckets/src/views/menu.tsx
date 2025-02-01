@@ -1,7 +1,8 @@
 import {
 	MenuDivider,
-	MenuItem,
 	MenuEmptyState,
+	MenuItem,
+	MenuLink,
 	MenuSection,
 	useAppState
 } from '@firenook/core'
