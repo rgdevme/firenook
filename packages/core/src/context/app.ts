@@ -2,7 +2,6 @@ import { Fireborm, FirebormStore } from 'fireborm'
 import { FC } from 'react'
 import { FieldsContext, registerAppState, registerField } from '.'
 import { CheckboxField } from '../componets/property/checkbox'
-import { GeoPointField } from '../componets/property/geopoint'
 import { NumberField } from '../componets/property/number'
 import { StringField } from '../componets/property/string'
 
@@ -23,7 +22,6 @@ declare global {
 		string: StringField
 		number: NumberField
 		checkbox: CheckboxField
-		geopoint: GeoPointField
 		textArea: StringField
 	}
 }
@@ -53,5 +51,4 @@ export const initializeAppState = () => {
 	registerField(StringField)
 	registerField(NumberField)
 	registerField(CheckboxField)
-	registerField(GeoPointField)
 }
