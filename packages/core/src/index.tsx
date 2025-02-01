@@ -5,20 +5,17 @@ import { Fireborm, FirebormSettings } from 'fireborm'
 import { Provider, useAtomValue } from 'jotai'
 import { Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
+import { NotFound } from './componets/layout/404'
 import { Loading } from './componets/layout/loading'
 import { PrivateLayout } from './componets/layout/private'
 import { PublicLayout } from './componets/layout/public'
 import { getAppState, state, useAppState } from './context'
-import {
-	initializeAppState,
-	MenuItemElement,
-	RouteElement
-} from './context/app'
+import { initializeAppState } from './context/app'
+import { initializePlugin } from './context/plugin'
 import { ColorName, mantineColors } from './styles/colors'
 import './styles/index.css'
 import { resolvedTailwindTheme as theme } from './styles/resolvedTailwindConfig'
 import { FirenookPluginFunction } from './types'
-import { NotFound } from './componets/layout/404'
 
 export * from './componets'
 export * from './context'
@@ -32,49 +29,19 @@ interface InitFirebormProps {
 
 initializeAppState()
 
-const initializeContext = async ({
-	config,
-	settings = {},
-	plugins = []
-}: InitFirebormProps) => {
-	const results = await Promise.all(plugins.map(f => f()))
-	const routes: RouteElement[] = []
-	const menuItems: MenuItemElement[] = []
-
-	results.forEach(({ name, routes: r = {}, menu: m = {} }) => {
-		routes.push(
-			...Object.entries(r).map(([path, element]) => ({
-				key: `${name}-${path}`,
-				path,
-				element
-			}))
-		)
-		menuItems.push(
-			...Object.entries(m).map(([id, { element, priority = 10 }]) => ({
-				key: `${name}-${id}`,
-				element,
-				priority
-			}))
-		)
-	})
-
-	getAppState('fireborm').set(new Fireborm(config, settings))
-	getAppState('routes').set(routes)
-	getAppState('menuItems').set(menuItems)
-}
-
 export interface FirenookProps extends InitFirebormProps {
 	logo?: string
 }
 
 export const Firenook = ({
 	logo,
-	plugins,
+	plugins = [],
 	config,
 	settings
 }: FirenookProps) => {
 	useEffect(() => {
-		initializeContext({ config, settings, plugins })
+		getAppState('fireborm').set(new Fireborm(config, settings))
+		plugins.forEach(initializePlugin)
 	}, [plugins, config, settings])
 
 	return (
