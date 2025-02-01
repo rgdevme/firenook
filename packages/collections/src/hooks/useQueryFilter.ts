@@ -18,11 +18,8 @@ export const useQueryFilter = (
 
 	useEffect(() => {
 		const stringFilters = schema.filter(x => x.type === 'string')
-		console.log({ schema, stringFilters })
 		if (!stringFilters.length) return
 		const upd = { searchBy: stringFilters?.[0].keyname }
-		console.log({ upd })
-
 		filter.setValues(upd)
 		filter.setInitialValues({ ...initialValues, ...upd })
 		filter.reset()
