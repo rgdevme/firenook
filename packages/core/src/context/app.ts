@@ -4,6 +4,7 @@ import { FieldsContext, registerAppState, registerField } from '.'
 import { CheckboxField } from '../componets/property/checkbox'
 import { NumberField } from '../componets/property/number'
 import { StringField } from '../componets/property/string'
+import { TextAreaField } from '../componets/property/textarea'
 
 export type RouteElement = { path: string; element: FC; key: string }
 export type MenuItemElement = { element: FC; key: string; priority: number }
@@ -22,7 +23,7 @@ declare global {
 		string: StringField
 		number: NumberField
 		checkbox: CheckboxField
-		textArea: StringField
+		textArea: TextAreaField
 	}
 }
 
@@ -51,4 +52,5 @@ export const initializeAppState = () => {
 	registerField(StringField)
 	registerField(NumberField)
 	registerField(CheckboxField)
+	registerField(TextAreaField)
 }
