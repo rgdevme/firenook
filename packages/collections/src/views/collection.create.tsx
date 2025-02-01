@@ -1,11 +1,9 @@
+import { getField, useAppState } from '@firenook/core'
 import {
-	ActionIcon,
 	Button,
 	Divider,
 	Flex,
 	Grid,
-	Paper,
-	Select,
 	SimpleGrid,
 	Switch,
 	Text,
@@ -14,28 +12,12 @@ import {
 } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { FC, ReactNode, useEffect, useMemo } from 'react'
-import {
-	TbCategoryPlus,
-	TbChevronDown,
-	TbGripHorizontal,
-	TbTrash
-} from 'react-icons/tb'
+import { TbCategoryPlus } from 'react-icons/tb'
+import { useNavigate, useParams } from 'react-router'
+import { ProvisionalPropertyComponent } from '../components/schemaProperty'
+import { getDefaultSchemaPropertyData } from '../context/collections'
 import { CollectionData, CollectionSchemaProperty } from '../types/collection'
-
-const getPath = (singular: string) => singular.toLowerCase().replace(/ +/g, '_')
-
-const getPlural = (singular: string) => (!singular.length ? '' : singular + 's')
-
-const examples = [
-	'Post',
-	'Student',
-	'Tag',
-	'Hat',
-	'Body part',
-	'Dog',
-	'User',
-	'Friend'
-].map(x => [x, getPlural(x), getPath(x)])
+import { examples, getPath, getPlural } from '../utils'
 
 export const CreateCollection: FC<{
 	edit?: true
@@ -141,7 +123,7 @@ export const CreateCollection: FC<{
 				},
 				{ left: [], right: [] } as { left: ReactNode[]; right: ReactNode[] }
 			),
-		[form.getValues().schema.length]
+		[form.getValues().schema.map(x => x.type)]
 	)
 
 	useEffect(() => {
@@ -257,141 +239,5 @@ export const CreateCollection: FC<{
 				</Grid>
 			</Flex>
 		</Flex>
-	)
-}
-
-import { getField, useAppState, useField, useFields } from '@firenook/core'
-import { useDebouncedCallback, useElementSize, useToggle } from '@mantine/hooks'
-import { useNavigate, useParams } from 'react-router'
-import { getDefaultSchemaPropertyData } from '../context/collections'
-
-const ProvisionalPropertyComponent = ({
-	onChange,
-	onTrash,
-	item
-}: {
-	item: CollectionSchemaProperty
-	onChange: (data: CollectionSchemaProperty) => void
-	onTrash: () => void
-}) => {
-	const [open, toggle] = useToggle()
-	const { ref, height } = useElementSize()
-	const debouncedOnChange = useDebouncedCallback(onChange, 350)
-	const [fields] = useFields()
-
-	const fieldTypes = [...fields.values()].map(f => ({
-		label: f.name,
-		value: f.type
-	}))
-
-	const schemaProp = useField(item.type)
-
-	const form = useForm<CollectionSchemaProperty>({
-		initialValues: item,
-		onValuesChange: (current, previous) => {
-			if (current.keyname === getPath(previous.label)) {
-				form.setFieldValue('keyname', getPath(current.label))
-			}
-			debouncedOnChange(current)
-		}
-	})
-
-	return !schemaProp?.input ? null : (
-		<Paper p='xs' withBorder>
-			<Flex gap='xs' direction='column'>
-				<Flex direction='row' wrap='nowrap' gap='xs' align='center'>
-					<ActionIcon variant='subtle'>
-						<TbGripHorizontal />
-					</ActionIcon>
-					<Flex gap='xs' w='100%' direction='row'>
-						<TextInput
-							size='xs'
-							variant='filled'
-							flex='1 1 auto'
-							placeholder='Property name'
-							{...form.getInputProps('label', { type: 'input' })}
-						/>
-						<TextInput
-							size='xs'
-							variant='filled'
-							flex='1 1 auto'
-							placeholder='property_key'
-							{...form.getInputProps('keyname', { type: 'input' })}
-						/>
-					</Flex>
-					<ActionIcon variant='subtle' onClick={onTrash}>
-						<TbTrash />
-					</ActionIcon>
-					<ActionIcon variant='subtle' onClick={() => toggle()}>
-						<TbChevronDown
-							data-open={open}
-							style={{
-								transform: open ? 'rotateZ(180deg)' : 'rotateZ(0deg)',
-								transition: 'all 150ms ease-in-out'
-							}}
-						/>
-					</ActionIcon>
-				</Flex>
-
-				<Flex
-					ref={ref}
-					justify='space-between'
-					align='center'
-					wrap='wrap'
-					direction='row'
-					px={40}
-					gap='xs'
-					style={{
-						maxHeight: '5rem',
-						height: open ? height || 'auto' : 0,
-						opacity: open ? 1 : 0,
-						marginTop: !open ? '-8px' : 0,
-						transition: 'all'
-					}}>
-					<Select
-						size='xs'
-						variant='filled'
-						flex='1 1 45%'
-						placeholder='Select a type'
-						data={fieldTypes}
-						{...form.getInputProps('type', { type: 'input' })}
-					/>
-					<schemaProp.input
-						isDirty={false}
-						isSubmitting={false}
-						{...item}
-						{...form.getInputProps('defaultValue', { type: 'input' })}
-						label={undefined}
-						placeholder='Default value'
-						key={item.keyname}
-					/>
-					<Switch
-						size='xs'
-						label='Nullable'
-						{...form.getInputProps('isNullable', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Sort'
-						{...form.getInputProps('isSort', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Filter'
-						{...form.getInputProps('isFilter', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Show'
-						{...form.getInputProps('isShown', { type: 'checkbox' })}
-					/>
-					<Switch
-						size='xs'
-						label='Array'
-						{...form.getInputProps('isArray', { type: 'checkbox' })}
-					/>
-				</Flex>
-			</Flex>
-		</Paper>
 	)
 }
