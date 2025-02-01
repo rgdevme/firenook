@@ -39,9 +39,7 @@ export const Collection: FC = () => {
 
 	useEffect(() => {
 		if (!store) return
-
 		const constrains = getQuery()
-
 		store.count(constrains.where).then(count => onChangeCount(count))
 		store.subscribeMany(constrains)
 	}, [store, getQuery])

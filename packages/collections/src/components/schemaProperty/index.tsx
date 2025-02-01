@@ -53,7 +53,7 @@ export const Property = ({
 						<TbGripHorizontal />
 					</ActionIcon>
 
-					<Flex gap='xs' w='100%' direction='row'>
+					<Flex gap='xs' w='100%' direction='row' align='center'>
 						<TextInput
 							size='xs'
 							variant='filled'
