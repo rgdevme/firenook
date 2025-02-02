@@ -1,12 +1,10 @@
 import { Where } from 'fireborm'
 import { useCallback, useState } from 'react'
-import { CollectionSchemaProperty } from '../types/collection'
+import { CollectionSchemaForm } from '../types/collection'
 import { useQueryFilter } from './useQueryFilter'
 import { Pointers, useQueryPagination } from './useQueryPagination'
 
-export const useQuery = (
-	schemas: CollectionSchemaProperty[] | undefined = []
-) => {
+export const useQuery = (schemas: CollectionSchemaForm[] | undefined = []) => {
 	const [count, setCount] = useState(0)
 	const [data, setData] = useState([] as any[])
 

@@ -1,31 +1,10 @@
-import { Indicator, TextInput } from '@mantine/core'
-import { FC } from 'react'
-import { TbLetterCase } from 'react-icons/tb'
-import { FieldProps } from '../../../context'
+import { Indicator } from '@mantine/core'
+import { StringField } from '.'
+import { StringSchema } from './schema'
 
-export const StringInput: FC<
-	FieldProps<string> & {
-		minLength?: number
-		maxLength?: number
-		suffix?: string
-		prefix?: string
-	}
-> = ({
-	isDirty,
-	isSubmitting,
-	label,
-	minLength,
-	maxLength,
-	suffix,
-	prefix,
-	description,
-	defaultValue,
-	value,
-	checked,
-	error,
-	onChange,
-	onFocus,
-	onBlur
+export const StringInput: NonNullable<StringField['input']> = ({
+	status: { isDirty, isSubmitting },
+	...schemaProps
 }) => (
 	<Indicator
 		position='top-end'
@@ -33,24 +12,6 @@ export const StringInput: FC<
 		withBorder
 		disabled={!isDirty}
 		processing={isSubmitting}>
-		<TextInput
-			size='xs'
-			variant='filled'
-			flex='1 1 45%'
-			label={label}
-			placeholder={label}
-			description={description}
-			leftSection={prefix || <TbLetterCase />}
-			rightSection={suffix}
-			minLength={minLength}
-			maxLength={maxLength}
-			defaultValue={defaultValue}
-			value={value}
-			onChange={onChange}
-			checked={checked}
-			error={error}
-			onFocus={onFocus}
-			onBlur={onBlur}
-		/>
+		<StringSchema {...schemaProps} />
 	</Indicator>
 )

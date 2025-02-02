@@ -1,10 +1,10 @@
 import { Flex, Select, Text } from '@mantine/core'
-import { FC } from 'react'
-import { FieldBaseProps, FieldProps } from '../../../context'
+import { StringField } from '.'
 
-export const StringFilter: FC<
-	FieldProps<string> & { fields?: FieldBaseProps[] }
-> = ({ fields = [], value, defaultValue, onChange, onBlur, onFocus }) => {
+export const StringFilter: NonNullable<StringField['filter']> = ({
+	input,
+	extra: { data = [] } = {}
+}) => {
 	return (
 		<Flex
 			direction='row'
@@ -17,12 +17,9 @@ export const StringFilter: FC<
 			</Text>
 			<Select
 				size='xs'
-				data={fields.map(field => ({
-					label: field.label!,
-					value: field.keyname
-				}))}
+				data={data}
 				comboboxProps={{ withinPortal: false }}
-				{...{ value, defaultValue, onBlur, onFocus, onChange }}
+				{...input}
 			/>
 		</Flex>
 	)

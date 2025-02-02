@@ -1,14 +1,9 @@
 import { Checkbox, Flex, Text } from '@mantine/core'
-import { FC } from 'react'
-import { FieldProps } from '../../../context'
+import { CheckboxField } from '../../../context'
 
-export const CheckboxFilter: FC<FieldProps<boolean>> = ({
-	checked,
-	defaultValue,
-	onChange,
-	onBlur,
-	label,
-	onFocus
+export const CheckboxFilter: NonNullable<CheckboxField['filter']> = ({
+	input: { value, ...input },
+	item: { label }
 }) => {
 	return (
 		<Flex
@@ -20,16 +15,7 @@ export const CheckboxFilter: FC<FieldProps<boolean>> = ({
 			<Text size='xs' pl='xs'>
 				{label}
 			</Text>
-			<Checkbox
-				size='sm'
-				{...{
-					checked,
-					defaultChecked: defaultValue,
-					onBlur,
-					onFocus,
-					onChange
-				}}
-			/>
+			<Checkbox size='sm' {...{ checked: value, ...input }} />
 		</Flex>
 	)
 }

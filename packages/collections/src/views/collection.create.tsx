@@ -17,7 +17,7 @@ import { TbCategoryPlus } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router'
 import { Property } from '../components/schemaProperty'
 import { getDefaultSchemaPropertyData } from '../context/collections'
-import { CollectionData, CollectionSchemaProperty } from '../types/collection'
+import { CollectionData, CollectionSchemaForm } from '../types/collection'
 import { examples, getPath, getPlural } from '../utils'
 
 export const CreateCollection: FC<{
@@ -66,8 +66,8 @@ export const CreateCollection: FC<{
 		nav(`/col/${data.path}`)
 	}
 
-	const [schemaState, { append, remove, setItem }] =
-		useListState<CollectionSchemaProperty>()
+	const [schemaState, { append, remove, setItem, setState }] =
+		useListState<CollectionSchemaForm>()
 
 	useEffect(() => {
 		form.setFieldValue('schema', schemaState)
@@ -81,7 +81,7 @@ export const CreateCollection: FC<{
 				sides[item.side].push(
 					<Property
 						key={item.id}
-						item={item}
+						schema={item}
 						onChange={upd => setItem(index, upd)}
 						onTrash={() => remove(index)}
 					/>
@@ -96,6 +96,7 @@ export const CreateCollection: FC<{
 		if (!col_id) return
 		const collection = collections.find(x => x.path === col_id)
 		if (!collection) return
+		setState(collection.schema)
 		form.setInitialValues(collection)
 		form.reset()
 	}, [col_id, collections])
@@ -185,9 +186,11 @@ export const CreateCollection: FC<{
 								fullWidth
 								variant='subtle'
 								leftSection={<TbCategoryPlus />}
-								onClick={() =>
-									append({ ...getDefaultSchemaPropertyData(), side: 'left' })
-								}>
+								onClick={() => {
+									const upd = getDefaultSchemaPropertyData()
+									upd.side = 'left'
+									append(upd)
+								}}>
 								Add schema property
 							</Button>
 						</Flex>
@@ -199,9 +202,11 @@ export const CreateCollection: FC<{
 								fullWidth
 								variant='subtle'
 								leftSection={<TbCategoryPlus />}
-								onClick={() =>
-									append({ ...getDefaultSchemaPropertyData(), side: 'right' })
-								}>
+								onClick={() => {
+									const upd = getDefaultSchemaPropertyData()
+									upd.side = 'right'
+									append(upd)
+								}}>
 								Add schema property
 							</Button>
 						</Flex>

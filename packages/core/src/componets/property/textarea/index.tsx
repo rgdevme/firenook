@@ -1,16 +1,20 @@
 import { Field } from '../../../context'
-import { StringStatic } from '../string/static'
+import { StringCell } from '../string/cell'
+import { StringSchema } from '../string/schema'
 import { TextAreaInput } from './input'
 
-export type TextAreaField = Field<
+export type TextAreaField = typeof TextAreaField
+export const TextAreaField: Field<
 	string,
-	typeof StringStatic,
-	typeof TextAreaInput
->
-export const TextAreaField: TextAreaField = {
+	{
+		minLength?: number
+		maxLength?: number
+	}
+> = {
 	type: 'textArea',
 	name: 'Text area',
 	defaultValue: '',
-	static: StringStatic,
-	input: TextAreaInput
+	cell: StringCell,
+	input: TextAreaInput,
+	schema: StringSchema
 }

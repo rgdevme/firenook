@@ -24,7 +24,7 @@ import {
 import { TableRow } from '../components/row'
 import { useCollectionStore } from '../context/collections'
 import { useQuery } from '../hooks/useQueryresult'
-import { CollectionData, CollectionSchemaProperty } from '../types/collection'
+import { CollectionData, CollectionSchemaForm } from '../types/collection'
 
 export const Collection: FC = () => {
 	const { col_id } = useParams()
@@ -75,13 +75,14 @@ export const Collection: FC = () => {
 									</Text>
 									{stringFilters.filter && (
 										<stringFilters.filter
-											fields={stringFilters.properties}
-											keyname='filters'
-											label=''
-											type='string'
-											isDirty={false}
-											isSubmitting={false}
-											{...getInputProps('searchBy')}
+											extra={{
+												data: stringFilters.properties.map(f => ({
+													label: f.label,
+													value: f.type
+												}))
+											}}
+											item={{ keyname: 'searchBy', type: 'string' }}
+											input={getInputProps('searchBy') as any}
 										/>
 									)}
 								</Flex>
@@ -208,7 +209,7 @@ const useStringFilters = (collection?: CollectionData) => {
 	const state = useMemo(() => {
 		const res = {
 			filter: undefined as NonNullable<typeof field>['filter'],
-			properties: [] as CollectionSchemaProperty[]
+			properties: [] as CollectionSchemaForm[]
 		}
 		if (!collection || !field) return res
 		const properties = collection.schema.filter(x => x.type === 'string')

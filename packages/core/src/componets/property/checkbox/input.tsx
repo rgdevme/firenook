@@ -1,18 +1,10 @@
-import { Checkbox, Indicator, Text } from '@mantine/core'
-import { FC } from 'react'
-import { FieldProps } from '../../../context'
+import { Indicator } from '@mantine/core'
+import { CheckboxField } from '.'
+import { CheckboxSchema } from './schema'
 
-export const CheckboxInput: FC<FieldProps<boolean>> = ({
-	isDirty,
-	isSubmitting,
-	label,
-	description,
-	defaultValue,
-	value,
-	error,
-	onChange,
-	onFocus,
-	onBlur
+export const CheckboxInput: NonNullable<CheckboxField['input']> = ({
+	status: { isDirty, isSubmitting },
+	...schemaProps
 }) => {
 	return (
 		<Indicator
@@ -21,20 +13,7 @@ export const CheckboxInput: FC<FieldProps<boolean>> = ({
 			withBorder
 			disabled={!isDirty}
 			processing={isSubmitting}>
-			<Checkbox
-				size='md'
-				variant='filled'
-				flex='1 1 45%'
-				label={label ? <Text size='xs'>{label}</Text> : null}
-				description={description}
-				onChange={onChange}
-				defaultChecked={defaultValue}
-				checked={value}
-				error={error}
-				onFocus={onFocus}
-				onBlur={onBlur}
-				styles={{ labelWrapper: { justifyContent: 'center' } }}
-			/>
+			<CheckboxSchema {...schemaProps} />
 		</Indicator>
 	)
 }

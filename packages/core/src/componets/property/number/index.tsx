@@ -1,19 +1,31 @@
-import { Field } from '../../../context'
+import { Field, FieldFilterProps } from '../../../context'
+import { NumberCell } from './cell'
 import { NumberFilter } from './filter'
 import { NumberInput } from './input'
-import { NumberStatic } from './static'
+import { NumberSchema } from './schema'
 
-export type NumberField = Field<
+export type NumberField = typeof NumberField
+
+export const NumberField: Field<
 	number,
-	typeof NumberStatic,
-	typeof NumberInput,
-	typeof NumberFilter
->
-export const NumberField: NumberField = {
+	{
+		min?: number
+		max?: number
+		decimals?: number
+		prefix?: string
+		suffix?: string
+	},
+	{
+		decimals?: number
+		minInputProps?: FieldFilterProps<number, {}>['input']
+		maxInputProps?: FieldFilterProps<number, {}>['input']
+	}
+> = {
 	type: 'number',
 	name: 'Number',
 	defaultValue: 0,
 	filter: NumberFilter,
-	static: NumberStatic,
-	input: NumberInput
+	cell: NumberCell,
+	input: NumberInput,
+	schema: NumberSchema
 } satisfies Field

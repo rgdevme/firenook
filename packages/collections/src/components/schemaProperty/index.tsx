@@ -1,4 +1,4 @@
-import { useField, useFields } from '@firenook/core'
+import { Field, useField, useFields } from '@firenook/core'
 import {
 	ActionIcon,
 	Checkbox,
@@ -23,29 +23,30 @@ import {
 	TbQuestionMark,
 	TbTrash
 } from 'react-icons/tb'
-import { CollectionSchemaProperty } from '../../types/collection'
+import { transformFormToSchema } from '../../context/collections'
+import { CollectionSchemaForm } from '../../types/collection'
 import { getFiledTypes, getPath } from '../../utils'
 
 export const Property = ({
 	onChange,
 	onTrash,
-	item
+	schema
 }: {
-	item: CollectionSchemaProperty
-	onChange: (data: CollectionSchemaProperty) => void
+	schema: CollectionSchemaForm
+	onChange: (data: CollectionSchemaForm) => void
 	onTrash: () => void
 }) => {
 	// const [open, toggle] = useToggle()
 	const [fields] = useFields()
-	const schemaProp = useField(item.type)
+	const schemaProp = useField(schema.type) as Field<any>
 
-	const form = useForm<CollectionSchemaProperty>({
-		initialValues: item,
+	const form = useForm<CollectionSchemaForm>({
+		initialValues: schema,
 		enhanceGetInputProps: () => ({ defaultValue: undefined }),
-		onValuesChange: current => onChange(current)
+		onValuesChange: val => onChange(val)
 	})
 
-	return !schemaProp?.input ? null : (
+	return !schemaProp?.schema ? null : (
 		<Paper p='xs' withBorder>
 			<Flex gap='xs' direction='column'>
 				<Flex direction='row' wrap='nowrap' gap='xs' align='center'>
@@ -92,18 +93,13 @@ export const Property = ({
 								if (!f) return
 								form.setValues({
 									type: f.type,
-									defaultValue: f.defaultValue
+									value: f.defaultValue
 								})
 							}}
 						/>
-						<schemaProp.input
-							isDirty={false}
-							isSubmitting={false}
-							{...form.getValues()}
-							{...form.getInputProps('defaultValue', { type: 'input' })}
-							label={undefined}
-							placeholder='Default value'
-							key={item.keyname}
+						<schemaProp.schema
+							{...transformFormToSchema(schema)}
+							input={{ ...(form.getInputProps('value') as any) }}
 						/>
 					</Flex>
 					{/* <ActionIcon variant='subtle' onClick={() => toggle()}>

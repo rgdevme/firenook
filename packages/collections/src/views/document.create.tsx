@@ -1,4 +1,4 @@
-import { getField } from '@firenook/core'
+import { Field, getField } from '@firenook/core'
 import {
 	ActionIcon,
 	Button,
@@ -14,6 +14,7 @@ import { TbArrowNarrowLeft, TbDeviceFloppy, TbTrash } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router'
 import {
 	getDefaultDocumentData,
+	transformFormToSchema,
 	useCollectionStore
 } from '../context/collections'
 
@@ -65,17 +66,19 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 		setColumns(
 			collection.schema.reduce(
 				(cols, item) => {
-					const el = getField(item.type)
+					const el = getField(item.type) as Field<any>
 					const inputProps = form.getInputProps(item.keyname, { type: 'input' })
 
 					if (el?.input && inputProps.defaultValue !== undefined) {
 						cols[item.side].push(
 							<el.input
-								{...item}
-								key={item.keyname}
-								isSubmitting={form.submitting}
-								isDirty={form.isDirty(item.keyname)}
-								{...inputProps}
+								key={item.id}
+								{...transformFormToSchema(item)}
+								status={{
+									isSubmitting: form.submitting,
+									isDirty: form.isDirty(item.keyname)
+								}}
+								input={inputProps as any}
 							/>
 						)
 					}

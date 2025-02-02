@@ -1,19 +1,17 @@
 import { Field } from '../../../context'
+import { CheckboxCell } from './cell'
 import { CheckboxFilter } from './filter'
 import { CheckboxInput } from './input'
-import { CheckboxStatic } from './static'
+import { CheckboxSchema } from './schema'
 
-export type CheckboxField = Field<
-	boolean,
-	typeof CheckboxStatic,
-	typeof CheckboxInput,
-	typeof CheckboxFilter
->
-export const CheckboxField: CheckboxField = {
+export type CheckboxField = typeof CheckboxField
+
+export const CheckboxField: Field<boolean> = {
 	type: 'checkbox',
 	name: 'Checkbox',
 	defaultValue: true,
-	static: CheckboxStatic,
+	cell: CheckboxCell,
 	input: CheckboxInput,
-	filter: CheckboxFilter
+	filter: CheckboxFilter,
+	schema: CheckboxSchema
 }

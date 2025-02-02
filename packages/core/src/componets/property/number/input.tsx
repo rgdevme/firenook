@@ -1,33 +1,10 @@
-import { Indicator, NumberInput as NI } from '@mantine/core'
-import { FC } from 'react'
-import { TbNumbers } from 'react-icons/tb'
-import { FieldProps } from '../../../context'
+import { Indicator } from '@mantine/core'
+import { NumberField } from '.'
+import { NumberSchema } from './schema'
 
-export const NumberInput: FC<
-	FieldProps<string> & {
-		min?: number
-		max?: number
-		decimals?: undefined | number
-		prefix?: string
-		suffix?: string
-	}
-> = ({
-	isDirty,
-	isSubmitting,
-	label,
-	min,
-	max,
-	decimals,
-	prefix,
-	suffix,
-	description,
-	defaultValue,
-	value,
-	checked,
-	error,
-	onChange,
-	onFocus,
-	onBlur
+export const NumberInput: NonNullable<NumberField['input']> = ({
+	status: { isDirty, isSubmitting },
+	...schemaProps
 }) => (
 	<Indicator
 		position='top-end'
@@ -35,26 +12,6 @@ export const NumberInput: FC<
 		withBorder
 		disabled={!isDirty}
 		processing={isSubmitting}>
-		<NI
-			size='xs'
-			variant='filled'
-			flex='1 1 45%'
-			label={label}
-			placeholder={label}
-			description={description}
-			leftSection={<TbNumbers />}
-			prefix={prefix}
-			suffix={suffix}
-			min={min}
-			max={max}
-			decimalScale={decimals}
-			defaultValue={defaultValue}
-			value={value}
-			checked={checked}
-			error={error}
-			onChange={onChange}
-			onFocus={onFocus}
-			onBlur={onBlur}
-		/>
+		<NumberSchema {...schemaProps} />
 	</Indicator>
 )

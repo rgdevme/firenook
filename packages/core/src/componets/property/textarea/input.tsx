@@ -1,30 +1,11 @@
 import { Indicator, Textarea } from '@mantine/core'
-import { FC } from 'react'
-import { TbTextSize } from 'react-icons/tb'
-import { FieldProps } from '../../../context'
+import { TextAreaField } from '.'
 
-export const TextAreaInput: FC<
-	FieldProps<string> & {
-		minLength?: number
-		maxLength?: number
-		suffix?: string
-		prefix?: string
-	}
-> = ({
-	isDirty,
-	isSubmitting,
-	label,
-	minLength,
-	maxLength,
-	suffix,
-	prefix,
-	description,
-	defaultValue,
-	value,
-	error,
-	onChange,
-	onFocus,
-	onBlur
+export const TextAreaInput: TextAreaField['input'] = ({
+	item: { description, label },
+	input,
+	status: { isDirty, isSubmitting },
+	options: { maxLength, minLength } = {}
 }) => (
 	<Indicator
 		position='top-end'
@@ -42,16 +23,9 @@ export const TextAreaInput: FC<
 			autosize
 			placeholder={label}
 			description={description}
-			leftSection={prefix || <TbTextSize />}
-			rightSection={suffix}
 			minLength={minLength}
 			maxLength={maxLength}
-			defaultValue={defaultValue}
-			value={value}
-			onChange={onChange}
-			error={error}
-			onFocus={onFocus}
-			onBlur={onBlur}
+			{...input}
 		/>
 	</Indicator>
 )

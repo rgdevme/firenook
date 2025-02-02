@@ -1,8 +1,9 @@
-import { getField } from '@firenook/core'
+import { Field, getField } from '@firenook/core'
 import { Checkbox, Flex, Table } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
 import { ReactNode } from 'react'
-import { CollectionSchemaProperty } from '../../types/collection'
+import { CollectionSchemaForm } from '../../types/collection'
+import { transformFormToSchema } from '../../context/collections'
 
 export const TableRow = ({
 	item,
@@ -12,7 +13,7 @@ export const TableRow = ({
 	actions
 }: {
 	item: Record<string, any>
-	schema: CollectionSchemaProperty[]
+	schema: CollectionSchemaForm[]
 	selected: boolean
 	onSelect: (val: boolean) => void
 	actions: ReactNode[]
@@ -28,16 +29,13 @@ export const TableRow = ({
 				/>
 			</Table.Td>
 			{schema.map((s, i) => {
-				const field = getField(s.type)
-				return !field?.static ? null : (
-					<Table.Td key={`${item.id}-${s.keyname}`}>
+				const field = getField(s.type) as Field
+				const schemaProps = transformFormToSchema(s)
+				schemaProps.input.value = item[s.keyname]
+				return !field?.cell ? null : (
+					<Table.Td key={`${item.id}-${s.keyname}`} colSpan={1} maw={25 * 16}>
 						<Flex direction='row' wrap='nowrap' align='center'>
-							<field.static
-								value={item[s.keyname]}
-								keyname={s.keyname}
-								type={field.type}
-								onChange={undefined}
-							/>
+							<field.cell {...schemaProps} />
 							{i === 0 && (
 								<Flex
 									flex='1 1 auto'

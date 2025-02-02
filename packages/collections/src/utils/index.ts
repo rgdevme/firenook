@@ -18,10 +18,7 @@ export const examples = [
 ].map(x => [x, getPlural(x), getPath(x)])
 
 export const getFiledTypes = (fieldsContext: FieldsContext) =>
-	fieldsContext
-		.values()
-		.toArray()
-		.map(f => ({
-			label: f.name,
-			value: f.type
-		}))
+	Array.from(fieldsContext.values()).map(f => ({
+		label: f.name,
+		value: f.type
+	}))

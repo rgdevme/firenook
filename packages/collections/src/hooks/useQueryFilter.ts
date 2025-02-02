@@ -1,10 +1,10 @@
 import { useForm } from '@mantine/form'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useEffect } from 'react'
-import { CollectionSchemaProperty } from '../types/collection'
+import { CollectionSchemaForm } from '../types/collection'
 
 export const useQueryFilter = (
-	schema: CollectionSchemaProperty[] | undefined = []
+	schema: CollectionSchemaForm[] | undefined = []
 ) => {
 	const initialValues = {
 		searchBy: '',
@@ -13,7 +13,13 @@ export const useQueryFilter = (
 		order: undefined as string | undefined
 	}
 
-	const filter = useForm({ initialValues })
+	const filter = useForm({
+		initialValues,
+		enhanceGetInputProps: ({ form, field }) => ({
+			defaultValue: undefined,
+			value: form.getValues()[field]
+		})
+	})
 	const [debounced] = useDebouncedValue(filter.getValues(), 300)
 
 	useEffect(() => {

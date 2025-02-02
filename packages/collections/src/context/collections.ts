@@ -1,7 +1,11 @@
 import { registerAppState, useAppState } from '@firenook/core'
 import { useMemo } from 'react'
 import { useParams } from 'react-router'
-import { CollectionData, CollectionSchemaProperty } from '../types/collection'
+import {
+	CollectionData,
+	CollectionSchemaForm,
+	CollectionSchemaProperty
+} from '../types/collection'
 
 declare global {
 	interface FirenookAppStateContext {
@@ -26,20 +30,17 @@ export const useCollection = (path?: string) => {
 }
 
 export const getDefaultDocumentData = (collection: CollectionData) => {
-	const entries = collection.schema.map(prop => [
-		prop.keyname,
-		prop.defaultValue
-	])
+	const entries = collection.schema.map(prop => [prop.keyname, prop.value])
 	return Object.fromEntries(entries) as Record<string, any>
 }
 
 export const getDefaultSchemaPropertyData =
-	(): Required<CollectionSchemaProperty> => ({
+	(): Required<CollectionSchemaForm> => ({
 		type: 'string',
 		keyname: '',
 		label: '',
 		description: '',
-		defaultValue: '',
+		value: '',
 		isFilter: false,
 		isArray: false,
 		isNullable: true,
@@ -83,3 +84,24 @@ export const useCollectionStore = () => {
 
 	return { collection, store, defaultData, idOnly }
 }
+
+export const transformFormToSchema = ({
+	description,
+	id,
+	isArray,
+	isFilter,
+	isNullable,
+	isShown,
+	isSort,
+	keyname,
+	label,
+	side,
+	type,
+	value,
+	...options
+}: CollectionSchemaForm): CollectionSchemaProperty => ({
+	input: { value },
+	item: { keyname, type, description, label },
+	extra: { id, side, isArray, isFilter, isNullable, isShown, isSort },
+	options
+})
