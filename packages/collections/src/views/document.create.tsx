@@ -62,17 +62,18 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	}, [store, doc_id])
 
 	useEffect(() => {
-		if (!collection) return
+		if (!collection || !form.initialized) return
+
 		setColumns(
 			collection.schema.reduce(
 				(cols, item) => {
 					const el = getField(item.type) as Field<any>
 					const inputProps = form.getInputProps(item.keyname, { type: 'input' })
 
-					if (el?.input && inputProps.defaultValue !== undefined) {
+					if (el?.input) {
 						cols[item.side].push(
 							<el.input
-								key={item.id}
+								key={item.keyname}
 								{...transformFormToSchema(item)}
 								status={{
 									isSubmitting: form.submitting,
