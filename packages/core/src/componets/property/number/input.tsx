@@ -1,10 +1,12 @@
-import { Indicator } from '@mantine/core'
+import { Indicator, NumberInput as NI } from '@mantine/core'
 import { NumberField } from '.'
-import { NumberSchema } from './schema'
+import { TbNumbers } from 'react-icons/tb'
 
 export const NumberInput: NonNullable<NumberField['input']> = ({
 	status: { isDirty, isSubmitting },
-	...schemaProps
+	input,
+	item: { description, label },
+	options: { decimals, max, min, prefix, suffix } = {}
 }) => (
 	<Indicator
 		position='top-end'
@@ -12,6 +14,20 @@ export const NumberInput: NonNullable<NumberField['input']> = ({
 		withBorder
 		disabled={!isDirty}
 		processing={isSubmitting}>
-		<NumberSchema {...schemaProps} />
+		<NI
+			size='xs'
+			variant='filled'
+			flex='1 1 45%'
+			label={label}
+			placeholder={label}
+			description={description}
+			leftSection={<TbNumbers />}
+			prefix={prefix}
+			suffix={suffix}
+			min={min}
+			max={max}
+			decimalScale={decimals}
+			{...input}
+		/>
 	</Indicator>
 )
