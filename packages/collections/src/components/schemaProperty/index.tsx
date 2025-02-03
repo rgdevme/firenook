@@ -36,7 +36,6 @@ export const Property = ({
 	onChange: (data: CollectionSchemaForm) => void
 	onTrash: () => void
 }) => {
-	// const [open, toggle] = useToggle()
 	const [fields] = useFields()
 	const schemaProp = useField(schema.type) as Field<any>
 
@@ -46,7 +45,7 @@ export const Property = ({
 		onValuesChange: val => onChange(val)
 	})
 
-	return !schemaProp?.schema ? null : (
+	return (
 		<Paper p='xs' withBorder>
 			<Flex gap='xs' direction='column'>
 				<Flex direction='row' wrap='nowrap' gap='xs' align='center'>
@@ -97,20 +96,13 @@ export const Property = ({
 								})
 							}}
 						/>
-						<schemaProp.schema
-							{...transformFormToSchema(schema)}
-							input={{ ...(form.getInputProps('value') as any) }}
-						/>
+						{schemaProp?.schema && (
+							<schemaProp.schema
+								{...transformFormToSchema(schema)}
+								input={{ ...(form.getInputProps('value') as any) }}
+							/>
+						)}
 					</Flex>
-					{/* <ActionIcon variant='subtle' onClick={() => toggle()}>
-						<TbChevronDown
-							data-open={open}
-							style={{
-								transform: open ? 'rotateZ(180deg)' : 'rotateZ(0deg)',
-								transition: 'all 150ms ease-in-out'
-							}}
-						/>
-            </ActionIcon> */}
 
 					<Tooltip {...tooltipProps('Is it an array?')}>
 						<Checkbox

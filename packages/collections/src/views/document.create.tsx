@@ -29,7 +29,7 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 	}>({ left: [], right: [] })
 
 	const form = useForm({
-		mode: 'uncontrolled',
+		// mode: 'uncontrolled',
 		onSubmitPreventDefault: 'always'
 	})
 
@@ -38,7 +38,9 @@ export const CreateDocument: FC<{ edit?: true }> = ({ edit }) => {
 		if (!doc_id) {
 			const res = await store.create(data)
 			nav(`/col/${col_id}/doc/${res.id}`, { replace: true })
-		} else await store.save(doc_id, data)
+		} else {
+			await store.save(doc_id, data)
+		}
 	}
 
 	useEffect(() => {
