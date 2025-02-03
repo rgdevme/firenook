@@ -5,7 +5,6 @@ import { CheckboxField } from '../componets/property/checkbox'
 import { NumberField } from '../componets/property/number'
 import { StringField } from '../componets/property/string'
 import { TextAreaField } from '../componets/property/textarea'
-import { DateField } from '../componets/property/date'
 
 export type RouteElement = { path: string; element: FC; key: string }
 export type MenuItemElement = { element: FC; key: string; priority: number }
@@ -25,7 +24,6 @@ declare global {
 		number: NumberField
 		checkbox: CheckboxField
 		textArea: TextAreaField
-		date: DateField
 	}
 }
 
@@ -55,5 +53,4 @@ export const initializeAppState = () => {
 	registerField(NumberField)
 	registerField(CheckboxField)
 	registerField(TextAreaField)
-	registerField(DateField)
 }

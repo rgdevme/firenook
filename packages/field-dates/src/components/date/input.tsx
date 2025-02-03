@@ -1,8 +1,8 @@
 import { Indicator } from '@mantine/core'
 import { DatePickerInput, DatesProvider } from '@mantine/dates'
+import { Timestamp } from 'firebase/firestore'
 import { TbCalendar } from 'react-icons/tb'
 import { DateField } from '.'
-import { Timestamp } from 'firebase/firestore'
 
 export const DateInput: NonNullable<DateField['input']> = ({
 	status: { isDirty, isSubmitting },
@@ -10,6 +10,8 @@ export const DateInput: NonNullable<DateField['input']> = ({
 	input,
 	options: { max, min } = {}
 }) => {
+	console.log({ input })
+
 	return (
 		<Indicator
 			position='top-end'

@@ -1,5 +1,5 @@
+import { Field } from '@firenook/core'
 import { Timestamp } from 'firebase/firestore'
-import { Field } from '../../../context'
 import { DateCell } from './cell'
 import { DateFilter } from './filter'
 import { DateInput } from './input'

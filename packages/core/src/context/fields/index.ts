@@ -1,5 +1,4 @@
 export { type CheckboxField } from '../../componets/property/checkbox'
-export { type DateField } from '../../componets/property/date'
 export { type NumberField } from '../../componets/property/number'
 export { type StringField } from '../../componets/property/string'
 export { type TextAreaField } from '../../componets/property/textarea'

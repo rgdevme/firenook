@@ -3,7 +3,6 @@
 
 /* @import '@tabler/icons-webfont/dist/tabler-icons.min.css'; */
 @import '@mantine/core/styles.css';
-@import '@mantine/dates/styles.css';
 
 @tailwind base;
 @tailwind components;

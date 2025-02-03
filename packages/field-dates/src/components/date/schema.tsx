@@ -1,7 +1,7 @@
 import { DatePickerInput, DatesProvider } from '@mantine/dates'
+import { Timestamp } from 'firebase/firestore'
 import { TbCalendar } from 'react-icons/tb'
 import { DateField } from '.'
-import { Timestamp } from 'firebase/firestore'
 
 export const DateSchema: NonNullable<DateField['schema']> = ({
 	input,
